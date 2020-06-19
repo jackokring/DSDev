@@ -26,6 +26,7 @@ SOURCES		:=	source
 DATA		:=	data  
 INCLUDES	:=	include
 GRAPHICS	:=	gfx
+MUSIC		:=	music
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -45,7 +46,7 @@ LDFLAGS	=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:= -lnds9
+LIBS	:= -lmm9 -lnds9
  
  
 #---------------------------------------------------------------------------------
@@ -74,9 +75,11 @@ export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
-BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*))) mmsolution.bin
 BMPFILES	:=	$(foreach dir,$(GRAPHICS),$(notdir $(wildcard $(dir)/*.bmp)))
 PNGFILES	:=	$(foreach dir,$(GRAPHICS),$(notdir $(wildcard $(dir)/*.png)))
+
+export MODFILES	:=	$(foreach dir,$(notdir $(wildcard $(MUSIC)/*.*)),$(CURDIR)/$(MUSIC)/$(dir))
 
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
@@ -141,6 +144,15 @@ $(OUTPUT).elf	:	$(OFILES)
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	@$(bin2o)
+
+#---------------------------------------------------------------------------------
+# rule to build solution from music files
+# rule to build soundbank from music files
+#---------------------------------------------------------------------------------
+mmsolution.bin mmsolution.h : $(MODFILES)
+#---------------------------------------------------------------------------------
+	@mmutil $^ -d -ommsolution.bin -hmmsolution.h
+
 
 #---------------------------------------------------------------------------------
 # This rule creates assembly source files using grit
