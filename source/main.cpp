@@ -17,6 +17,10 @@
 #include <nds.h>
 #include <stdio.h>
 #include <gl2d.h>
+#include <maxmod9.h>
+
+#include "mmsolution.h"		// solution definitions
+#include "mmsolution_bin.h"	// solution binary reference 
 
 
 
@@ -213,6 +217,52 @@ int main( int argc, char *argv[] )
 	
 	
 	consoleDemoInit();
+	keyboardDemoInit();
+
+	mmInitDefaultMem((mm_addr)mmsolution_bin);
+	
+	// load the module
+	mmLoad( MOD_FLATOUTLIES );
+
+	// load sound effects
+	mmLoadEffect( SFX_AMBULANCE );
+	mmLoadEffect( SFX_BOOM );
+
+	// Start playing module
+	mmStart( MOD_FLATOUTLIES, MM_PLAY_LOOP );
+
+	mm_sound_effect ambulance = {
+		{ SFX_AMBULANCE } ,			// id
+		(int)(1.0f * (1<<10)),	// rate
+		0,		// handle
+		255,	// volume
+		0,		// panning
+	};
+
+	mm_sound_effect boom = {
+		{ SFX_BOOM } ,			// id
+		(int)(1.0f * (1<<10)),	// rate
+		0,		// handle
+		255,	// volume
+		255,	// panning
+	};
+
+/*
+// Play looping ambulance sound effect out of left speaker if A button is pressed
+		if ( keys_pressed & KEY_A ) {
+			amb = mmEffectEx(&ambulance);
+		}
+
+		// stop ambulance sound when A button is released
+		if ( keys_released & KEY_A ) {
+			mmEffectCancel(amb);
+		}
+
+		// Play explosion sound effect out of right speaker if B button is pressed
+		if ( keys_pressed & KEY_B ) {
+			mmEffectEx(&boom);
+		}
+*/
 	
 	
 	// Initialize GL in 3d mode
@@ -348,6 +398,7 @@ int main( int argc, char *argv[] )
 		
 	
 	}
+    
 
 	return 0;
 	
