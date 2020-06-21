@@ -368,16 +368,16 @@ int main( int argc, char *argv[] ) {
 }
 
 void draw3D(int frame, int textureID) {
-		float rotateX = 0;
-		float rotateY = 0;
+		int rotateX = 0;
+		int rotateY = 0;
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 
 		//move it away from the camera
 		glTranslatef32(0, 0, floattof32(-1));
 				
-		glRotateX(rotateX);
-		glRotateY(rotateY);
+		glRotateXi(rotateX);
+		glRotateYi(rotateY);
 		
 		glMaterialf(GL_AMBIENT, RGB15(16,16,16));
 		glMaterialf(GL_DIFFUSE, RGB15(16,16,16));
