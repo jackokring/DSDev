@@ -14,7 +14,6 @@
 #include <console.h>
 #include <keyboard.h>
 #include <input.h>
-#include <Cvertexbuffer.h>
 
 //============= SOUND BUILD =========================
 #include "mmsolution.h"		// solution definitions
@@ -167,7 +166,9 @@ int main( int argc, char *argv[] ) {
 	videoSetMode(MODE_5_3D);
 	
     //lower screen
-	consoleDemoInit();//does the following
+	//x, y, w, h in chars
+	PrintConsole *console;
+	consoleSetWindow(console = consoleDemoInit(), 0, 0, 32, 24);//does the following
     //videoSetModeSub(MODE_0_2D);
 	//vramSetBankC(VRAM_C_SUB_BG);
     //BG0, mapbase 22 (2K) -> 21 extra free map, tilebase 3 (16K) = 48K, load-font
@@ -223,12 +224,7 @@ int main( int argc, char *argv[] ) {
 		if (keys_pressed & KEY_B) {
 			mmEffectEx(&boom);
 		}
-*/
-	
-	
-	// Initialize GL in 3d mode
-	glScreen2D();
-	
+*/	
 	// Set Bank A+B to texture (256 K)
 	vramSetBankA(VRAM_A_TEXTURE);
     vramSetBankB(VRAM_B_TEXTURE);
@@ -275,6 +271,38 @@ int main( int argc, char *argv[] ) {
 	int TextureSize = font_siBitmapLen + font_16x16BitmapLen;			  
 	iprintf("\x1b[10;1HTotal Texture size= %i kb", TextureSize / 1024);
 	
+	// initialize gl
+	int textureID;
+	glInit();
+	
+	//enable textures
+	glEnable(GL_TEXTURE_2D);
+	
+	// enable antialiasing
+	glEnable(GL_ANTIALIAS);
+	
+	// setup the rear plane
+	glClearColor(0,0,0,31); // BG must be opaque for AA to work
+	glClearPolyID(63); // BG must have a unique polygon ID for AA to work
+	glClearDepth(0x7FFF);
+
+	//this should work the same as the normal gl call
+	glViewport(0,0,255,191);
+	
+	glGenTextures(1, &textureID);
+	glBindTexture(0, textureID);
+	glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_64, TEXTURE_SIZE_512,
+		0, TEXGEN_TEXCOORD, (u8*)font_16x16Bitmap);//TODO: just easier to reuse
+	
+	//any floating point gl call is being converted to fixed prior to being implemented
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(70, 256.0 / 192.0, 0.1, 40);
+	
+	gluLookAt(	0.0, 0.0, 1.0,		//camera possition 
+				0.0, 0.0, 0.0,		//look at
+				0.0, 1.0, 0.0);		//up	
+
 	// our ever present frame counter	
 	int frame = 0;
 	
@@ -282,7 +310,7 @@ int main( int argc, char *argv[] ) {
 		// increment frame counter and rotation offsets
 		frame++;	
 		//3D
-		draw3D(frame);
+		draw3D(frame, textureID);
 		// set up GL2D for 2d mode
 		glBegin2D();			
 			// fill the whole screen with a gradient box
@@ -339,42 +367,57 @@ int main( int argc, char *argv[] ) {
 	return 0;
 }
 
-Cvertexbuffer *vb;//TODO
-
-void draw3D(int frame) {
-	static s32 text_off_u = 0;
-	static s32 text_off_v = 0;
-	
-	glPushMatrix();
-		
-		glLoadIdentity();
-		
-		glTranslate3f32( 0, 0, floattof32(3.0) );
-		glScalef32(floattof32(1),floattof32(1.5),floattof32(1.5));
-	
-		// floor
+void draw3D(int frame, int textureID) {
+		float rotateX = 0;
+		float rotateY = 0;
+		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 
-			glTranslate3f32( 0, -1 << 12, -2 << 12 );		
-			glRotateXi( inttof32(244) );
-			
-			//vb->render( text_off_u, text_off_v, true );
-			
-		glPopMatrix( 1 );
+		//move it away from the camera
+		glTranslatef32(0, 0, floattof32(-1));
+				
+		glRotateX(rotateX);
+		glRotateY(rotateY);
 		
-		// ceiling
-		glPushMatrix();
+		glMaterialf(GL_AMBIENT, RGB15(16,16,16));
+		glMaterialf(GL_DIFFUSE, RGB15(16,16,16));
+		glMaterialf(GL_SPECULAR, BIT(15) | RGB15(8,8,8));
+		glMaterialf(GL_EMISSION, RGB15(16,16,16));
 
-			glTranslate3f32( 0, 1 << 12, -2 << 12 );
-			glRotateXi( inttof32(180) );
-			
-			//vb->render( text_off_u ,text_off_v, true );
+		//ds uses a table for shinyness..this generates a half-ass one
+		glMaterialShinyness();
+
+		//not a real gl function and will likely change
+		glPolyFmt(POLY_ALPHA(31) | POLY_CULL_BACK);
+
+		scanKeys();
 		
-		glPopMatrix( 1 );
+		u16 keys = keysHeld();
+		
+		if((keys & KEY_UP)) rotateX += 3;
+		if((keys & KEY_DOWN)) rotateX -= 3;
+		if((keys & KEY_LEFT)) rotateY += 3;
+		if((keys & KEY_RIGHT)) rotateY -= 3;
+		
+		glBindTexture(0, textureID);
+
+		//draw the obj
+		glBegin(GL_QUAD);
+			glNormal(NORMAL_PACK(0,inttov10(-1),0));
+
+			GFX_TEX_COORD = (TEXTURE_PACK(0, inttot16(512)));
+			glVertex3v16(floattov16(-0.5),	floattov16(-0.5), 0 );
 	
-	glPopMatrix( 1 );
+			GFX_TEX_COORD = (TEXTURE_PACK(inttot16(64),inttot16(512)));
+			glVertex3v16(floattov16(0.5),	floattov16(-0.5), 0 );
 	
-	// "move" the floor and ceiling
-	text_off_u = (sinLerp(frame*30)*2) & 4095;
-	text_off_v = (sinLerp(-frame*50)*3) & 4095;
+			GFX_TEX_COORD = (TEXTURE_PACK(inttot16(64), 0));
+			glVertex3v16(floattov16(0.5),	floattov16(0.5), 0 );
+
+			GFX_TEX_COORD = (TEXTURE_PACK(0,0));
+			glVertex3v16(floattov16(-0.5),	floattov16(0.5), 0 );
+		
+		glEnd();
+		
+		glPopMatrix(1);
 }
