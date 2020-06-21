@@ -1,11 +1,11 @@
-/=============================================================================
+/*============================================================================
 
     DSDev Template
 	
 	Thanks to source examples from:
 	Adigun A. Polack, Richard Eric M. Lope BSN RN
 	
-==============================================================================/ 
+=============================================================================*/ 
 
 
 #include <nds.h>
@@ -14,6 +14,7 @@
 #include <maxmod9.h>
 #include <console.h>
 #include <keyboard.h>
+#include <input.h>
 
 #include "mmsolution.h"		// solution definitions
 #include "mmsolution_bin.h"	// solution binary reference 
@@ -69,7 +70,7 @@ int Cglfont::Load( glImage              *_font_sprite,
 				   int 	              	param,
 				   int					pallette_width,
 				   const u16			*palette,
-				   const uint8          *texture	 
+				   const u8          *texture	 
 				 ) {
 	font_sprite = _font_sprite;
 	

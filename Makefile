@@ -105,6 +105,8 @@ export HFILES := $(PNGFILES:.png=.h) $(BMPFILES:.bmp=.h) $(addsuffix .h,$(subst 
  
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-iquote $(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
+					$(foreach dir,$(LIBDIRS),-I$(dir)/include/nds) \
+					$(foreach dir,$(LIBDIRS),-I$(dir)/include/nds/arm9) \
 					-I$(CURDIR)/$(BUILD)
  
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
