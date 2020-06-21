@@ -1,23 +1,19 @@
-/******************************************************************************
-*******************************************************************************
-	Easy GL2D 
-	Fonts example
-	A simple font class for Easy GL2D DS
+/=============================================================================
+
+    DSDev Template
 	
-	Relminator (Richard Eric M. Lope BSN RN)
-	Http://Rel.Phatcode.Net
+	Thanks to source examples from:
+	Adigun A. Polack, Richard Eric M. Lope BSN RN
 	
-	Thanks to:
-	Adigun A. Polack for the fonts
-	
-*******************************************************************************
-******************************************************************************/ 
+==============================================================================/ 
 
 
 #include <nds.h>
 #include <stdio.h>
 #include <gl2d.h>
 #include <maxmod9.h>
+#include <console.h>
+#include <keyboard.h>
 
 #include "mmsolution.h"		// solution definitions
 #include "mmsolution_bin.h"	// solution binary reference 
@@ -26,8 +22,7 @@
 
 // Our font class
 // I decided to use c++ because of function overloading
-class Cglfont
-{
+class Cglfont {
 	public:
 	
 	Cglfont();
@@ -56,8 +51,7 @@ class Cglfont
 
 
 
-Cglfont::Cglfont()
-{
+Cglfont::Cglfont() {
 
 }
 
@@ -76,15 +70,13 @@ int Cglfont::Load( glImage              *_font_sprite,
 				   int					pallette_width,
 				   const u16			*palette,
 				   const uint8          *texture	 
-				 )
-
-{
+				 ) {
 	font_sprite = _font_sprite;
 	
 	int textureID = 
 		glLoadSpriteSet( font_sprite,
-						 numframes, 
-						 texcoords,
+						 numframes,//glLoadTileSet -> tileWidth, tileHieght 
+						 texcoords,//glLoadTileSet -> totalWidth, totalHeight
 						 type,
 						 sizeX,
 						 sizeY,
@@ -95,7 +87,6 @@ int Cglfont::Load( glImage              *_font_sprite,
 					   );
 					   
 	return textureID;
-
 }
 
 /******************************************************************************
@@ -103,8 +94,7 @@ int Cglfont::Load( glImage              *_font_sprite,
 	Prints a string
 
 ******************************************************************************/
-void Cglfont::Print( int x, int y, const char *text )
-{
+void Cglfont::Print( int x, int y, const char *text ) {
 
 	unsigned char font_char;
 	
@@ -122,8 +112,7 @@ void Cglfont::Print( int x, int y, const char *text )
 	Prints a number
 
 ******************************************************************************/
-void Cglfont::Print( int x, int y, int value )
-{
+void Cglfont::Print( int x, int y, int value ) {
 
 	
 	sprintf( str,"%i",value );
@@ -137,8 +126,7 @@ void Cglfont::Print( int x, int y, int value )
 	Center Prints a string
 
 ******************************************************************************/
-void Cglfont::PrintCentered( int x, int y, const char *text )
-{
+void Cglfont::PrintCentered( int x, int y, const char *text ) {
 
 	unsigned char font_char;
 	int total_width = 0;
@@ -167,8 +155,7 @@ void Cglfont::PrintCentered( int x, int y, const char *text )
 	Center Prints a number
 
 ******************************************************************************/
-void Cglfont::PrintCentered( int x, int y, int value )
-{
+void Cglfont::PrintCentered( int x, int y, int value ) {
 
 	
 	sprintf( str,"%i",value );
@@ -183,9 +170,6 @@ void Cglfont::PrintCentered( int x, int y, int value )
     MAIN 
 
 ******************************************************************************/
-
-
-
 // GRIT auto-genrated arrays of images
 #include "font_si.h"
 #include "font_16x16.h"
@@ -205,31 +189,50 @@ glImage  FontBigImages[FONT_16X16_NUM_IMAGES];
 Cglfont Font;
 Cglfont FontBig;
 	
+int main( int argc, char *argv[] ) {
 
+    //VRAM ALLOCATIONS
+    //A 128 -> PRIMARY TEXTURES
+    //B 128 -> PRIMARY TEXTURES
+    //C 128 -> 50% used for console and keyboard (sub-screen) BG0, BG3 (BG1 and BG2 free)
+    //D 128 -> 
+    //E 64 -> TEXTURE PALETTE
+    //F 16 ->
+    //G 16 ->
+    //H 32 ->
+    //I 16 ->
 
-int main( int argc, char *argv[] )
-{
-
+    //BG_PALETTE(_SUB)[x] -> 1K (* 2) -> lower 1K is Main 512 colours, 256 BG, 256 OBJ, upper is Sub
+    //console fills black 0, and (n * 16 - 1) for text colours (on SUB)
 	
-	
-	// Set it to my favorite mode
+	//upper screen
 	videoSetMode(MODE_5_3D);
 	
-	
-	consoleDemoInit();
+    //lower screen
+	consoleDemoInit();//does the following
+    //videoSetModeSub(MODE_0_2D);
+	//vramSetBankC(VRAM_C_SUB_BG);
+    //BG0, mapbase 22 (2K) -> 21 extra free map, tilebase 3 (16K) = 48K, load-font
+    //47,104 (map 23) -> also an extra free map
+    //4096 byte tiles in default font 4bpp
+    //tilebase 4 is free @ 64K, map 26 to 31 free in lower 64K of VRAM_C
+    //BG1, BG2 not used
 	keyboardDemoInit();
+    keyboardShow();
+    //BG3, mapbase 20 (2K) -> just above tiles, tilebase 0 (16K) = 0K
+    //40,960 byte tiles for keyboard (256 * 320 / 2) 4bpp
 
 	mmInitDefaultMem((mm_addr)mmsolution_bin);
 	
 	// load the module
-	mmLoad( MOD_FLATOUTLIES );
+	mmLoad(MOD_FLATOUTLIES);
 
 	// load sound effects
-	mmLoadEffect( SFX_AMBULANCE );
-	mmLoadEffect( SFX_BOOM );
+	mmLoadEffect(SFX_AMBULANCE);
+	mmLoadEffect(SFX_BOOM);
 
 	// Start playing module
-	mmStart( MOD_FLATOUTLIES, MM_PLAY_LOOP );
+	mmStart(MOD_FLATOUTLIES, MM_PLAY_LOOP);
 
 	mm_sound_effect ambulance = {
 		{ SFX_AMBULANCE } ,			// id
@@ -249,17 +252,17 @@ int main( int argc, char *argv[] )
 
 /*
 // Play looping ambulance sound effect out of left speaker if A button is pressed
-		if ( keys_pressed & KEY_A ) {
+		if (keys_pressed & KEY_A) {
 			amb = mmEffectEx(&ambulance);
 		}
 
 		// stop ambulance sound when A button is released
-		if ( keys_released & KEY_A ) {
-			mmEffectCancel(amb);
+		if (keys_released & KEY_A) {
+			mmEffectCancel(amb);//also mmEffectReleae??
 		}
 
 		// Play explosion sound effect out of right speaker if B button is pressed
-		if ( keys_pressed & KEY_B ) {
+		if (keys_pressed & KEY_B) {
 			mmEffectEx(&boom);
 		}
 */
@@ -268,12 +271,10 @@ int main( int argc, char *argv[] )
 	// Initialize GL in 3d mode
 	glScreen2D();
 	
-	
-	// Set  Bank A to texture (128 kb)
-	vramSetBankA( VRAM_A_TEXTURE );
-	
-
-	vramSetBankE(VRAM_E_TEX_PALETTE);  // Allocate VRAM bank for all the palettes
+	// Set Bank A+B to texture (256 K)
+	vramSetBankA(VRAM_A_TEXTURE);
+    vramSetBankB(VRAM_B_TEXTURE);
+	vramSetBankE(VRAM_E_TEX_PALETTE);  // Allocate VRAM bank for all the palettes (64 K)
 	
 	// Load our font texture
 	// We used glLoadSpriteSet since the texture was made
@@ -326,8 +327,7 @@ int main( int argc, char *argv[] )
 	int frame = 0;
 	
 	
-	while( 1 )
-	{
+	while(1) {
 		// increment frame counter and rotation offsets
 	
 		frame++;
@@ -394,14 +394,11 @@ int main( int argc, char *argv[] )
 
 		swiWaitForVBlank();
 		scanKeys();
-		if (keysDown()&KEY_START) break;
+		if (keysDown() & KEY_START) break;
 		
 	
 	}
-    
-
 	return 0;
-	
 }
 
 
