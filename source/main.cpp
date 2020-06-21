@@ -42,7 +42,6 @@ class Cglfont {
 	
 	private:
 	glImage *font_sprite;
-	char str[256];
 };
 
 Cglfont::Cglfont() { }
@@ -86,12 +85,6 @@ void Cglfont::printRight(int x, int y, const char *text) {
 	print(x, y, text);
 }
 
-char *Cglfont::printValue(int value) {
-	sprintf(str, "%i", value);
-	return str;
-	
-}
-
 void Cglfont::printCentered(int y, const char *text) {
 	int x = (SCREEN_WIDTH - printWidth(text)) / 2; 
 	print(x, y, text);
@@ -124,6 +117,13 @@ glImage  FontBigImages[FONT_16X16_NUM_IMAGES];
 // Our fonts
 Cglfont Font;
 Cglfont FontBig;
+
+char *printValue(int value) {
+	//buffer
+	static char _str[256];
+	sprintf(_str, "%i", value);
+	return _str;
+}
 	
 int main( int argc, char *argv[] ) {
 
@@ -326,7 +326,7 @@ int main( int argc, char *argv[] ) {
 			glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(2));
 			// Print the number of frames
 			Font.print(10, 170, "FRAMES = ");
-			Font.print(10 + 72, 170, frame);		
+			Font.print(10 + 72, 170, printValue(frame));		
 		glEnd2D();
 		glFlush(0);
 		swiWaitForVBlank();
