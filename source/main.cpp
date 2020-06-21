@@ -7,7 +7,6 @@
 	
 =============================================================================*/ 
 
-
 #include <nds.h>
 #include <stdio.h>
 #include <gl2d.h>
@@ -16,161 +15,98 @@
 #include <keyboard.h>
 #include <input.h>
 
+//============= SOUND BUILD =========================
 #include "mmsolution.h"		// solution definitions
 #include "mmsolution_bin.h"	// solution binary reference 
-
-
 
 // Our font class
 // I decided to use c++ because of function overloading
 class Cglfont {
-	public:
-	
+	public:	
 	Cglfont();
-	int Load( glImage              *_font_sprite,
-              const unsigned int   numframes, 
-			  const unsigned int   *texcoords,
-			  GL_TEXTURE_TYPE_ENUM type,
-			  int 	               sizeX,
-		      int 	               sizeY,
-		      int 	               param,
-		      int				   pallette_width,
-			  const u16			   *palette,
-			  const uint8          *texture	 
-            );
-	void Print( int x, int y, const char *text );
-	void Print( int x, int y, int value );
-	void PrintCentered( int x, int y, const char *text );
-	void PrintCentered( int x, int y, int value );
-	
+	int load(glImage *_font_sprite,
+		const unsigned int numframes, 
+		const unsigned int *texcoords,
+		GL_TEXTURE_TYPE_ENUM type,
+		int sizeX,
+		int sizeY,
+		int param,
+		int	pallette_width,
+		const u16 *palette,
+		const u8 *texture);
+	void print(int x, int y, const char *text);
+	void printRight(int x, int y, const char *text);
+	char *printValue(int value);
+	void printCentered(int y, const char *text);
+	int printWidth(const char *text);
 	
 	private:
-	glImage     *font_sprite;
-	char		str[256];
-	char		str2[256];
+	glImage *font_sprite;
+	char str[256];
 };
 
+Cglfont::Cglfont() { }
 
-
-Cglfont::Cglfont() {
-
-}
-
-/******************************************************************************
-
-	Loads our font
-
-******************************************************************************/
-int Cglfont::Load( glImage              *_font_sprite,
-				   const unsigned int   numframes, 
-				   const unsigned int   *texcoords,
-				   GL_TEXTURE_TYPE_ENUM type,
-				   int 	              	sizeX,
-				   int 	              	sizeY,
-				   int 	              	param,
-				   int					pallette_width,
-				   const u16			*palette,
-				   const u8          *texture	 
-				 ) {
+int Cglfont::load(glImage *_font_sprite,
+		const unsigned int numframes, 
+		const unsigned int *texcoords,
+		GL_TEXTURE_TYPE_ENUM type,
+		int sizeX,
+		int sizeY,
+		int param,
+		int pallette_width,
+		const u16 *palette,
+		const u8 *texture) {
 	font_sprite = _font_sprite;
-	
 	int textureID = 
-		glLoadSpriteSet( font_sprite,
-						 numframes,//glLoadTileSet -> tileWidth, tileHieght 
-						 texcoords,//glLoadTileSet -> totalWidth, totalHeight
-						 type,
-						 sizeX,
-						 sizeY,
-						 param,
-						 pallette_width,
-					     palette,
-						 texture	 
-					   );
-					   
+		glLoadSpriteSet(font_sprite,
+			numframes,//glLoadTileSet -> tileWidth, tileHieght 
+			texcoords,//glLoadTileSet -> totalWidth, totalHeight
+			type,
+			sizeX,
+			sizeY,
+			param,
+			pallette_width,
+			palette,
+			texture);					   
 	return textureID;
 }
 
-/******************************************************************************
-
-	Prints a string
-
-******************************************************************************/
-void Cglfont::Print( int x, int y, const char *text ) {
-
+void Cglfont::print(int x, int y, const char *text) {
 	unsigned char font_char;
-	
-	while( *text )
-	{
-		font_char = ( *(unsigned char*)text++ ) - 32;
-		glSprite( x, y, GL_FLIP_NONE, &font_sprite[font_char] );
+	while(*text) { 
+		font_char = (*(unsigned char*)text++) - 32;
+		glSprite(x, y, GL_FLIP_NONE, &font_sprite[font_char]);
 		x += font_sprite[font_char].width; 
 	}
+}
+
+void Cglfont::printRight(int x, int y, const char *text) {
+	x -= printWidth(text); 
+	print(x, y, text);
+}
+
+char *Cglfont::printValue(int value) {
+	sprintf(str, "%i", value);
+	return str;
 	
 }
 
-/******************************************************************************
-
-	Prints a number
-
-******************************************************************************/
-void Cglfont::Print( int x, int y, int value ) {
-
-	
-	sprintf( str,"%i",value );
-	
-	Print( x, y, str );
-	
+void Cglfont::printCentered(int y, const char *text) {
+	int x = (SCREEN_WIDTH - printWidth(text)) / 2; 
+	print(x, y, text);
 }
 
-/******************************************************************************
-
-	Center Prints a string
-
-******************************************************************************/
-void Cglfont::PrintCentered( int x, int y, const char *text ) {
-
+int Cglfont::printWidth(const char *text) {
 	unsigned char font_char;
 	int total_width = 0;
-	char *o_text = (char*)text;
-	
-	while( *text )
-	{
-		font_char = ( *(unsigned char*)text++ ) - 32;
+	while(*text) {
+		font_char = (*(unsigned char*)text++) - 32;
 		total_width += font_sprite[font_char].width; 
 	}
-	
-	x = (SCREEN_WIDTH - total_width) / 2; 
-	
-	text = o_text;
-	while( *text )
-	{
-		font_char = (*(unsigned char*)text++) - 32;
-		glSprite( x, y, GL_FLIP_NONE, &font_sprite[font_char] );
-		x += font_sprite[font_char].width; 
-	}
-	
+	return total_width;
 }
 
-/******************************************************************************
-
-	Center Prints a number
-
-******************************************************************************/
-void Cglfont::PrintCentered( int x, int y, int value ) {
-
-	
-	sprintf( str,"%i",value );
-	
-	PrintCentered( x, y, str );
-	
-}
-
-
-/******************************************************************************
-
-    MAIN 
-
-******************************************************************************/
 // GRIT auto-genrated arrays of images
 #include "font_si.h"
 #include "font_16x16.h"
@@ -184,7 +120,6 @@ void Cglfont::PrintCentered( int x, int y, int value ) {
 // FONT_SI_NUM_IMAGES is a value #defined from "uvcoord_font_si.h"
 glImage  FontImages[FONT_SI_NUM_IMAGES];
 glImage  FontBigImages[FONT_16X16_NUM_IMAGES];
-
 
 // Our fonts
 Cglfont Font;
@@ -205,6 +140,27 @@ int main( int argc, char *argv[] ) {
 
     //BG_PALETTE(_SUB)[x] -> 1K (* 2) -> lower 1K is Main 512 colours, 256 BG, 256 OBJ, upper is Sub
     //console fills black 0, and (n * 16 - 1) for text colours (on SUB)
+	/*
+			palette[1 * 16 - 1] = RGB15(0,0,0); //30 normal black
+			palette[2 * 16 - 1] = RGB15(15,0,0); //31 normal red
+			palette[3 * 16 - 1] = RGB15(0,15,0); //32 normal green
+			palette[4 * 16 - 1] = RGB15(15,15,0); //33 normal yellow
+
+			palette[5 * 16 - 1] = RGB15(0,0,15); //34 normal blue
+			palette[6 * 16 - 1] = RGB15(15,0,15); //35 normal magenta
+			palette[7 * 16 - 1] = RGB15(0,15,15); //36 normal cyan
+			palette[8 * 16 - 1] = RGB15(24,24,24); //37 normal white
+
+			palette[9 * 16 - 1 ] = RGB15(15,15,15); //40 bright black
+			palette[10 * 16 - 1] = RGB15(31,0,0); //41 bright red
+			palette[11 * 16 - 1] = RGB15(0,31,0); //42 bright green
+			palette[12 * 16 - 1] = RGB15(31,31,0);	//43 bright yellow
+
+			palette[13 * 16 - 1] = RGB15(0,0,31); //44 bright blue
+			palette[14 * 16 - 1] = RGB15(31,0,31);	//45 bright magenta
+			palette[15 * 16 - 1] = RGB15(0,31,31);	//46 bright cyan
+			palette[16 * 16 - 1] = RGB15(31,31,31); //47 & 39 bright white
+	*/
 	
 	//upper screen
 	videoSetMode(MODE_5_3D);
@@ -282,34 +238,31 @@ int main( int argc, char *argv[] ) {
 	// with my texture packer.
 	// no need to save the return value since
 	// we don't need  it at all
-	Font.Load( FontImages,				// pointer to glImage array
-			   FONT_SI_NUM_IMAGES, 		// Texture packer auto-generated #define
-			   font_si_texcoords,		// Texture packer auto-generated array
-			   GL_RGB256,				// texture type for glTexImage2D() in videoGL.h 
-			   TEXTURE_SIZE_64,			// sizeX for glTexImage2D() in videoGL.h
-			   TEXTURE_SIZE_128,		// sizeY for glTexImage2D() in videoGL.h
-			   GL_TEXTURE_WRAP_S|GL_TEXTURE_WRAP_T|TEXGEN_OFF|GL_TEXTURE_COLOR0_TRANSPARENT, // param for glTexImage2D() in videoGL.h
-			   256,						// Length of the palette (256 colors)
-			   (u16*)font_siPal,		// Palette Data
-			   (u8*)font_siBitmap		// image data generated by GRIT 
-			 );
+	Font.load(FontImages,				// pointer to glImage array
+		FONT_SI_NUM_IMAGES, 		// Texture packer auto-generated #define
+		font_si_texcoords,		// Texture packer auto-generated array
+		GL_RGB256,				// texture type for glTexImage2D() in videoGL.h 
+		TEXTURE_SIZE_64,			// sizeX for glTexImage2D() in videoGL.h
+		TEXTURE_SIZE_128,		// sizeY for glTexImage2D() in videoGL.h
+		GL_TEXTURE_WRAP_S|GL_TEXTURE_WRAP_T|TEXGEN_OFF|GL_TEXTURE_COLOR0_TRANSPARENT, // param for glTexImage2D() in videoGL.h
+		256,						// Length of the palette (256 colors)
+		(u16*)font_siPal,		// Palette Data
+		(u8*)font_siBitmap		// image data generated by GRIT 
+	);
 
 	// Do the same with our bigger texture
-	FontBig.Load( FontBigImages,
-			   FONT_16X16_NUM_IMAGES, 
-			   font_16x16_texcoords,
-			   GL_RGB256,
-			   TEXTURE_SIZE_64,
-			   TEXTURE_SIZE_512,
-			   GL_TEXTURE_WRAP_S|GL_TEXTURE_WRAP_T|TEXGEN_OFF|GL_TEXTURE_COLOR0_TRANSPARENT,
-			   256,
-			   (u16*)font_siPal,
-			   (u8*)font_16x16Bitmap	 
-			 );
+	FontBig.load(FontBigImages,
+		FONT_16X16_NUM_IMAGES, 
+		font_16x16_texcoords,
+		GL_RGB256,
+		TEXTURE_SIZE_64,
+		TEXTURE_SIZE_512,
+		GL_TEXTURE_WRAP_S|GL_TEXTURE_WRAP_T|TEXGEN_OFF|GL_TEXTURE_COLOR0_TRANSPARENT,
+		256,
+		(u16*)font_siPal,
+		(u8*)font_16x16Bitmap	 
+	);
 
-
-	
-	
 	iprintf("\x1b[1;1HEasy GL2D Font Example");
 	iprintf("\x1b[3;1HFonts by Adigun A. Polack");
 	
@@ -318,88 +271,67 @@ int main( int argc, char *argv[] ) {
 	
 	// calculate the amount of 
 	// memory uploaded to VRAM in KB
-	int TextureSize = font_siBitmapLen +
-					  font_16x16BitmapLen;
-					  
-					  
+	int TextureSize = font_siBitmapLen + font_16x16BitmapLen;			  
 	iprintf("\x1b[10;1HTotal Texture size= %i kb", TextureSize / 1024);
 	
 	// our ever present frame counter	
 	int frame = 0;
 	
-	
-	while(1) {
+	while(true) {
 		// increment frame counter and rotation offsets
-	
-		frame++;
-	
+		frame++;	
 		// set up GL2D for 2d mode
-		glBegin2D();
-			
+		glBegin2D();			
 			// fill the whole screen with a gradient box
-			glBoxFilledGradient( 0, 0, 255, 191,
-								 RGB15( 31,  0,  0 ),
-								 RGB15(  0, 31,  0 ),
-								 RGB15( 31,  0, 31 ),
-								 RGB15(  0, 31, 31 )
-                               );
+			glBoxFilledGradient(0, 0, 255, 191,
+				RGB15(31, 0, 0),
+				RGB15(0, 31, 0),
+				RGB15(31, 0, 31),
+				RGB15(0, 31, 31)
+			);
 			
 			// Center print the title
-			glColor( RGB15(0,0,0) );
-			FontBig.PrintCentered( 0, 0, "EASY GL2D" );
-			glColor( RGB15((frame*6)&31,(-frame*4)&31, (frame*2)&31) );
-			FontBig.PrintCentered( 0, 20,  "FONT EXAMPLE" );
+			glColor(RGB15(0,0,0));
+			FontBig.printCentered(0, "EASY GL2D");
+			glColor(RGB15((frame*6)&31,(-frame*4)&31, (frame*2)&31));
+			FontBig.printCentered(20,  "FONT EXAMPLE");
 
 			// Fixed-point sinusoidal movement
-			int x = ( sinLerp( frame * 400 ) * 30 ) >> 12;
+			int x = (sinLerp(frame * 400) * 30) >> 12;
 	   
 			// Make the fonts sway left and right
 			// Also change coloring of fonts
-			glColor( RGB15(31,0,0) );
-			FontBig.Print( 25 + x, 50, "hfDEVKITPROfh" );
-			glColor( RGB15(31,0,31) );
-			glColor( RGB15(x, 31 - x, x * 2) );
-			FontBig.Print( 50 - x, 70, "dcLIBNDScd" );
-			
-			
-			
+			glColor(RGB15(31,0,0));
+			FontBig.print(25 + x, 50, "hfDEVKITPROfh");
+			glColor(RGB15(31,0,31) );
+			glColor(RGB15(x, 31 - x, x * 2));
+			FontBig.print(50 - x, 70, "dcLIBNDScd");
+
 			// change fontsets and  print some spam
-			glColor( RGB15(0,31,31) );
-			Font.PrintCentered( 0, 100, "FONTS BY ADIGUN A. POLACK" );
-			Font.PrintCentered( 0, 120, "CODE BY RELMINATOR" );
-			
+			glColor(RGB15(0,31,31));
+			Font.printCentered(100, "FONTS BY ADIGUN A. POLACK" );
+			Font.printCentered(120, "CODE BY RELMINATOR" );
 			
 			// Restore normal coloring
-			glColor( RGB15(31,31,31) );
+			glColor(RGB15(31,31,31));
 			
 			// Change opacity relative to frame
-			int opacity = abs( sinLerp( frame * 245 ) * 30 ) >> 12;
+			int opacity = abs(sinLerp(frame * 245) * 30) >> 12;
 			
 			// translucent mode 
 			// Add 1 to opacity since at 0 we will get into wireframe mode
 			glPolyFmt(POLY_ALPHA(1 + opacity) | POLY_CULL_NONE | POLY_ID(1));
-			FontBig.Print( 35 + x, 140, "ANYA THERESE" );
-			
-			
+			FontBig.print(35 + x, 140, "ANYA THERESE");
 			
 			glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(2));
-			
 			// Print the number of frames
-			Font.Print( 10, 170, "FRAMES = " );
-			Font.Print( 10 + 72, 170, frame );
-			
-			
+			Font.print(10, 170, "FRAMES = ");
+			Font.print(10 + 72, 170, frame);		
 		glEnd2D();
-		
 		glFlush(0);
-
 		swiWaitForVBlank();
 		scanKeys();
 		if (keysDown() & KEY_START) break;
-		
-	
 	}
 	return 0;
 }
-
-
