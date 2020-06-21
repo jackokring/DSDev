@@ -14,6 +14,7 @@
 #include <console.h>
 #include <keyboard.h>
 #include <input.h>
+#include <Cvertexbuffer.h>
 
 //============= SOUND BUILD =========================
 #include "mmsolution.h"		// solution definitions
@@ -280,6 +281,8 @@ int main( int argc, char *argv[] ) {
 	while(true) {
 		// increment frame counter and rotation offsets
 		frame++;	
+		//3D
+		draw3D(frame);
 		// set up GL2D for 2d mode
 		glBegin2D();			
 			// fill the whole screen with a gradient box
@@ -334,4 +337,44 @@ int main( int argc, char *argv[] ) {
 		if (keysDown() & KEY_START) break;
 	}
 	return 0;
+}
+
+Cvertexbuffer *vb;//TODO
+
+void draw3D(int frame) {
+	static s32 text_off_u = 0;
+	static s32 text_off_v = 0;
+	
+	glPushMatrix();
+		
+		glLoadIdentity();
+		
+		glTranslate3f32( 0, 0, floattof32(3.0) );
+		glScalef32(floattof32(1),floattof32(1.5),floattof32(1.5));
+	
+		// floor
+		glPushMatrix();
+
+			glTranslate3f32( 0, -1 << 12, -2 << 12 );		
+			glRotateXi( inttof32(244) );
+			
+			//vb->render( text_off_u, text_off_v, true );
+			
+		glPopMatrix( 1 );
+		
+		// ceiling
+		glPushMatrix();
+
+			glTranslate3f32( 0, 1 << 12, -2 << 12 );
+			glRotateXi( inttof32(180) );
+			
+			//vb->render( text_off_u ,text_off_v, true );
+		
+		glPopMatrix( 1 );
+	
+	glPopMatrix( 1 );
+	
+	// "move" the floor and ceiling
+	text_off_u = (sinLerp(frame*30)*2) & 4095;
+	text_off_v = (sinLerp(-frame*50)*3) & 4095;
 }
