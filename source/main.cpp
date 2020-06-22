@@ -126,14 +126,17 @@ char *printValue(int value) {
 }
 
 u16 frame = 0;//frame counter
+bool baulkAI = false;
 
 void updateFrame() {
 	frame++;
+	baulkAI = true;
 }
 
 u16 frameCount() {
 	static u16 last = 0;
 	u16 x = frame - last;
+	if(x > 1) baulkAI = false;
 	last += x;
 	return x;
 }
@@ -323,6 +326,7 @@ int main( int argc, char *argv[] ) {
 		u16 step;
 		while((step = frameCount()) < 1) {
 			//perform AI?? section
+			//check baulkAI in intensive search
 			swiWaitForVBlank();//or low power
 		}	
 		//3D
