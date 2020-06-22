@@ -1,9 +1,13 @@
 /*============================================================================
 
-    DSDev Template
+    DSDev Template:
+	Simon Jackson
 	
 	Thanks to source examples from:
 	Adigun A. Polack, Richard Eric M. Lope BSN RN
+	
+	Music from Aminet:
+	Neurodancer
 	
 =============================================================================*/ 
 
@@ -209,14 +213,42 @@ u8 audioMods[MSL_NSONGS] = {
 	MOD_TRICKTOP
 };
 
+u16 audioEffects[] = {
+	SFX_AMBULANCE,
+	SFX_BOOM
+};
+
+#define numberOfEffects sizeof(audioEffects) / sizeof(u16)
+
+mm_sound_effect effectHandles[numberOfEffects];
+
 u8 curentAudioMod = -1;
 bool sheduleAudio = true;
+u8 volumeModPercent = 100;
+u8 volumeEffectPercent = 100;
 
 void playMod(u8 current) {
 	if(curentAudioMod >= 0 && !sheduleAudio) mmStop();
+	mmSetModuleVolume(volumeModPercent * 1023 / 100);
 	mmStart(current, MM_PLAY_ONCE);
 	curentAudioMod = current;
 	sheduleAudio = false;
+}
+
+mm_sfxhand playEffect(int effect, bool foreground = false) {
+	mm_sound_effect *snd;
+	for(int i = 0; i < numberOfEffects; ++i) {
+		if(audioEffects[i] == effect) {
+			snd = &effectHandles[i];
+			break;
+		}
+	}	
+	mmSetEffectsVolume(volumeEffectPercent * 1023 / 100);
+	mm_sfxhand hand = mmEffectEx(snd);
+	if(!foreground) {
+		mmEffectRelease(hand);//for low priority
+	}
+	return hand;
 }
 
 //---------------------------------------------------------------------------------
@@ -243,6 +275,19 @@ void loadMods() {
 	}
 	// setup maxmod to use the song event handler
 	mmSetEventHandler(myEventHandler);
+}
+
+void loadEffects() {
+	for(u8 i = 0; i < numberOfEffects; ++i) {
+		mmLoadEffect(audioEffects[i]);	
+		effectHandles[i] = {
+			{ audioEffects[i] } ,	// id
+			(int)(1.0f * (1<<10)),	// rate
+			0,		// handle (for recycling)
+			255,	// volume
+			128,	// panning
+		};
+	}
 }
 	
 int main(int argc, char *argv[]) {
@@ -305,43 +350,8 @@ int main(int argc, char *argv[]) {
 	irqSet(IRQ_VBLANK, updateFrame);
 
 	loadMods();
+	loadEffects();
 
-	// load sound effects
-	mmLoadEffect(SFX_AMBULANCE);
-	mmLoadEffect(SFX_BOOM);
-
-	mm_sound_effect ambulance = {
-		{ SFX_AMBULANCE } ,			// id
-		(int)(1.0f * (1<<10)),	// rate
-		0,		// handle
-		255,	// volume
-		0,		// panning
-	};
-
-	mm_sound_effect boom = {
-		{ SFX_BOOM } ,			// id
-		(int)(1.0f * (1<<10)),	// rate
-		0,		// handle
-		255,	// volume
-		255,	// panning
-	};
-
-/*
-// Play looping ambulance sound effect out of left speaker if A button is pressed
-		if (keys_pressed & KEY_A) {
-			amb = mmEffectEx(&ambulance);
-		}
-
-		// stop ambulance sound when A button is released
-		if (keys_released & KEY_A) {
-			mmEffectCancel(amb);//also mmEffectReleae??
-		}
-
-		// Play explosion sound effect out of right speaker if B button is pressed
-		if (keys_pressed & KEY_B) {
-			mmEffectEx(&boom);
-		}
-*/	
 	// Set Bank A+B to texture (256 K)
 	vramSetBankA(VRAM_A_TEXTURE);
     vramSetBankB(VRAM_B_TEXTURE);
