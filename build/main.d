@@ -70,8 +70,7 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
  /home/jacko/Documents/DSDev/build/mmsolution_bin.h \
  /home/jacko/Documents/DSDev/build/font_si.h \
  /home/jacko/Documents/DSDev/build/font_16x16.h \
- /home/jacko/Documents/DSDev/source/uvcoord_font_si.h \
- /home/jacko/Documents/DSDev/source/uvcoord_font_16x16.h
+ /home/jacko/Documents/DSDev/build/threeDtex.h
 /opt/devkitpro/libnds/include/nds.h:
 /opt/devkitpro/libnds/include/nds/libversion.h:
 /opt/devkitpro/libnds/include/nds/ndstypes.h:
@@ -143,5 +142,4 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
 /home/jacko/Documents/DSDev/build/mmsolution_bin.h:
 /home/jacko/Documents/DSDev/build/font_si.h:
 /home/jacko/Documents/DSDev/build/font_16x16.h:
-/home/jacko/Documents/DSDev/source/uvcoord_font_si.h:
-/home/jacko/Documents/DSDev/source/uvcoord_font_16x16.h:
+/home/jacko/Documents/DSDev/build/threeDtex.h:

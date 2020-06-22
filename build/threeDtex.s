@@ -1,14 +1,14 @@
 
-@{{BLOCK(font_16x16)
+@{{BLOCK(threeDtex)
 
 @=======================================================================
 @
-@	font_16x16, 256x256@8, 
+@	threeDtex, 256x256@8, 
 @	+ palette 256 entries, not compressed
 @	+ bitmap not compressed
 @	Total size: 512 + 65536 = 66048
 @
-@	Time-stamp: 2020-06-22, 21:58:59
+@	Time-stamp: 2020-06-22, 22:07:18
 @	Exported by Cearn's GBA Image Transmogrifier, v0.8.15
 @	( http://www.coranac.com/projects/#grit )
 @
@@ -16,9 +16,9 @@
 
 	.section .rodata
 	.align	2
-	.global font_16x16Bitmap		@ 65536 unsigned chars
-	.hidden font_16x16Bitmap
-font_16x16Bitmap:
+	.global threeDtexBitmap		@ 65536 unsigned chars
+	.hidden threeDtexBitmap
+threeDtexBitmap:
 	.word 0x00000000,0x69000000,0x00000000,0x00000000,0x00000000,0x69690000,0x00000069,0x00000000
 	.word 0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000
 	.word 0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000
@@ -2325,9 +2325,9 @@ font_16x16Bitmap:
 
 	.section .rodata
 	.align	2
-	.global font_16x16Pal		@ 512 unsigned chars
-	.hidden font_16x16Pal
-font_16x16Pal:
+	.global threeDtexPal		@ 512 unsigned chars
+	.hidden threeDtexPal
+threeDtexPal:
 	.hword 0x0000,0x5400,0x02A0,0x56A0,0x0015,0x5415,0x0155,0x56B5
 	.hword 0x294A,0x7D4A,0x2BEA,0x7FEA,0x295F,0x7D5F,0x2BFF,0x7FFF
 	.hword 0x0000,0x0842,0x1084,0x14A5,0x1CE7,0x2108,0x294A,0x318C
@@ -2364,4 +2364,4 @@ font_16x16Pal:
 	.hword 0x0010,0x0051,0x0092,0x00D3,0x0114,0x0155,0x0196,0x01D7
 	.hword 0x0218,0x0259,0x02BA,0x02FB,0x033C,0x037D,0x03BE,0x03FF
 
-@}}BLOCK(font_16x16)
+@}}BLOCK(threeDtex)
