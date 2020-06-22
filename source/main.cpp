@@ -14,7 +14,7 @@
 #include <console.h>
 #include <keyboard.h>
 #include <input.h>
-#include <ai.h>
+#include "ai.h"
 
 //============= SOUND BUILD =========================
 #include "mmsolution.h"		// solution definitions
@@ -141,8 +141,111 @@ u16 frameCount() {
 	last += x;
 	return x;
 }
+
+void draw3D(int textureID) {
+		int rotateX = 0;
+		int rotateY = 0;
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+
+		//move it away from the camera
+		glTranslatef32(0, 0, floattof32(-1));
+				
+		glRotateXi(rotateX);
+		glRotateYi(rotateY);
+		
+		glMaterialf(GL_AMBIENT, RGB15(16,16,16));
+		glMaterialf(GL_DIFFUSE, RGB15(16,16,16));
+		glMaterialf(GL_SPECULAR, BIT(15) | RGB15(8,8,8));
+		glMaterialf(GL_EMISSION, RGB15(16,16,16));
+
+		//ds uses a table for shinyness..this generates a half-ass one
+		glMaterialShinyness();
+
+		//not a real gl function and will likely change
+		glPolyFmt(POLY_ALPHA(31) | POLY_CULL_BACK);
+
+		scanKeys();
+		
+		u16 keys = keysHeld();
+		
+		if((keys & KEY_UP)) rotateX += 3;
+		if((keys & KEY_DOWN)) rotateX -= 3;
+		if((keys & KEY_LEFT)) rotateY += 3;
+		if((keys & KEY_RIGHT)) rotateY -= 3;
+		
+		glBindTexture(0, textureID);
+
+		//draw the obj
+		glBegin(GL_QUAD);
+			glNormal(NORMAL_PACK(0,inttov10(-1),0));
+
+			GFX_TEX_COORD = (TEXTURE_PACK(0, inttot16(512)));
+			glVertex3v16(floattov16(-0.5),	floattov16(-0.5), 0 );
 	
-int main( int argc, char *argv[] ) {
+			GFX_TEX_COORD = (TEXTURE_PACK(inttot16(64),inttot16(512)));
+			glVertex3v16(floattov16(0.5),	floattov16(-0.5), 0 );
+	
+			GFX_TEX_COORD = (TEXTURE_PACK(inttot16(64), 0));
+			glVertex3v16(floattov16(0.5),	floattov16(0.5), 0 );
+
+			GFX_TEX_COORD = (TEXTURE_PACK(0,0));
+			glVertex3v16(floattov16(-0.5),	floattov16(0.5), 0 );
+		
+		glEnd();
+		
+		glPopMatrix(1);
+}
+
+u8 audioMods[MSL_NSONGS] = {
+	MOD_WF_COURIER,
+	MOD_MATHHYSTERIA,
+	MOD_TIMETRAP,
+	MOD_QUASAR,
+	MOD_ALIENTEMPLE,
+	MOD_LILHOUSE,
+	MOD_AGRESSOR8,
+	MOD_FLOOR_23,
+	MOD_TRICKTOP
+};
+
+u8 curentAudioMod = -1;
+bool sheduleAudio = true;
+
+void playMod(u8 current) {
+	if(curentAudioMod >= 0 && !sheduleAudio) mmStop();
+	mmStart(current, MM_PLAY_ONCE);
+	curentAudioMod = current;
+	sheduleAudio = false;
+}
+
+//---------------------------------------------------------------------------------
+// callback function to handle song events
+//---------------------------------------------------------------------------------
+mm_word myEventHandler(mm_word msg, mm_word param) {
+	//Avoid sheduling new music direct, use flag and do later after exit this
+	switch(msg) {
+	case MMCB_SONGMESSAGE:	// process song messages
+		// if song event 1 is triggered, set sprite's y velocity to make it jump
+		//if (param == 1) spriteDy = -16;
+		//EFx EFFECT MESSAGE (param = x)
+        break;	
+	case MMCB_SONGFINISHED:	// process song finish message (only triggered in songs played with MM_PLAY_ONCE)
+		sheduleAudio = true;
+		break;
+    }
+	return 0;
+}
+
+void loadMods() {
+	for(u8 i = 0; i < MSL_NSONGS; ++i) {
+		mmLoad(audioMods[i]);
+	}
+	// setup maxmod to use the song event handler
+	mmSetEventHandler(myEventHandler);
+}
+	
+int main(int argc, char *argv[]) {
 
     //VRAM ALLOCATIONS
     //A 128 -> PRIMARY TEXTURES
@@ -199,19 +302,13 @@ int main( int argc, char *argv[] ) {
     //40,960 byte tiles for keyboard (256 * 320 / 2) 4bpp
 
 	mmInitDefaultMem((mm_addr)mmsolution_bin);
-	// setup maxmod to use the song event handler
-	mmSetEventHandler(myEventHandler);
 	irqSet(IRQ_VBLANK, updateFrame);
-	
-	// load the module
-	mmLoad(MOD_FLATOUTLIES);
+
+	loadMods();
 
 	// load sound effects
 	mmLoadEffect(SFX_AMBULANCE);
 	mmLoadEffect(SFX_BOOM);
-
-	// Start playing module
-	mmStart(MOD_FLATOUTLIES, MM_PLAY_LOOP);
 
 	mm_sound_effect ambulance = {
 		{ SFX_AMBULANCE } ,			// id
@@ -324,6 +421,7 @@ int main( int argc, char *argv[] ) {
 				0.0, 1.0, 0.0);		//up	
 	
 	while(true) {
+		if(sheduleAudio) playMod(++curentAudioMod);
 		u16 step;
 		while((step = frameCount()) < 1) {
 			//perform AI?? section
@@ -384,77 +482,5 @@ int main( int argc, char *argv[] ) {
 		scanKeys();
 		if (keysDown() & KEY_START) break;
 	}
-	return 0;
-}
-
-void draw3D(int textureID) {
-		int rotateX = 0;
-		int rotateY = 0;
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-
-		//move it away from the camera
-		glTranslatef32(0, 0, floattof32(-1));
-				
-		glRotateXi(rotateX);
-		glRotateYi(rotateY);
-		
-		glMaterialf(GL_AMBIENT, RGB15(16,16,16));
-		glMaterialf(GL_DIFFUSE, RGB15(16,16,16));
-		glMaterialf(GL_SPECULAR, BIT(15) | RGB15(8,8,8));
-		glMaterialf(GL_EMISSION, RGB15(16,16,16));
-
-		//ds uses a table for shinyness..this generates a half-ass one
-		glMaterialShinyness();
-
-		//not a real gl function and will likely change
-		glPolyFmt(POLY_ALPHA(31) | POLY_CULL_BACK);
-
-		scanKeys();
-		
-		u16 keys = keysHeld();
-		
-		if((keys & KEY_UP)) rotateX += 3;
-		if((keys & KEY_DOWN)) rotateX -= 3;
-		if((keys & KEY_LEFT)) rotateY += 3;
-		if((keys & KEY_RIGHT)) rotateY -= 3;
-		
-		glBindTexture(0, textureID);
-
-		//draw the obj
-		glBegin(GL_QUAD);
-			glNormal(NORMAL_PACK(0,inttov10(-1),0));
-
-			GFX_TEX_COORD = (TEXTURE_PACK(0, inttot16(512)));
-			glVertex3v16(floattov16(-0.5),	floattov16(-0.5), 0 );
-	
-			GFX_TEX_COORD = (TEXTURE_PACK(inttot16(64),inttot16(512)));
-			glVertex3v16(floattov16(0.5),	floattov16(-0.5), 0 );
-	
-			GFX_TEX_COORD = (TEXTURE_PACK(inttot16(64), 0));
-			glVertex3v16(floattov16(0.5),	floattov16(0.5), 0 );
-
-			GFX_TEX_COORD = (TEXTURE_PACK(0,0));
-			glVertex3v16(floattov16(-0.5),	floattov16(0.5), 0 );
-		
-		glEnd();
-		
-		glPopMatrix(1);
-}
-
-//---------------------------------------------------------------------------------
-// callback function to handle song events
-//---------------------------------------------------------------------------------
-mm_word myEventHandler(mm_word msg, mm_word param) {
-	//Avoid sheduling new music direct, use flag and do later after exit this
-	switch(msg) {
-	case MMCB_SONGMESSAGE:	// process song messages
-		// if song event 1 is triggered, set sprite's y velocity to make it jump
-		//if (param == 1) spriteDy = -16;
-		//EFx EFFECT MESSAGE (param = x)
-        break;	
-	case MMCB_SONGFINISHED:	// process song finish message (only triggered in songs played with MM_PLAY_ONCE)
-		break;
-    }
 	return 0;
 }
