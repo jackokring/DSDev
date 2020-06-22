@@ -100,8 +100,8 @@ int Cglfont::printWidth(const char *text) {
 #include "threeDtex.h"
 
 // Our fonts
-Cglfont *Font;
-Cglfont *FontBig;
+Cglfont *Font;//1024
+Cglfont *FontBig;//256
 
 char *printValue(int value) {
 	//buffer
