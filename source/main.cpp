@@ -236,13 +236,14 @@ void playMod(u8 current) {
 }
 
 mm_sfxhand playEffect(int effect, bool foreground = false) {
-	mm_sound_effect *snd;
-	for(int i = 0; i < numberOfEffects; ++i) {
+	mm_sound_effect *snd = NULL;
+	for(uint i = 0; i < numberOfEffects; ++i) {
 		if(audioEffects[i] == effect) {
 			snd = &effectHandles[i];
 			break;
 		}
 	}	
+	if(snd == NULL) return 0;
 	mmSetEffectsVolume(volumeEffectPercent * 1023 / 100);
 	mm_sfxhand hand = mmEffectEx(snd);
 	if(!foreground) {
