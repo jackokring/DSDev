@@ -14,6 +14,7 @@
 #include <console.h>
 #include <keyboard.h>
 #include <input.h>
+#include <ai.h>
 
 //============= SOUND BUILD =========================
 #include "mmsolution.h"		// solution definitions
