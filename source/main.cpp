@@ -124,6 +124,19 @@ char *printValue(int value) {
 	sprintf(_str, "%i", value);
 	return _str;
 }
+
+u16 frame = 0;//frame counter
+
+void updateFrame() {
+	frame++;
+}
+
+u16 frameCount() {
+	static u16 last = 0;
+	u16 x = frame - last;
+	last += x;
+	return x;
+}
 	
 int main( int argc, char *argv[] ) {
 
@@ -182,6 +195,9 @@ int main( int argc, char *argv[] ) {
     //40,960 byte tiles for keyboard (256 * 320 / 2) 4bpp
 
 	mmInitDefaultMem((mm_addr)mmsolution_bin);
+	// setup maxmod to use the song event handler
+	mmSetEventHandler(myEventHandler);
+	irqSet(IRQ_VBLANK, updateFrame);
 	
 	// load the module
 	mmLoad(MOD_FLATOUTLIES);
@@ -302,15 +318,15 @@ int main( int argc, char *argv[] ) {
 	gluLookAt(	0.0, 0.0, 1.0,		//camera possition 
 				0.0, 0.0, 0.0,		//look at
 				0.0, 1.0, 0.0);		//up	
-
-	// our ever present frame counter	
-	int frame = 0;
 	
 	while(true) {
-		// increment frame counter and rotation offsets
-		frame++;	
+		u16 step;
+		while((step = frameCount()) < 1) {
+			//perform AI?? section
+			swiWaitForVBlank();//or low power
+		}	
 		//3D
-		draw3D(frame, textureID);
+		draw3D(textureID);
 		// set up GL2D for 2d mode
 		glBegin2D();			
 			// fill the whole screen with a gradient box
@@ -360,14 +376,13 @@ int main( int argc, char *argv[] ) {
 			Font.print(10 + 72, 170, printValue(frame));		
 		glEnd2D();
 		glFlush(0);
-		swiWaitForVBlank();
 		scanKeys();
 		if (keysDown() & KEY_START) break;
 	}
 	return 0;
 }
 
-void draw3D(int frame, int textureID) {
+void draw3D(int textureID) {
 		int rotateX = 0;
 		int rotateY = 0;
 		glMatrixMode(GL_MODELVIEW);
@@ -420,4 +435,21 @@ void draw3D(int frame, int textureID) {
 		glEnd();
 		
 		glPopMatrix(1);
+}
+
+//---------------------------------------------------------------------------------
+// callback function to handle song events
+//---------------------------------------------------------------------------------
+mm_word myEventHandler(mm_word msg, mm_word param) {
+	//Avoid sheduling new music direct, use flag and do later after exit this
+	switch(msg) {
+	case MMCB_SONGMESSAGE:	// process song messages
+		// if song event 1 is triggered, set sprite's y velocity to make it jump
+		//if (param == 1) spriteDy = -16;
+		//EFx EFFECT MESSAGE (param = x)
+        break;	
+	case MMCB_SONGFINISHED:	// process song finish message (only triggered in songs played with MM_PLAY_ONCE)
+		break;
+    }
+	return 0;
 }
