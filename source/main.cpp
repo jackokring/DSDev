@@ -38,6 +38,8 @@ class Cglfont {
 	int printWidth(const char *text);
 	void setExtended(bool low, bool high);//for small font
 	void printOutline(int x, int y);
+	int getTextureID();
+	int getTexturePack(int tile, int coordinate);
 	
 	private:
 	glImage *font_sprite;
@@ -102,6 +104,28 @@ int Cglfont::printWidth(const char *text) {
 		total_width += font_sprite[font_char].width; 
 	}
 	return total_width;
+}
+
+int Cglfont::getTextureID() {
+	return textureID;//useful for 3D text
+}
+
+int Cglfont::getTexturePack(int tile, int coordinate) {
+	int sz = font_sprite[0].width;
+	int x = (256 / sz) * (tile % (256 / sz));
+	int y = (256 / sz) * (tile / (256 / sz));
+	switch(coordinate) {
+		case TOP_LEFT_FONT:
+			return TEXTURE_PACK(inttot16(x),inttot16(y));
+		case TOP_RIGHT_FONT:
+			return TEXTURE_PACK(inttot16(x + sz),inttot16(y));
+		case BOTTOM_LEFT_FONT:
+			return TEXTURE_PACK(inttot16(x),inttot16(y + sz));
+		case BOTTOM_RIGHT_FONT:
+			return TEXTURE_PACK(inttot16(x + sz),inttot16(y + sz));
+		default:
+			return 0;
+	}
 }
 
 // GRIT auto-genrated arrays of images
