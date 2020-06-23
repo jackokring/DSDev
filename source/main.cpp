@@ -170,6 +170,9 @@ char *printValue(int32 *value, bool comma = false,
 
 int32 frame = 0;//frame counter
 bool baulkAI = false;
+bool paused = false;
+bool inGame = false;
+bool exiting = false;
 
 void updateFrame() {
 	frame++;
@@ -239,6 +242,74 @@ void draw3D() {
 		glEnd();
 		
 		glPopMatrix(1);
+}
+
+void draw2D() {
+	// set up GL2D for 2d mode
+	glBegin2D();			
+		// fill the whole screen with a gradient box
+		glBoxFilledGradient(0, 0, 255, 191,
+			RGB15(31, 0, 0),
+			RGB15(0, 31, 0),
+			RGB15(31, 0, 31),
+			RGB15(0, 31, 31)
+		);
+		
+		// Center print the title
+		glColor(RGB15(0,0,0));
+		FontBig->printCentered(0, "EASY GL2D");
+		glColor(RGB15((frame*6)&31,(-frame*4)&31, (frame*2)&31));
+		FontBig->printCentered(20,  "FONT EXAMPLE");
+
+		// Fixed-point sinusoidal movement
+		int x = (sinLerp(frame * 400) * 30) >> 12;
+	
+		// Make the fonts sway left and right
+		// Also change coloring of fonts
+		glColor(RGB15(31,0,0));
+		FontBig->print(25 + x, 50, "hfDEVKITPROfh");
+		glColor(RGB15(31,0,31) );
+		glColor(RGB15(x, 31 - x, x * 2));
+		FontBig->print(50 - x, 70, "dcLIBNDScd");
+
+		// change fontsets and  print some spam
+		glColor(RGB15(0,31,31));
+		Font->printCentered(100, "FONTS BY ADIGUN A. POLACK" );
+		Font->printCentered(120, "CODE BY RELMINATOR" );
+		
+		// Restore normal coloring
+		glColor(RGB15(31,31,31));
+		
+		// Change opacity relative to frame
+		int opacity = abs(sinLerp(frame * 245) * 30) >> 12;
+		
+		// translucent mode 
+		// Add 1 to opacity since at 0 we will get into wireframe mode
+		glPolyFmt(POLY_ALPHA(1 + opacity) | POLY_CULL_NONE | POLY_ID(1));
+		FontBig->print(35 + x, 140, "ANYA THERESE");
+		
+		glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(2));
+		// Print the number of frames
+		Font->print(10, 170, "FRAMES = ");
+		Font->print(10 + 72, 170, printValue(&frame));		
+	glEnd2D();
+}
+
+void processInputs() {
+	scanKeys();
+	if(keysDown() & KEY_START) exiting = true;
+}
+
+void processMotions() {
+
+}
+
+void processCollisions() {
+
+}
+
+void processStateMachine() {
+	
 }
 
 u8 audioMods[MSL_NSONGS] = {
@@ -459,7 +530,7 @@ int main(int argc, char *argv[]) {
 				0.0, 0.0, 0.0,		//look at
 				0.0, 1.0, 0.0);		//up	
 	
-	while(true) {
+	while(!exiting) {
 		if(sheduleAudio) playMod(++curentAudioMod);
 		u16 step;
 		while((step = frameCount()) < 1) {
@@ -469,57 +540,13 @@ int main(int argc, char *argv[]) {
 		}	
 		//3D
 		draw3D();
-		// set up GL2D for 2d mode
-		glBegin2D();			
-			// fill the whole screen with a gradient box
-			glBoxFilledGradient(0, 0, 255, 191,
-				RGB15(31, 0, 0),
-				RGB15(0, 31, 0),
-				RGB15(31, 0, 31),
-				RGB15(0, 31, 31)
-			);
-			
-			// Center print the title
-			glColor(RGB15(0,0,0));
-			FontBig->printCentered(0, "EASY GL2D");
-			glColor(RGB15((frame*6)&31,(-frame*4)&31, (frame*2)&31));
-			FontBig->printCentered(20,  "FONT EXAMPLE");
-
-			// Fixed-point sinusoidal movement
-			int x = (sinLerp(frame * 400) * 30) >> 12;
-	   
-			// Make the fonts sway left and right
-			// Also change coloring of fonts
-			glColor(RGB15(31,0,0));
-			FontBig->print(25 + x, 50, "hfDEVKITPROfh");
-			glColor(RGB15(31,0,31) );
-			glColor(RGB15(x, 31 - x, x * 2));
-			FontBig->print(50 - x, 70, "dcLIBNDScd");
-
-			// change fontsets and  print some spam
-			glColor(RGB15(0,31,31));
-			Font->printCentered(100, "FONTS BY ADIGUN A. POLACK" );
-			Font->printCentered(120, "CODE BY RELMINATOR" );
-			
-			// Restore normal coloring
-			glColor(RGB15(31,31,31));
-			
-			// Change opacity relative to frame
-			int opacity = abs(sinLerp(frame * 245) * 30) >> 12;
-			
-			// translucent mode 
-			// Add 1 to opacity since at 0 we will get into wireframe mode
-			glPolyFmt(POLY_ALPHA(1 + opacity) | POLY_CULL_NONE | POLY_ID(1));
-			FontBig->print(35 + x, 140, "ANYA THERESE");
-			
-			glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(2));
-			// Print the number of frames
-			Font->print(10, 170, "FRAMES = ");
-			Font->print(10 + 72, 170, printValue(&frame));		
-		glEnd2D();
+		//2D
+		draw2D();
 		glFlush(0);
-		scanKeys();
-		if (keysDown() & KEY_START) break;
+		processInputs();
+		processMotions();
+		processCollisions();
+		processStateMachine();
 	}
 	cleanUp();
 	return 0;
