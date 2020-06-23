@@ -19,6 +19,7 @@
 #include <keyboard.h>
 #include <input.h>
 #include "ai.h"
+#include "lang.h"
 
 //============= SOUND BUILD =========================
 #include "mmsolution.h"		// solution definitions
@@ -188,6 +189,18 @@ u16 frameCount() {
 }
 
 int textureID[2];
+View *subViewRXInput;
+uint keyNoAuto = 0;//bitmask for one shot keys
+uint keyIntercepted = 0;
+
+uint drawSub() {
+
+	//return masked keys
+	scanKeys();
+	if(subViewRXInput != NULL);//process
+	return (keysHeld() & ~keyIntercepted) &
+		~(~keysDown() & keyNoAuto);//one shots
+}
 
 void draw3D() {
 		int rotateX = 0;
@@ -295,9 +308,9 @@ void draw2D() {
 	glEnd2D();
 }
 
-void processInputs() {
-	scanKeys();
-	if(keysDown() & KEY_START) exiting = true;
+void processInputs(uint keysMasked) {
+
+	if(keysMasked & KEY_START) exiting = true;
 }
 
 void processMotions() {
@@ -543,7 +556,7 @@ int main(int argc, char *argv[]) {
 		//2D
 		draw2D();
 		glFlush(0);
-		processInputs();
+		processInputs(drawSub());//keysIntercepted?
 		processMotions();
 		processCollisions();
 		processStateMachine();
