@@ -18,5 +18,4 @@ Basic Design Things
   * Various other glyphs - box art, arrows, musical notes, sex, angled quotes ...
 * Automated music scheduling
 * Distinct texture palettes
-
-
+* Digit containment in prints
