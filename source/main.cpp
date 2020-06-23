@@ -39,7 +39,7 @@ class Cglfont {
 	void setExtended(bool low, bool high);//for small font
 	void printOutline(int x, int y);
 	int getTextureID();
-	int getTexturePack(int tile, int coordinate);
+	int getTexturePack(int tile, int coordinate, uint scale = 1);
 	
 	private:
 	glImage *font_sprite;
@@ -110,7 +110,7 @@ int Cglfont::getTextureID() {
 	return textureID;//useful for 3D text
 }
 
-int Cglfont::getTexturePack(int tile, int coordinate) {
+int Cglfont::getTexturePack(int tile, int coordinate, uint scale) {
 	int sz = font_sprite[0].width;
 	int x = (256 / sz) * (tile % (256 / sz));
 	int y = (256 / sz) * (tile / (256 / sz));
@@ -118,11 +118,11 @@ int Cglfont::getTexturePack(int tile, int coordinate) {
 		case TOP_LEFT_FONT:
 			return TEXTURE_PACK(inttot16(x),inttot16(y));
 		case TOP_RIGHT_FONT:
-			return TEXTURE_PACK(inttot16(x + sz),inttot16(y));
+			return TEXTURE_PACK(inttot16(x + sz * scale),inttot16(y));
 		case BOTTOM_LEFT_FONT:
-			return TEXTURE_PACK(inttot16(x),inttot16(y + sz));
+			return TEXTURE_PACK(inttot16(x),inttot16(y + sz * scale));
 		case BOTTOM_RIGHT_FONT:
-			return TEXTURE_PACK(inttot16(x + sz),inttot16(y + sz));
+			return TEXTURE_PACK(inttot16(x + sz * scale),inttot16(y + sz * scale));
 		default:
 			return 0;
 	}
