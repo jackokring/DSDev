@@ -97,6 +97,7 @@ int Cglfont::printWidth(const char *text) {
 #include "font_si.h"
 #include "font_16x16.h"
 #include "threeDtex.h"
+#include "threeDtex2.h"
 
 // Our fonts
 Cglfont *Font;//1024
@@ -110,7 +111,7 @@ char *printValue(int32 *value, bool comma = false,
 	u8 digits = 10, void (*fn)(int32 *) = overflowDefault) {
 	//buffer
 	static char _str[16];
-	sprintf(_str, "%i", *value);
+	sprintf(_str, "%li", *value);
 	int off = 0;
 	if(*value < 0) off = 1;
 	int l = strlen(_str);
@@ -132,7 +133,7 @@ char *printValue(int32 *value, bool comma = false,
 	return _str;
 }
 
-u16 frame = 0;//frame counter
+int32 frame = 0;//frame counter
 bool baulkAI = false;
 
 void updateFrame() {
@@ -148,7 +149,7 @@ u16 frameCount() {
 	return x;
 }
 
-int textureID;
+int textureID[2];
 
 void draw3D() {
 		int rotateX = 0;
@@ -182,7 +183,7 @@ void draw3D() {
 		if((keys & KEY_LEFT)) rotateY += 3;
 		if((keys & KEY_RIGHT)) rotateY -= 3;
 		
-		glBindTexture(0, textureID);
+		glBindTexture(0, textureID[0]);
 
 		//draw the obj
 		glBegin(GL_QUAD);
@@ -303,11 +304,11 @@ void cleanUp() {
 int main(int argc, char *argv[]) {
 
     //VRAM ALLOCATIONS
-    //A 128 -> PRIMARY TEXTURES
-    //B 128 -> PRIMARY TEXTURES
+    //A 128 -> PRIMARY TEXTURES (BIG + SMALL FONTS)
+    //B 128 -> PRIMARY TEXTURES (TextureID[2])
     //C 128 -> 50% used for console and keyboard (sub-screen) BG0, BG3 (BG1 and BG2 free)
-    //D 128 -> 
-    //E 64 -> TEXTURE PALETTE
+    //D 128 -> ?? othe Main XOR Sub Backgrounds ??
+    //E 64 -> TEXTURE PALETTE (4 * 512 (2K) used fades??)
     //F 16 ->
     //G 16 ->
     //H 32 ->
@@ -404,11 +405,15 @@ int main(int argc, char *argv[]) {
 	//this should work the same as the normal gl call
 	glViewport(0,0,255,191);
 	
-	glGenTextures(1, &textureID);//make 1 texture
-	glBindTexture(0, textureID);//bind it
+	glGenTextures(2, (int *)&textureID);//make 2 textures
+	glBindTexture(0, textureID[0]);//bind it
 	glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
 		0, TEXGEN_TEXCOORD, (u8*)threeDtexBitmap);//TODO: just easier to reuse
 	glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtexPal);
+	glBindTexture(0, textureID[1]);//bind it
+	glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
+		0, TEXGEN_TEXCOORD, (u8*)threeDtex2Bitmap);//TODO: just easier to reuse
+	glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex2Pal);
 	
 	//any floating point gl call is being converted to fixed prior to being implemented
 	glMatrixMode(GL_PROJECTION);
@@ -475,7 +480,7 @@ int main(int argc, char *argv[]) {
 			glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(2));
 			// Print the number of frames
 			Font->print(10, 170, "FRAMES = ");
-			Font->print(10 + 72, 170, printValue(frame));		
+			Font->print(10 + 72, 170, printValue(&frame));		
 		glEnd2D();
 		glFlush(0);
 		scanKeys();
