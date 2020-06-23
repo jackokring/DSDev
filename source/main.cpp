@@ -36,10 +36,13 @@ class Cglfont {
 	void printRight(int x, int y, const char *text);
 	void printCentered(int y, const char *text);
 	int printWidth(const char *text);
+	void setExtended(bool low, bool high);//for small font
+	void printOutline(int x, int y);
 	
 	private:
 	glImage *font_sprite;
 	int textureID;
+	int extended = 0;
 };
 
 Cglfont::~Cglfont() { 
@@ -64,13 +67,21 @@ Cglfont::Cglfont(const uint tileSize,
 			texture);					   
 }
 
+void Cglfont::setExtended(bool low, bool high) {
+	extended = ((low ? 1 : 0) | (high ? 2 : 0)) << 8;
+}
+
 void Cglfont::print(int x, int y, const char *text) {
-	unsigned char font_char;
+	uint font_char;
 	while(*text) { 
-		font_char = (*(unsigned char*)text++);
+		font_char = (*(unsigned char*)text++) | extended;
 		glSprite(x, y, GL_FLIP_NONE, &font_sprite[font_char]);
 		x += font_sprite[font_char].width; 
 	}
+}
+
+void Cglfont::printOutline(int x, int y) {
+	glSprite(x, y, GL_FLIP_NONE, &font_sprite[0]);//use for null
 }
 
 void Cglfont::printRight(int x, int y, const char *text) {
@@ -84,10 +95,10 @@ void Cglfont::printCentered(int y, const char *text) {
 }
 
 int Cglfont::printWidth(const char *text) {
-	unsigned char font_char;
+	uint font_char;
 	int total_width = 0;
 	while(*text) {
-		font_char = (*(unsigned char*)text++) - 32;
+		font_char = (*(unsigned char*)text++) | extended;
 		total_width += font_sprite[font_char].width; 
 	}
 	return total_width;
