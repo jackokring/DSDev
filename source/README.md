@@ -1,5 +1,5 @@
-DSDev
-=====
+DSDev (Technical)
+=================
 
 A bit of a hack. Music from Aminet by Neurodancer. Graphics from various homebrew examples from devkitPro plus some own design. Code from examples with a refactor and some own homebrew. Built to compile on Linux (OK), and maybe Windows.
 
