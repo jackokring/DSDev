@@ -34,7 +34,6 @@ class Cglfont {
 		const u8 *texture);
 	void print(int x, int y, const char *text);
 	void printRight(int x, int y, const char *text);
-	char *printValue(int value);
 	void printCentered(int y, const char *text);
 	int printWidth(const char *text);
 	
@@ -103,10 +102,33 @@ int Cglfont::printWidth(const char *text) {
 Cglfont *Font;//1024
 Cglfont *FontBig;//256
 
-char *printValue(int value) {
+void overflowDefault(int32 *value) {
+	//will cause a stack overflow on too many digits
+}
+
+char *printValue(int32 *value, bool comma = false,
+	u8 digits = 10, void (*fn)(int32 *) = overflowDefault) {
 	//buffer
-	static char _str[256];
-	sprintf(_str, "%i", value);
+	static char _str[16];
+	sprintf(_str, "%i", *value);
+	int off = 0;
+	if(*value < 0) off = 1;
+	int l = strlen(_str);
+	if(l - off > digits) {
+		fn(value);//for things like preventing score overflows
+		return printValue(value, comma, digits, fn);
+	}
+	if(comma) {
+		int k = l + ((l - 1 - off) / 3);
+		int m = 0;
+		for(int p = l; p >= 0 + off; --p) {
+			if(p == k) break;
+			_str[k--] = _str[p];
+			if((m++ % 3) == 2) {
+				_str[k--] = ',';
+			}
+		}
+	}
 	return _str;
 }
 
