@@ -531,12 +531,12 @@ int main(int argc, char *argv[]) {
     //VRAM ALLOCATIONS
     //A 128 -> PRIMARY TEXTURES (BIG + SMALL FONTS)
     //B 128 -> PRIMARY TEXTURES (TextureID[0,1])
-    //C 128 -> SUB CONSOLE, KEYBOARD, 2 * BG, (map 28 to 31 free)
+    //C 128 -> SUB CONSOLE, KEYBOARD, 2 * BG, (map 23 free)
     //D 128 -> PRIMARY TEXTURES (TextureID[2,3])
     //E 64 -> MAIN BG (EE) -> uses main palette as 3D doesn't
     //F 16 -> TEXTURE PALETTE (6 * 512 (3K of 32K) used) -> hi-colour
     //G 16 -> TEXTURE PALETTE -> overflow from above
-    //H 32 -> SUB BG EXT PALETTE -> 4096 colours
+    //H 32 -> SUB BG EXT PALETTE -> 4096 colours (auto palette by last 32 colour lights)
     //I 16 -> ?SUB SPRITE? -> vramSetBankI(VRAM_I_SUB_SPRITE);
 	
 	//upper screen
