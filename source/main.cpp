@@ -536,7 +536,7 @@ int main(int argc, char *argv[]) {
 	glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
 		0, TEXGEN_TEXCOORD, (u8*)threeDtex1Bitmap);
 	glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex1Pal);
-	glBindTexture(0, textureID[1]);//bind it
+	glBindTexture(0, textureID[2]);//bind it
 	glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
 		0, TEXGEN_TEXCOORD, (u8*)threeDtex2Bitmap);
 	glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex2Pal);
