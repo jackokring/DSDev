@@ -32,9 +32,14 @@ Some sort of simple programming could be part of in game play. To this end keys 
 VRAM
 ----
 
-A, B and D for 3D textures/fonts, so only BG0 is used on the main engine. E is for palettes for a high colour display. The main display palette can be used as a temporary or backup store. With 2048 quads about divided by about 4 textures (256 * 256) for about 16 * 16 pixels fundemental texture size.
+Main
+* BG0/3D - A, B, D (texture gfx); F, G (texture palette)
+* BG2, BG3 - E (shared gfx and seperate maps using main palette)
 
-C has about 64kB remaining for tile sets on the sub engine BG1 and BG2 planes. Perhaps using a common tileset of 1024 tiles at 8 bit colour (minus the 17 colours used by the console) or distinct tilesets at 4 bit (14 colour after console colours) with 8 bit being better I think.
-
-Sub engine sprites would have little to no memory left, apart from a few kB, but the sprite engine has no memory access. Pseudo sprites by animation and flipping, along with scrolling of the two layers, could have enough effect. The full 256 colours could be used with an extended palette.
+Sub
+* BG0 - C (ANSI minimal console) 
+* BG1 - C (shared gfx and seperate maps); H using extended palette)
+* BG2 - (as above)
+* BG3 - C (inbuilt keyboard)
+* Sprites - I (TBC)
 

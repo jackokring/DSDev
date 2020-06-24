@@ -497,35 +497,11 @@ int main(int argc, char *argv[]) {
     //B 128 -> PRIMARY TEXTURES (TextureID[0,1])
     //C 128 -> SUB CONSOLE, KEYBOARD, 2 * BG, (map 28 to 31 free)
     //D 128 -> PRIMARY TEXTURES (TextureID[2,3])
-    //E 64 -> MAIN BG (TEE) -> uses main palette as 3D doesn't
+    //E 64 -> MAIN BG (EE) -> uses main palette as 3D doesn't
     //F 16 -> TEXTURE PALETTE (6 * 512 (3K of 32K) used) -> hi-colour
     //G 16 -> TEXTURE PALETTE -> overflow from above
     //H 32 -> SUB BG EXT PALETTE -> 4096 colours
     //I 16 -> ?SUB SPRITE? -> vramSetBankI(VRAM_I_SUB_SPRITE);
-
-    //BG_PALETTE(_SUB)[x] -> 1K (* 2) -> lower 1K is Main 512 colours, 256 BG, 256 OBJ, upper is Sub
-    //console fills black 0, and (n * 16 - 1) for text colours (on SUB)
-	/*
-			palette[1 * 16 - 1] = RGB15(0,0,0); //30 normal black
-			palette[2 * 16 - 1] = RGB15(15,0,0); //31 normal red
-			palette[3 * 16 - 1] = RGB15(0,15,0); //32 normal green
-			palette[4 * 16 - 1] = RGB15(15,15,0); //33 normal yellow
-
-			palette[5 * 16 - 1] = RGB15(0,0,15); //34 normal blue
-			palette[6 * 16 - 1] = RGB15(15,0,15); //35 normal magenta
-			palette[7 * 16 - 1] = RGB15(0,15,15); //36 normal cyan
-			palette[8 * 16 - 1] = RGB15(24,24,24); //37 normal white
-
-			palette[9 * 16 - 1 ] = RGB15(15,15,15); //40 bright black
-			palette[10 * 16 - 1] = RGB15(31,0,0); //41 bright red
-			palette[11 * 16 - 1] = RGB15(0,31,0); //42 bright green
-			palette[12 * 16 - 1] = RGB15(31,31,0);	//43 bright yellow
-
-			palette[13 * 16 - 1] = RGB15(0,0,31); //44 bright blue
-			palette[14 * 16 - 1] = RGB15(31,0,31);	//45 bright magenta
-			palette[15 * 16 - 1] = RGB15(0,31,31);	//46 bright cyan
-			palette[16 * 16 - 1] = RGB15(31,31,31); //47 & 39 bright white
-	*/
 	
 	//upper screen
 	videoSetMode(MODE_5_3D);
@@ -540,11 +516,11 @@ int main(int argc, char *argv[]) {
     //videoSetModeSub(MODE_0_2D);
 	//vramSetBankC(VRAM_C_SUB_BG);
     //BG0, mapbase 22 (2K), tilebase 3 (16K) = 48K, load-font
-    //47,104 (map 23) -> also an extra free map
+    //47,104 ============> (map 23) is an extra free map
     //4096 byte tiles in default font 4bpp
     //tilebase 4 is free @ 64K, map 30 and 31 free in lower 64K of VRAM_C
     //BG1, BG2 not used
-	keyboardDemoInit();
+	Keyboard * k = keyboardDemoInit();
     keyboardShow();
     //BG3, mapbase 20 (2K) -> just above tiles, tilebase 0 (16K) = 0K
     //40,960 byte tiles for keyboard (256 * 320 / 2) 4bpp
@@ -566,7 +542,7 @@ int main(int argc, char *argv[]) {
 	vramSetBankA(VRAM_A_TEXTURE);
     vramSetBankB(VRAM_B_TEXTURE);
 	vramSetBankD(VRAM_D_TEXTURE);
-	vramSetBankE(VRAM_E_MAIN_BG);//for intro screen
+	vramSetBankE(VRAM_E_MAIN_BG);//for intro screens and ...
 	vramSetBankF(VRAM_F_TEX_PALETTE_SLOT0);
 	vramSetBankG(VRAM_G_TEX_PALETTE_SLOT1);
 	// Allocate VRAM bank for all the main palettes (32 K)
@@ -577,6 +553,21 @@ int main(int argc, char *argv[]) {
 	dmaCopy(mainTilesTiles, bgGetGfxPtr(mainBG[0]), sizeof(mainTilesTilesLen));
 	clearMain(0);
 	clearMain(1);
+
+	//ready for priorities
+	//3D ---> hack to 0
+	REG_BG0CNT &= ~ 3;//mask out
+	REG_BG0CNT |= 0;//set new priority
+	//BG1 is not in use
+	bgSetPriority(mainBG[0],1);
+	bgSetPriority(mainBG[1],2);
+
+	//Console
+	bgSetPriority(console->bgId, 0);
+	//keyboard ---> hack to 1
+	bgSetPriority(k->background, 1);
+	bgSetPriority(subBG[0],2);
+	bgSetPriority(subBG[1],3);
 	
 	// Load our font textures
 	Font = new Cglfont(8, 		// tile pixels square
@@ -607,11 +598,6 @@ int main(int argc, char *argv[]) {
 	// enable antialiasing
 	glEnable(GL_ANTIALIAS);
 	
-	// setup the rear plane
-	glClearColor(0,0,0,31); // BG must be opaque for AA to work
-	glClearPolyID(63); // BG must have a unique polygon ID for AA to work
-	glClearDepth(0x7FFF);
-
 	//this should work the same as the normal gl call
 	glViewport(0,0,255,191);
 	
