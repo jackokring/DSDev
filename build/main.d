@@ -66,12 +66,16 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
  /opt/devkitpro/libnds/include/nds/arm9/keyboard.h \
  /opt/devkitpro/libnds/include/nds/input.h \
  /home/jacko/Documents/DSDev/source/ai.h \
+ /home/jacko/Documents/DSDev/source/lang.h \
  /home/jacko/Documents/DSDev/build/mmsolution.h \
  /home/jacko/Documents/DSDev/build/mmsolution_bin.h \
  /home/jacko/Documents/DSDev/build/font_si.h \
  /home/jacko/Documents/DSDev/build/font_16x16.h \
- /home/jacko/Documents/DSDev/build/threeDtex.h \
- /home/jacko/Documents/DSDev/build/threeDtex2.h
+ /home/jacko/Documents/DSDev/build/threeDtex0.h \
+ /home/jacko/Documents/DSDev/build/threeDtex1.h \
+ /home/jacko/Documents/DSDev/build/threeDtex2.h \
+ /home/jacko/Documents/DSDev/build/threeDtex3.h \
+ /home/jacko/Documents/DSDev/build/subTiles.h
 /opt/devkitpro/libnds/include/nds.h:
 /opt/devkitpro/libnds/include/nds/libversion.h:
 /opt/devkitpro/libnds/include/nds/ndstypes.h:
@@ -139,9 +143,13 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
 /opt/devkitpro/libnds/include/nds/arm9/keyboard.h:
 /opt/devkitpro/libnds/include/nds/input.h:
 /home/jacko/Documents/DSDev/source/ai.h:
+/home/jacko/Documents/DSDev/source/lang.h:
 /home/jacko/Documents/DSDev/build/mmsolution.h:
 /home/jacko/Documents/DSDev/build/mmsolution_bin.h:
 /home/jacko/Documents/DSDev/build/font_si.h:
 /home/jacko/Documents/DSDev/build/font_16x16.h:
-/home/jacko/Documents/DSDev/build/threeDtex.h:
+/home/jacko/Documents/DSDev/build/threeDtex0.h:
+/home/jacko/Documents/DSDev/build/threeDtex1.h:
 /home/jacko/Documents/DSDev/build/threeDtex2.h:
+/home/jacko/Documents/DSDev/build/threeDtex3.h:
+/home/jacko/Documents/DSDev/build/subTiles.h:

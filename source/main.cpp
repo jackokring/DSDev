@@ -136,6 +136,7 @@ int Cglfont::getTexturePack(uint tile, uint coordinate, uint scale) {
 #include "threeDtex1.h"
 #include "threeDtex2.h"
 #include "threeDtex3.h"
+#include "subTiles.h"
 
 // Our fonts
 Cglfont *Font;//1024
@@ -194,6 +195,15 @@ int textureID[4];
 View *subViewRXInput;
 uint keyNoAuto = 0;//bitmask for one shot keys
 uint keyIntercepted = 0;
+int subBG[2];
+
+void clearSub(int idx) {
+	idx = subBG[idx];
+	u16 *map = bgGetMapPtr(idx);
+	for(int i = 0; i < 1024; ++i) {
+		*map++ = 0;
+	}
+}
 
 uint drawSub() {
 
@@ -427,7 +437,7 @@ int main(int argc, char *argv[]) {
     //VRAM ALLOCATIONS
     //A 128 -> PRIMARY TEXTURES (BIG + SMALL FONTS)
     //B 128 -> PRIMARY TEXTURES (TextureID[0,1])
-    //C 128 -> 50% used for console and keyboard (sub-screen) BG0, BG3 (BG1 and BG2 free)
+    //C 128 -> SUB CONSOLE, KEYBOARD, 2 * BG, (map 26 to 31 free)
     //D 128 -> PRIMARY TEXTURES (TextureID[2,3])
     //E 64 -> TEXTURE PALETTE (6 * 512 (3K) used fades??)
     //F 16 ->
@@ -461,7 +471,8 @@ int main(int argc, char *argv[]) {
 	
 	//upper screen
 	videoSetMode(MODE_5_3D);
-	
+	dmaCopy(subTilesPal, BG_PALETTE, subTilesPalLen);
+
     //lower screen
 	//x, y, w, h in chars
 	PrintConsole *console;
@@ -477,6 +488,12 @@ int main(int argc, char *argv[]) {
     keyboardShow();
     //BG3, mapbase 20 (2K) -> just above tiles, tilebase 0 (16K) = 0K
     //40,960 byte tiles for keyboard (256 * 320 / 2) 4bpp
+	subBG[0] = bgInitSub(1, BgType_Text8bpp, BgSize_T_256x256, 21, 4);
+	subBG[1] = bgInitSub(2, BgType_Text8bpp, BgSize_T_256x256, 23, 4);
+	
+	dmaCopy(subTilesTiles, bgGetGfxPtr(subBG[0]), sizeof(subTilesTilesLen));
+	clearSub(0);
+	clearSub(1);
 
 	mmInitDefaultMem((mm_addr)mmsolution_bin);
 	irqSet(IRQ_VBLANK, updateFrame);
