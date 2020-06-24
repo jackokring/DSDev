@@ -466,11 +466,11 @@ int main(int argc, char *argv[]) {
     //B 128 -> PRIMARY TEXTURES (TextureID[0,1])
     //C 128 -> SUB CONSOLE, KEYBOARD, 2 * BG, (map 28 to 31 free)
     //D 128 -> PRIMARY TEXTURES (TextureID[2,3])
-    //E 64 -> TEXTURE PALETTE (6 * 512 (3K) used fades??) -> full colour
-    //F 16 -> ?MAIN SPRITE?
-    //G 16 -> ?MAIN SPRITE?
-    //H 32 -> SUB BG EXT PALETTE
-    //I 16 -> ?SUB SPRITE?
+    //E 64 -> MAIN BG (TEE) -> uses main palette as 3D doesn't
+    //F 16 -> TEXTURE PALETTE (6 * 512 (3K of 32K) used) -> hi-colour
+    //G 16 -> TEXTURE PALETTE -> overflow from above
+    //H 32 -> SUB BG EXT PALETTE -> 4096 colours
+    //I 16 -> ?SUB SPRITE? -> vramSetBankI(VRAM_I_SUB_SPRITE);
 
     //BG_PALETTE(_SUB)[x] -> 1K (* 2) -> lower 1K is Main 512 colours, 256 BG, 256 OBJ, upper is Sub
     //console fills black 0, and (n * 16 - 1) for text colours (on SUB)
@@ -534,7 +534,10 @@ int main(int argc, char *argv[]) {
 	vramSetBankA(VRAM_A_TEXTURE);
     vramSetBankB(VRAM_B_TEXTURE);
 	vramSetBankD(VRAM_D_TEXTURE);
-	vramSetBankE(VRAM_E_TEX_PALETTE);  // Allocate VRAM bank for all the palettes (64 K)
+	vramSetBankE(VRAM_E_MAIN_BG);//for intro screen
+	vramSetBankF(VRAM_F_TEX_PALETTE_SLOT0);
+	vramSetBankG(VRAM_G_TEX_PALETTE_SLOT1);
+	// Allocate VRAM bank for all the main palettes (32 K)
 	
 	// Load our font textures
 	Font = new Cglfont(8, 		// tile pixels square
