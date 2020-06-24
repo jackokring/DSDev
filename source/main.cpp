@@ -132,8 +132,10 @@ int Cglfont::getTexturePack(uint tile, uint coordinate, uint scale) {
 // GRIT auto-genrated arrays of images
 #include "font_si.h"
 #include "font_16x16.h"
-#include "threeDtex.h"
+#include "threeDtex0.h"
+#include "threeDtex1.h"
 #include "threeDtex2.h"
+#include "threeDtex3.h"
 
 // Our fonts
 Cglfont *Font;//1024
@@ -188,7 +190,7 @@ u16 frameCount() {
 	return x;
 }
 
-int textureID[2];
+int textureID[4];
 View *subViewRXInput;
 uint keyNoAuto = 0;//bitmask for one shot keys
 uint keyIntercepted = 0;
@@ -424,10 +426,10 @@ int main(int argc, char *argv[]) {
 
     //VRAM ALLOCATIONS
     //A 128 -> PRIMARY TEXTURES (BIG + SMALL FONTS)
-    //B 128 -> PRIMARY TEXTURES (TextureID[2])
+    //B 128 -> PRIMARY TEXTURES (TextureID[0,1])
     //C 128 -> 50% used for console and keyboard (sub-screen) BG0, BG3 (BG1 and BG2 free)
-    //D 128 -> ?? othe Main XOR Sub Backgrounds ??
-    //E 64 -> TEXTURE PALETTE (4 * 512 (2K) used fades??)
+    //D 128 -> PRIMARY TEXTURES (TextureID[2,3])
+    //E 64 -> TEXTURE PALETTE (6 * 512 (3K) used fades??)
     //F 16 ->
     //G 16 ->
     //H 32 ->
@@ -482,9 +484,10 @@ int main(int argc, char *argv[]) {
 	loadMods();
 	loadEffects();
 
-	// Set Bank A+B to texture (256 K)
+	// Set Bank A+B+D to texture (256 K + 128K)
 	vramSetBankA(VRAM_A_TEXTURE);
     vramSetBankB(VRAM_B_TEXTURE);
+	vramSetBankD(VRAM_D_TEXTURE);
 	vramSetBankE(VRAM_E_TEX_PALETTE);  // Allocate VRAM bank for all the palettes (64 K)
 	
 	// Load our font textures
@@ -524,15 +527,23 @@ int main(int argc, char *argv[]) {
 	//this should work the same as the normal gl call
 	glViewport(0,0,255,191);
 	
-	glGenTextures(2, (int *)&textureID);//make 2 textures
+	glGenTextures(4, (int *)&textureID);//make 2 textures
 	glBindTexture(0, textureID[0]);//bind it
 	glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
-		0, TEXGEN_TEXCOORD, (u8*)threeDtexBitmap);//TODO: just easier to reuse
-	glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtexPal);
+		0, TEXGEN_TEXCOORD, (u8*)threeDtex0Bitmap);
+	glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex0Pal);
 	glBindTexture(0, textureID[1]);//bind it
 	glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
-		0, TEXGEN_TEXCOORD, (u8*)threeDtex2Bitmap);//TODO: just easier to reuse
+		0, TEXGEN_TEXCOORD, (u8*)threeDtex1Bitmap);
+	glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex1Pal);
+	glBindTexture(0, textureID[1]);//bind it
+	glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
+		0, TEXGEN_TEXCOORD, (u8*)threeDtex2Bitmap);
 	glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex2Pal);
+	glBindTexture(0, textureID[3]);//bind it
+	glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
+		0, TEXGEN_TEXCOORD, (u8*)threeDtex3Bitmap);
+	glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex3Pal);
 	
 	//any floating point gl call is being converted to fixed prior to being implemented
 	glMatrixMode(GL_PROJECTION);

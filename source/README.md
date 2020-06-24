@@ -27,5 +27,5 @@ A simple text based IDE for building on device. Using the console as a code entr
 
 START should of course run the active entry item, and also stop or pause code running. The other buttons could roughly be defined as A for add selected or insert, B for delete last or backspace, X for building complex views based on current item such as references, and finally Y should change between the insert type for numbers, strings, lists and words.
 
-Some sort of simple programming could be part of in game play.
+Some sort of simple programming could be part of in game play. To this end keys can be intercepted by the console on the sub display.
 

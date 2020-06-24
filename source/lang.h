@@ -1,4 +1,5 @@
 //DSL processor
+#include <nds.h>
 #include <stdio.h>
 
 class Type;
@@ -40,6 +41,10 @@ class Book : Type {
 
 };
 
+class Macro : Symbol {//immediate
+
+};
+
 //thread
 class Thread : Type {//cooperative
 
@@ -59,5 +64,5 @@ class Machine {//singleton?
 
 };
 
-extern View *subViewRXInput;
-extern uint keyIntercepted;
+extern View *subViewRXInput;//set view to draw?
+extern uint keyIntercepted;//mask of keys intercepted

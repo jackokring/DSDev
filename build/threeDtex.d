@@ -1,1 +1,0 @@
-threeDtex.o: threeDtex.s
