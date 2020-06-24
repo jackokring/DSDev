@@ -210,6 +210,21 @@ void clearSub(int bg) {
 	}
 }
 
+void loadTitleMain(u8 *tiles, int len) {
+	dmaCopy(tiles, bgGetGfxPtr(mainBG[0]), len);
+	for(int x = 0; x < 32 * 24; ++x) {
+		putMain(0, x % 32, x / 32, x);
+	}
+	bgSetScroll(mainBG[0], 0, 0);//origin
+	bgSetRotateScale(mainBG[0], 0, 1 << 8, 1 << 8);
+	bgUpdate(); 
+}
+
+void titleTilesMain() {
+	dmaCopy(mainTilesTiles, bgGetGfxPtr(mainBG[0]), mainTilesTilesLen);
+	clearMain(0);
+}
+
 void clearMain(int bg) {
 	u16 *map = bgGetMapPtr(mainBG[bg]);
 	for(int i = 0; i < 4096; ++i) {
@@ -263,8 +278,13 @@ void drawMain() {
 
 }
 
-uint drawSub() {
+void drawSub() {
 
+}
+
+uint drawSubMeta() {
+
+	drawSub();
 	//return masked keys
 	scanKeys();
 	if(subViewRXInput != NULL);//process
@@ -527,7 +547,7 @@ int main(int argc, char *argv[]) {
 	subBG[0] = bgInitSub(1, BgType_Text8bpp, BgSize_T_512x256, 26, 4);
 	subBG[1] = bgInitSub(2, BgType_Text8bpp, BgSize_T_512x256, 29, 4);
 	
-	dmaCopy(subTilesTiles, bgGetGfxPtr(subBG[0]), sizeof(subTilesTilesLen));
+	dmaCopy(subTilesTiles, bgGetGfxPtr(subBG[0]), subTilesTilesLen);
 	clearSub(0);
 	clearSub(1);
 
@@ -550,8 +570,7 @@ int main(int argc, char *argv[]) {
 	mainBG[0] = bgInit(2, BgType_Text8bpp, BgSize_ER_512x512, 24, 0);
 	mainBG[1] = bgInit(3, BgType_Text8bpp, BgSize_ER_512x512, 28, 0);
 	
-	dmaCopy(mainTilesTiles, bgGetGfxPtr(mainBG[0]), sizeof(mainTilesTilesLen));
-	clearMain(0);
+	titleTilesMain();//clears automatic
 	clearMain(1);
 
 	//ready for priorities
@@ -641,7 +660,7 @@ int main(int argc, char *argv[]) {
 		//2D
 		draw2D();
 		glFlush(0);
-		processInputs(drawSub());//keysIntercepted?
+		processInputs(drawSubMeta());//keysIntercepted?
 		drawMain();
 		processMotions();
 		processCollisions();
