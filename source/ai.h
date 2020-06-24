@@ -7,8 +7,14 @@ extern bool paused;
 extern bool inGame;
 extern bool exiting;
 
-const uint TOP_LEFT_FONT = 0;
-const uint TOP_RIGHT_FONT = 1;
-const uint BOTTOM_LEFT_FONT = 2;
-const uint BOTTOM_RIGHT_FONT = 3;
+enum CORNER {
+    TOP_LEFT_FONT = 0,
+    TOP_RIGHT_FONT = 1,
+    BOTTOM_LEFT_FONT = 2,
+    BOTTOM_RIGHT_FONT = 3
+};
+
+#define RED(X) ((X >> 0) & 31)
+#define GREEN(X) ((X >> 5) & 31)
+#define BLUE(X) ((X >> 10)& 31)
 #endif

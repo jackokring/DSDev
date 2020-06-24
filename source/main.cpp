@@ -40,7 +40,7 @@ class Cglfont {
 	void setExtended(bool low, bool high);//for small font
 	void printOutline(int x, int y);
 	int getTextureID();
-	int getTexturePack(uint tile, uint coordinate, uint scale = 1);
+	int getTexturePack(uint tile, CORNER coordinate, uint scale = 1);
 	
 	private:
 	glImage *font_sprite;
@@ -111,7 +111,7 @@ int Cglfont::getTextureID() {
 	return textureID;//useful for 3D text
 }
 
-int Cglfont::getTexturePack(uint tile, uint coordinate, uint scale) {
+int Cglfont::getTexturePack(uint tile, CORNER coordinate, uint scale) {
 	uint sz = font_sprite[0].width;
 	uint x = (256 / sz) * (tile % (256 / sz));
 	uint y = (256 / sz) * (tile / (256 / sz));
@@ -137,6 +137,7 @@ int Cglfont::getTexturePack(uint tile, uint coordinate, uint scale) {
 #include "threeDtex2.h"
 #include "threeDtex3.h"
 #include "subTiles.h"
+#include "mainTiles.h"
 
 // Our fonts
 Cglfont *Font;//1024
@@ -196,40 +197,70 @@ View *subViewRXInput;
 uint keyNoAuto = 0;//bitmask for one shot keys
 uint keyIntercepted = 0;
 int subBG[2];//2 sub backgrounds of 64 by 32 for clear space all around
+int mainBG[2];//2 main backgrounds of 64 by 64 for clear space and fill
 
-void clearSub(int idx) {
-	idx = subBG[idx];
-	u16 *map = bgGetMapPtr(idx);
+void clearSub(int bg) {
+	u16 *map = bgGetMapPtr(subBG[bg]) + 2048;//advanced attributes ...
+	for(int i = 0; i < 1024; ++i) {
+		*map++ = 0;
+	}
+	map = bgGetMapPtr(subBG[bg]);
 	for(int i = 0; i < 2048; ++i) {
 		*map++ = 0;
 	}
 }
 
-void extendedPalettes(const unsigned short *pal, int len, u16 *vram) {
+void clearMain(int bg) {
+	u16 *map = bgGetMapPtr(mainBG[bg]);
+	for(int i = 0; i < 4096; ++i) {
+		*map++ = 0;
+	}
+}
+
+void putMain(int bg, int x, int y, int tile) {
+	u16 *map = bgGetMapPtr(mainBG[bg]);
+	x += y * 64;
+	x &= 4095;
+	map += x;
+	*map = tile;
+}
+
+void putSub(int bg, int x, int y, int tile, int attribute = 0) {
+	u16 *map = bgGetMapPtr(subBG[bg]);
+	x += y * 64;
+	x &= 2047;
+	map += x;
+	*map = tile;
+	u8 *at = (u8 *)bgGetMapPtr(subBG[bg]);
+	at += 4096;
+	at += x;
+	*at = (u8)attribute;
+}
+
+void extendedPalettes(const unsigned short *pal, int len) {
 	vramSetBankH(VRAM_H_LCD);
 	u16 palette[len / 2];
-	for(int i = 0; i < len / 2; ++i) {
-		palette[i] = pal[i];//copy for processing
-	}
-	dmaCopy(subTilesPal, &VRAM_H_EXT_PALETTE[2][0], subTilesPalLen);
-	//15 other palette slots for BG1 and BG2
+	//16 palette slots for BG1 and BG2
 	//as console and keyboard are 4bpp backgrounds
 	//they are not affected with extended palettes
 	for(int i = 1; i < 3; ++i) {
 		for(int p = 0; p < 16; ++p) {
-			for(int i = 0; i < len / 2; ++i) {
-				palette[i] = pal[i];//copy for processing
+			int col = palette[15 + i * 16 + p];//multiplyer of light
+			for(int k = 0; k < len / 2; ++k) {
+				int r = RED(col) * RED(pal[k]) / 31;
+				int b = BLUE(col) * BLUE(pal[k]) / 31;
+				int g = GREEN(col) * GREEN(pal[k]) /31;
+				palette[k] = RGB15(r, g, b);
 			}
-			//TODO: process depending on i and p
-			if(i == 1) {//BG1
-
-			} else { //BG2
-
-			}
-			dmaCopy(palette, &vram[i][p], len);//4096 colours max
+			DC_FlushAll();
+			dmaCopy(palette, &VRAM_H_EXT_PALETTE[i][p], len);//4096 colours max
 		}
 	}
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);//extended palette
+}
+
+void drawMain() {
+
 }
 
 uint drawSub() {
@@ -500,7 +531,7 @@ int main(int argc, char *argv[]) {
 	videoSetMode(MODE_5_3D);
 	bgExtPaletteEnableSub();
 
-	extendedPalettes(subTilesPal, subTilesPalLen, &VRAM_H_EXT_PALETTE);
+	extendedPalettes(subTilesPal, subTilesPalLen);
 
     //lower screen
 	//x, y, w, h in chars
@@ -508,7 +539,7 @@ int main(int argc, char *argv[]) {
 	consoleSetWindow(console = consoleDemoInit(), 0, 0, 32, 24);//does the following
     //videoSetModeSub(MODE_0_2D);
 	//vramSetBankC(VRAM_C_SUB_BG);
-    //BG0, mapbase 22 (2K) -> 21 extra free map, tilebase 3 (16K) = 48K, load-font
+    //BG0, mapbase 22 (2K), tilebase 3 (16K) = 48K, load-font
     //47,104 (map 23) -> also an extra free map
     //4096 byte tiles in default font 4bpp
     //tilebase 4 is free @ 64K, map 30 and 31 free in lower 64K of VRAM_C
@@ -518,13 +549,14 @@ int main(int argc, char *argv[]) {
     //BG3, mapbase 20 (2K) -> just above tiles, tilebase 0 (16K) = 0K
     //40,960 byte tiles for keyboard (256 * 320 / 2) 4bpp
 	subBG[0] = bgInitSub(1, BgType_Text8bpp, BgSize_T_512x256, 26, 4);
-	subBG[1] = bgInitSub(2, BgType_Text8bpp, BgSize_T_512x256, 28, 4);
+	subBG[1] = bgInitSub(2, BgType_Text8bpp, BgSize_T_512x256, 29, 4);
 	
 	dmaCopy(subTilesTiles, bgGetGfxPtr(subBG[0]), sizeof(subTilesTilesLen));
 	clearSub(0);
 	clearSub(1);
 
 	mmInitDefaultMem((mm_addr)mmsolution_bin);
+	irqInit();
 	irqSet(IRQ_VBLANK, updateFrame);
 
 	loadMods();
@@ -538,6 +570,13 @@ int main(int argc, char *argv[]) {
 	vramSetBankF(VRAM_F_TEX_PALETTE_SLOT0);
 	vramSetBankG(VRAM_G_TEX_PALETTE_SLOT1);
 	// Allocate VRAM bank for all the main palettes (32 K)
+
+	mainBG[0] = bgInit(2, BgType_Text8bpp, BgSize_ER_512x512, 24, 0);
+	mainBG[1] = bgInit(3, BgType_Text8bpp, BgSize_ER_512x512, 28, 0);
+	
+	dmaCopy(mainTilesTiles, bgGetGfxPtr(mainBG[0]), sizeof(mainTilesTilesLen));
+	clearMain(0);
+	clearMain(1);
 	
 	// Load our font textures
 	Font = new Cglfont(8, 		// tile pixels square
@@ -617,6 +656,7 @@ int main(int argc, char *argv[]) {
 		draw2D();
 		glFlush(0);
 		processInputs(drawSub());//keysIntercepted?
+		drawMain();
 		processMotions();
 		processCollisions();
 		processStateMachine();
