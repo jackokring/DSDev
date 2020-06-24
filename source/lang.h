@@ -1,4 +1,6 @@
-//DSL processor
+#ifndef LANG__H
+#define LANG__H
+//========================== DSL PROCESSOR =================
 #include <nds.h>
 #include <stdio.h>
 
@@ -66,3 +68,4 @@ class Machine {//singleton?
 
 extern View *subViewRXInput;//set view to draw?
 extern uint keyIntercepted;//mask of keys intercepted
+#endif

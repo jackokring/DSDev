@@ -20,13 +20,30 @@
 #include <input.h>
 #include "ai.h"
 #include "lang.h"
+#include "progress.h"
 
 //============= SOUND BUILD =========================
 #include "mmsolution.h"		// solution definitions
 #include "mmsolution_bin.h"	// solution binary reference 
 
-// Our font class
-// I decided to use c++ because of function overloading
+u8 audioMods[MSL_NSONGS] = {
+	MOD_WF_COURIER,
+	MOD_MATHHYSTERIA,
+	MOD_TIMETRAP,
+	MOD_QUASAR,
+	MOD_ALIENTEMPLE,
+	MOD_LILHOUSE,
+	MOD_AGRESSOR8,
+	MOD_FLOOR_23,
+	MOD_TRICKTOP
+};
+
+u16 audioEffects[] = {
+	SFX_AMBULANCE,
+	SFX_BOOM
+};
+
+//============= FONT CLASS ==========================
 class Cglfont {
 	public:	
 	~Cglfont();
@@ -129,7 +146,10 @@ int Cglfont::getTexturePack(uint tile, CORNER coordinate, uint scale) {
 	}
 }
 
-// GRIT auto-genrated arrays of images
+Cglfont *Font;//1024
+Cglfont *FontBig;//256
+
+//================== TILES AND TEXTURES =======================
 #include "font_si.h"
 #include "font_16x16.h"
 #include "threeDtex0.h"
@@ -139,10 +159,7 @@ int Cglfont::getTexturePack(uint tile, CORNER coordinate, uint scale) {
 #include "subTiles.h"
 #include "mainTiles.h"
 
-// Our fonts
-Cglfont *Font;//1024
-Cglfont *FontBig;//256
-
+//================ DECIMAL STRINGS ==========================
 void overflowDefault(int32 *value) {
 	//will cause a stack overflow on too many digits
 }
@@ -173,6 +190,7 @@ char *printValue(int32 *value, bool comma = false,
 	return _str;
 }
 
+//=================== MASTER GLOBAL STATE =================
 int32 frame = 0;//frame counter
 bool baulkAI = false;
 bool paused = false;
@@ -199,6 +217,7 @@ uint keyIntercepted = 0;
 int subBG[2];//2 sub backgrounds of 64 by 32 for clear space all around
 int mainBG[2];//2 main backgrounds of 64 by 64 for clear space and fill
 
+//================ TILES, LAYERS AND PALETTES ==================
 void clearSub(int bg) {
 	u16 *map = bgGetMapPtr(subBG[bg]) + 2048;//advanced attributes ...
 	for(int i = 0; i < 1024; ++i) {
@@ -274,6 +293,7 @@ void extendedPalettes(const unsigned short *pal, int len) {
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);//extended palette
 }
 
+//=========================== DRAWING ROUTINES ============================
 void drawMain() {
 
 }
@@ -282,85 +302,59 @@ void drawSub() {
 
 }
 
-uint drawSubMeta() {
-	for(int i = 0; i < 2; ++i) {
-		u16 *map = bgGetMapPtr(subBG[i]);
-		u8 *at = (u8 *)(map + 2048);//attribute pointer
-		for(int j = frame & 15; j < 2048; j+= 16) {
-			//process attribute
-			int a = *at;
-			if(((frame + (frame << 2)) & 0xF0) >= a) {//test percent slow (BITS 4-7)
-				int t = *map;
-				int mask = ((1 << (a & 7)) - 1);
-				int low = t & mask;
-				low = (low + 1 - ((a & 8) >> 2)) & mask;//direction 0UP/1DWN (BIT 3)
-				*map = ((*map) & ~mask) | low;//auto rotate nth low bits (BIT 0-2)
-			}
-			map++;
-			at++;
-		}
-	}
-	drawSub();
-	//return masked keys
-	scanKeys();
-	if(subViewRXInput != NULL);//process
-	return (keysHeld() & ~keyIntercepted) &
-		~(~keysDown() & keyNoAuto);//one shots
-}
-
 void draw3D() {
-		int rotateX = 0;
-		int rotateY = 0;
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
+	int rotateX = 0;
+	int rotateY = 0;
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
 
-		//move it away from the camera
-		glTranslatef32(0, 0, floattof32(-1));
-				
-		glRotateXi(rotateX);
-		glRotateYi(rotateY);
-		
-		glMaterialf(GL_AMBIENT, RGB15(16,16,16));
-		glMaterialf(GL_DIFFUSE, RGB15(16,16,16));
-		glMaterialf(GL_SPECULAR, BIT(15) | RGB15(8,8,8));
-		glMaterialf(GL_EMISSION, RGB15(16,16,16));
-
-		//ds uses a table for shinyness..this generates a half-ass one
-		glMaterialShinyness();
-
-		//not a real gl function and will likely change
-		glPolyFmt(POLY_ALPHA(31) | POLY_CULL_BACK);
-
-		scanKeys();
-		
-		u16 keys = keysHeld();
-		
-		if((keys & KEY_UP)) rotateX += 3;
-		if((keys & KEY_DOWN)) rotateX -= 3;
-		if((keys & KEY_LEFT)) rotateY += 3;
-		if((keys & KEY_RIGHT)) rotateY -= 3;
-		
-		glBindTexture(0, textureID[0]);
-
-		//draw the obj
-		glBegin(GL_QUAD);
-			glNormal(NORMAL_PACK(0,inttov10(-1),0));
-
-			GFX_TEX_COORD = (TEXTURE_PACK(0, inttot16(512)));
-			glVertex3v16(floattov16(-0.5),	floattov16(-0.5), 0 );
+	//move it away from the camera
+	glTranslatef32(0, 0, floattof32(-1));
+			
+	glRotateXi(rotateX);
+	glRotateYi(rotateY);
 	
-			GFX_TEX_COORD = (TEXTURE_PACK(inttot16(64),inttot16(512)));
-			glVertex3v16(floattov16(0.5),	floattov16(-0.5), 0 );
-	
-			GFX_TEX_COORD = (TEXTURE_PACK(inttot16(64), 0));
-			glVertex3v16(floattov16(0.5),	floattov16(0.5), 0 );
+	glMaterialf(GL_AMBIENT, RGB15(16,16,16));
+	glMaterialf(GL_DIFFUSE, RGB15(16,16,16));
+	glMaterialf(GL_SPECULAR, BIT(15) | RGB15(8,8,8));
+	glMaterialf(GL_EMISSION, RGB15(16,16,16));
 
-			GFX_TEX_COORD = (TEXTURE_PACK(0,0));
-			glVertex3v16(floattov16(-0.5),	floattov16(0.5), 0 );
-		
-		glEnd();
-		
-		glPopMatrix(1);
+	//ds uses a table for shinyness..this generates a half-ass one
+	glMaterialShinyness();
+
+	//not a real gl function and will likely change
+	glPolyFmt(POLY_ALPHA(31) | POLY_CULL_BACK);
+
+	scanKeys();
+	
+	u16 keys = keysHeld();
+	
+	if((keys & KEY_UP)) rotateX += 3;
+	if((keys & KEY_DOWN)) rotateX -= 3;
+	if((keys & KEY_LEFT)) rotateY += 3;
+	if((keys & KEY_RIGHT)) rotateY -= 3;
+	
+	glBindTexture(0, textureID[0]);
+
+	//draw the obj
+	glBegin(GL_QUAD);
+		glNormal(NORMAL_PACK(0,inttov10(-1),0));
+
+		GFX_TEX_COORD = (TEXTURE_PACK(0, inttot16(512)));
+		glVertex3v16(floattov16(-0.5),	floattov16(-0.5), 0 );
+
+		GFX_TEX_COORD = (TEXTURE_PACK(inttot16(64),inttot16(512)));
+		glVertex3v16(floattov16(0.5),	floattov16(-0.5), 0 );
+
+		GFX_TEX_COORD = (TEXTURE_PACK(inttot16(64), 0));
+		glVertex3v16(floattov16(0.5),	floattov16(0.5), 0 );
+
+		GFX_TEX_COORD = (TEXTURE_PACK(0,0));
+		glVertex3v16(floattov16(-0.5),	floattov16(0.5), 0 );
+	
+	glEnd();
+	
+	glPopMatrix(1);
 }
 
 void draw2D() {
@@ -414,6 +408,34 @@ void draw2D() {
 	glEnd2D();
 }
 
+//===================== INTERNAL AUTOMATION DRAWING HELP =====================
+uint drawSubMeta() {
+	for(int i = 0; i < 2; ++i) {
+		u16 *map = bgGetMapPtr(subBG[i]);
+		u8 *at = (u8 *)(map + 2048);//attribute pointer
+		for(int j = frame & 15; j < 2048; j+= 16) {
+			//process attribute
+			int a = *at;
+			if(((frame + (frame << 2)) & 0xF0) >= a) {//test percent slow (BITS 4-7)
+				int t = *map;
+				int mask = ((1 << (a & 7)) - 1);
+				int low = t & mask;
+				low = (low + 1 - ((a & 8) >> 2)) & mask;//direction 0UP/1DWN (BIT 3)
+				*map = ((*map) & ~mask) | low;//auto rotate nth low bits (BIT 0-2)
+			}
+			map++;
+			at++;
+		}
+	}
+	drawSub();
+	//return masked keys
+	scanKeys();
+	if(subViewRXInput != NULL);//process
+	return (keysHeld() & ~keyIntercepted) &
+		~(~keysDown() & keyNoAuto);//one shots
+}
+
+//===================== GAME LOOP PROCESS FUNCTIONS ==================
 void processInputs(uint keysMasked) {
 
 	if(keysMasked & KEY_START) exiting = true;
@@ -431,23 +453,7 @@ void processStateMachine() {
 	
 }
 
-u8 audioMods[MSL_NSONGS] = {
-	MOD_WF_COURIER,
-	MOD_MATHHYSTERIA,
-	MOD_TIMETRAP,
-	MOD_QUASAR,
-	MOD_ALIENTEMPLE,
-	MOD_LILHOUSE,
-	MOD_AGRESSOR8,
-	MOD_FLOOR_23,
-	MOD_TRICKTOP
-};
-
-u16 audioEffects[] = {
-	SFX_AMBULANCE,
-	SFX_BOOM
-};
-
+//===================== SOUND PROCESSING =======================
 #define numberOfEffects sizeof(audioEffects) / sizeof(u16)
 
 mm_sound_effect effectHandles[numberOfEffects];
@@ -482,20 +488,19 @@ mm_sfxhand playEffect(int effect, bool foreground = false) {
 	return hand;
 }
 
-//---------------------------------------------------------------------------------
-// callback function to handle song events
-//---------------------------------------------------------------------------------
 mm_word myEventHandler(mm_word msg, mm_word param) {
 	//Avoid sheduling new music direct, use flag and do later after exit this
 	switch(msg) {
-	case MMCB_SONGMESSAGE:	// process song messages
-		// if song event 1 is triggered, set sprite's y velocity to make it jump
-		//if (param == 1) spriteDy = -16;
-		//EFx EFFECT MESSAGE (param = x)
-        break;	
-	case MMCB_SONGFINISHED:	// process song finish message (only triggered in songs played with MM_PLAY_ONCE)
-		sheduleAudio = true;
-		break;
+		case MMCB_SONGMESSAGE:	// process song messages
+			// if song event 1 is triggered, set sprite's y velocity to make it jump
+			//if (param == 1) spriteDy = -16;
+			//EFx EFFECT MESSAGE (param = x)
+			break;	
+		case MMCB_SONGFINISHED:	// process song finish message (only triggered in songs played with MM_PLAY_ONCE)
+			sheduleAudio = true;
+			break;
+		default:
+			break;
     }
 	return 0;
 }
@@ -521,11 +526,32 @@ void loadEffects() {
 	}
 }
 
+//=================== SELF TEST LOADING =================================
+void progressMessage(PROGRESS x) {
+	switch(x) {
+		case INITIAL_LOAD:
+			iprintf("\x1b[1;1HEasy GL2D Font Example");
+			iprintf("\x1b[3;1HFonts by Adigun A. Polack");
+			iprintf("\x1b[6;1HRelminator");
+			iprintf("\x1b[7;1HHttp://Rel.Phatcode.Net");
+			// calculate the amount of 
+			// memory uploaded to VRAM in KB
+			int TextureSize = font_siBitmapLen + font_16x16BitmapLen;			  
+			iprintf("\x1b[10;1HTotal Texture size= %i kb", TextureSize / 1024);
+			break;
+
+		default:
+			break;
+	}
+}
+
+//=================== ANYTHING MESSAGE FOR CHAIN LOADS ==================
 void cleanUp() {
 	delete FontBig;
 	delete Font;
 }
-	
+
+//=================== MAIN ENTRY ========================================
 int main(int argc, char *argv[]) {
 
     //VRAM ALLOCATIONS
@@ -538,12 +564,6 @@ int main(int argc, char *argv[]) {
     //G 16 -> TEXTURE PALETTE -> overflow from above
     //H 32 -> SUB BG EXT PALETTE -> 4096 colours (auto palette by last 32 colour lights)
     //I 16 -> ?SUB SPRITE? -> vramSetBankI(VRAM_I_SUB_SPRITE);
-	
-	//upper screen
-	videoSetMode(MODE_5_3D);
-	bgExtPaletteEnableSub();
-
-	extendedPalettes(subTilesPal, subTilesPalLen);
 
     //lower screen
 	//x, y, w, h in chars
@@ -562,18 +582,21 @@ int main(int argc, char *argv[]) {
     //40,960 byte tiles for keyboard (256 * 320 / 2) 4bpp
 	subBG[0] = bgInitSub(1, BgType_Text8bpp, BgSize_T_512x256, 26, 4);
 	subBG[1] = bgInitSub(2, BgType_Text8bpp, BgSize_T_512x256, 29, 4);
-	
 	dmaCopy(subTilesTiles, bgGetGfxPtr(subBG[0]), subTilesTilesLen);
 	clearSub(0);
 	clearSub(1);
 
+	//sound
 	mmInitDefaultMem((mm_addr)mmsolution_bin);
 	irqInit();
 	irqSet(IRQ_VBLANK, updateFrame);
-
 	loadMods();
 	loadEffects();
 
+	//upper screen
+	videoSetMode(MODE_5_3D);
+	bgExtPaletteEnableSub();
+	extendedPalettes(subTilesPal, subTilesPalLen);
 	// Set Bank A+B+D to texture (256 K + 128K)
 	vramSetBankA(VRAM_A_TEXTURE);
     vramSetBankB(VRAM_B_TEXTURE);
@@ -582,10 +605,8 @@ int main(int argc, char *argv[]) {
 	vramSetBankF(VRAM_F_TEX_PALETTE_SLOT0);
 	vramSetBankG(VRAM_G_TEX_PALETTE_SLOT1);
 	// Allocate VRAM bank for all the main palettes (32 K)
-
 	mainBG[0] = bgInit(2, BgType_Text8bpp, BgSize_ER_512x512, 24, 0);
-	mainBG[1] = bgInit(3, BgType_Text8bpp, BgSize_ER_512x512, 28, 0);
-	
+	mainBG[1] = bgInit(3, BgType_Text8bpp, BgSize_ER_512x512, 28, 0);	
 	defaultTilesMain();//clears automatic
 	clearMain(1);
 
@@ -604,39 +625,20 @@ int main(int argc, char *argv[]) {
 	bgSetPriority(subBG[0],2);
 	bgSetPriority(subBG[1],3);
 	
-	// Load our font textures
-	Font = new Cglfont(8, 		// tile pixels square
-		(u16*)font_siPal,		// Palette Data
-		(u8*)font_siBitmap		// image data generated by GRIT 
-	);
-
-	// Do the same with our bigger texture
+	// Load font textures
+	Font = new Cglfont(8, (u16*)font_siPal,	(u8*)font_siBitmap);
 	FontBig = new Cglfont(16, (u16*)font_16x16Pal, (u8*)font_16x16Bitmap);
-
-	iprintf("\x1b[1;1HEasy GL2D Font Example");
-	iprintf("\x1b[3;1HFonts by Adigun A. Polack");
-	
-	iprintf("\x1b[6;1HRelminator");
-	iprintf("\x1b[7;1HHttp://Rel.Phatcode.Net");
-	
-	// calculate the amount of 
-	// memory uploaded to VRAM in KB
-	int TextureSize = font_siBitmapLen + font_16x16BitmapLen;			  
-	iprintf("\x1b[10;1HTotal Texture size= %i kb", TextureSize / 1024);
 	
 	// initialize gl
-	glInit();
-	
+	glInit();	
 	//enable textures
 	glEnable(GL_TEXTURE_2D);
-	
 	// enable antialiasing
 	glEnable(GL_ANTIALIAS);
-	
 	//this should work the same as the normal gl call
 	glViewport(0,0,255,191);
 	
-	glGenTextures(4, (int *)&textureID);//make 2 textures
+	glGenTextures(4, (int *)&textureID);//make 4 textures
 	glBindTexture(0, textureID[0]);//bind it
 	glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
 		0, TEXGEN_TEXCOORD, (u8*)threeDtex0Bitmap);
@@ -661,7 +663,9 @@ int main(int argc, char *argv[]) {
 	
 	gluLookAt(	0.0, 0.0, 1.0,		//camera possition 
 				0.0, 0.0, 0.0,		//look at
-				0.0, 1.0, 0.0);		//up	
+				0.0, 1.0, 0.0);		//up
+
+	progressMessage(INITIAL_LOAD);	
 	
 	while(!exiting) {
 		if(sheduleAudio) playMod(++curentAudioMod);
