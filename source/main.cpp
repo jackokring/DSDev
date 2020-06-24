@@ -150,7 +150,7 @@ void overflowDefault(int32 *value) {
 char *printValue(int32 *value, bool comma = false,
 	u8 digits = 10, void (*fn)(int32 *) = overflowDefault) {
 	//buffer
-	static char _str[16];
+	static char _str[32];//long!
 	sprintf(_str, "%li", *value);
 	int off = 0;
 	if(*value < 0) off = 1;
@@ -220,7 +220,7 @@ void loadTitleMain(u8 *tiles, int len) {
 	bgUpdate(); 
 }
 
-void titleTilesMain() {
+void defaultTilesMain() {
 	dmaCopy(mainTilesTiles, bgGetGfxPtr(mainBG[0]), mainTilesTilesLen);
 	clearMain(0);
 }
@@ -283,7 +283,23 @@ void drawSub() {
 }
 
 uint drawSubMeta() {
-
+	for(int i = 0; i < 2; ++i) {
+		u16 *map = bgGetMapPtr(subBG[i]);
+		u8 *at = (u8 *)(map + 2048);//attribute pointer
+		for(int j = frame & 15; j < 2048; j+= 16) {
+			//process attribute
+			int a = *at;
+			if(((frame + (frame << 2)) & 0xF0) >= a) {//test percent slow (BITS 4-7)
+				int t = *map;
+				int mask = ((1 << (a & 7)) - 1);
+				int low = t & mask;
+				low = (low + 1 - ((a & 8) >> 2)) & mask;//direction 0UP/1DWN (BIT 3)
+				*map = ((*map) & ~mask) | low;//auto rotate nth low bits (BIT 0-2)
+			}
+			map++;
+			at++;
+		}
+	}
 	drawSub();
 	//return masked keys
 	scanKeys();
@@ -570,7 +586,7 @@ int main(int argc, char *argv[]) {
 	mainBG[0] = bgInit(2, BgType_Text8bpp, BgSize_ER_512x512, 24, 0);
 	mainBG[1] = bgInit(3, BgType_Text8bpp, BgSize_ER_512x512, 28, 0);
 	
-	titleTilesMain();//clears automatic
+	defaultTilesMain();//clears automatic
 	clearMain(1);
 
 	//ready for priorities
