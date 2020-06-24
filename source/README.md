@@ -7,7 +7,7 @@ Basic Design Things
 -------------------
 
 * Bottom display has console and keyboard
-* Top display uses 2D and 3D GL. Allocated 2 * 64kB (256 colour) textures
+* Top display uses 2D and 3D GL. Allocated 4 * 64kB (256 colour) textures plus 2 fonts
 * Font resources use a modified ASCII (upper case)
   * Sword - output producer, fast (A)
   * Shield - input consumer, slow (B)
@@ -28,4 +28,13 @@ A simple text based IDE for building on device. Using the console as a code entr
 START should of course run the active entry item, and also stop or pause code running. The other buttons could roughly be defined as A for add selected or insert, B for delete last or backspace, X for building complex views based on current item such as references, and finally Y should change between the insert type for numbers, strings, lists and words.
 
 Some sort of simple programming could be part of in game play. To this end keys can be intercepted by the console on the sub display.
+
+VRAM
+----
+
+A, B and D for 3D textures/fonts, so only BG0 is used on the main engine. E is for palettes for a high colour display. The main display palette can be used as a temporary or backup store. With 2048 quads about divided by about 4 textures (256 * 256) for about 16 * 16 pixels fundemental texture size.
+
+C has about 64kB remaining for tile sets on the sub engine BG1 and BG2 planes. Perhaps using a common tileset of 1024 tiles at 8 bit colour (minus the 17 colours used by the console) or distinct tilesets at 4 bit (14 colour after console colours) with 8 bit being better I think.
+
+Sub engine sprites would have little to no memory left, apart from a few kB, but the sprite engine has no memory access. Pseudo sprites by animation and flipping, along with scrolling of the two layers, could have enough effect. The full 256 colours could be used with an extended palette.
 
