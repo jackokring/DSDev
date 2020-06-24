@@ -158,6 +158,7 @@ Cglfont *FontBig;//256
 #include "threeDtex3.h"
 #include "subTiles.h"
 #include "mainTiles.h"
+#include "logo.h"
 
 //================ DECIMAL STRINGS ==========================
 void overflowDefault(int32 *value) {
@@ -210,6 +211,11 @@ u16 frameCount() {
 	return x;
 }
 
+void enterFrameWhile() {
+	exiting = false;
+	while(frameCount() != 0);
+}
+
 int textureID[4];
 View *subViewRXInput;
 uint keyNoAuto = 0;//bitmask for one shot keys
@@ -256,8 +262,10 @@ void clearSub(int bg) {
 	}
 }
 
-void loadTitleMain(u8 *tiles, int len) {
+void loadTitleMain(const unsigned int *tiles, int len,
+		const unsigned short *pal, int palLen) {
 	dmaCopy(tiles, bgGetGfxPtr(mainBG[0]), len);
+	dmaCopy(pal, BG_PALETTE, palLen);
 	for(int x = 0; x < 32 * 24; ++x) {
 		putMain(0, x % 32, x / 32, x);
 	}
@@ -428,6 +436,7 @@ uint drawSubMeta() {
 		}
 	}
 	drawSub();
+	keyboardUpdate();//for later
 	//return masked keys
 	scanKeys();
 	if(subViewRXInput != NULL);//process
@@ -603,7 +612,6 @@ int main(int argc, char *argv[]) {
 	// Allocate VRAM bank for all the main palettes (32 K)
 	mainBG[0] = bgInit(2, BgType_Text8bpp, BgSize_ER_512x512, 24, 0);
 	mainBG[1] = bgInit(3, BgType_Text8bpp, BgSize_ER_512x512, 28, 0);	
-	defaultTilesMain();//clears automatic
 	clearMain(1);
 
 	//ready for priorities
@@ -661,8 +669,17 @@ int main(int argc, char *argv[]) {
 				0.0, 0.0, 0.0,		//look at
 				0.0, 1.0, 0.0);		//up
 
+	loadTitleMain(logoTiles, logoTilesLen, logoPal, logoPalLen);
 	progressMessage(INITIAL_LOAD);	
+	scanKeys();//initial held propergation
+	playEffect(SFX_BOOM);
 	
+	while(!exiting) {
+		scanKeys();
+		if(keysDown() & (KEY_START | KEY_A)) exiting = true;//next
+	}
+	defaultTilesMain();//clears automatic
+	enterFrameWhile();
 	while(!exiting) {
 		if(sheduleAudio) playMod(++curentAudioMod);
 		u16 step;

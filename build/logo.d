@@ -1,0 +1,1 @@
+logo.o: logo.s
