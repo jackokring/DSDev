@@ -521,7 +521,7 @@ int main(int argc, char *argv[]) {
     //tilebase 4 is free @ 64K, map 30 and 31 free in lower 64K of VRAM_C
     //BG1, BG2 not used
 	Keyboard * k = keyboardDemoInit();
-    keyboardShow();
+    //keyboardShow();
     //BG3, mapbase 20 (2K) -> just above tiles, tilebase 0 (16K) = 0K
     //40,960 byte tiles for keyboard (256 * 320 / 2) 4bpp
 	subBG[0] = bgInitSub(1, BgType_Text8bpp, BgSize_T_512x256, 26, 4);
@@ -555,12 +555,12 @@ int main(int argc, char *argv[]) {
 	clearMain(1);
 
 	//ready for priorities
+	bgSetPriority(mainBG[0],0);//HUD
 	//3D ---> hack to 0
 	REG_BG0CNT &= ~ 3;//mask out
-	REG_BG0CNT |= 0;//set new priority
+	REG_BG0CNT |= 1;//set new priority
+	bgSetPriority(mainBG[1],2);//SKY?
 	//BG1 is not in use
-	bgSetPriority(mainBG[0],1);
-	bgSetPriority(mainBG[1],2);
 
 	//Console
 	bgSetPriority(console->bgId, 0);
