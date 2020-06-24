@@ -77,7 +77,8 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
  /home/jacko/Documents/DSDev/build/threeDtex2.h \
  /home/jacko/Documents/DSDev/build/threeDtex3.h \
  /home/jacko/Documents/DSDev/build/subTiles.h \
- /home/jacko/Documents/DSDev/build/mainTiles.h
+ /home/jacko/Documents/DSDev/build/mainTiles.h \
+ /home/jacko/Documents/DSDev/build/logo.h
 /opt/devkitpro/libnds/include/nds.h:
 /opt/devkitpro/libnds/include/nds/libversion.h:
 /opt/devkitpro/libnds/include/nds/ndstypes.h:
@@ -157,3 +158,4 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
 /home/jacko/Documents/DSDev/build/threeDtex3.h:
 /home/jacko/Documents/DSDev/build/subTiles.h:
 /home/jacko/Documents/DSDev/build/mainTiles.h:
+/home/jacko/Documents/DSDev/build/logo.h:
