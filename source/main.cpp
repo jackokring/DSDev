@@ -436,7 +436,7 @@ uint drawSubMeta() {
 		}
 	}
 	drawSub();
-	keyboardUpdate();//for later
+	int keyCode = keyboardUpdate();//for later
 	//return masked keys
 	scanKeys();
 	if(subViewRXInput != NULL);//process
@@ -672,6 +672,7 @@ int main(int argc, char *argv[]) {
 	loadTitleMain(logoTiles, logoTilesLen, logoPal, logoPalLen);
 	progressMessage(INITIAL_LOAD);	
 	scanKeys();//initial held propergation
+	progressMessage(INITIAL_LOAD);	//<< NOPE!!
 	playEffect(SFX_BOOM);
 	
 	while(!exiting) {
