@@ -67,6 +67,7 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
  /opt/devkitpro/libnds/include/nds/input.h \
  /home/jacko/Documents/DSDev/source/ai.h \
  /home/jacko/Documents/DSDev/source/lang.h \
+ /home/jacko/Documents/DSDev/source/progress.h \
  /home/jacko/Documents/DSDev/build/mmsolution.h \
  /home/jacko/Documents/DSDev/build/mmsolution_bin.h \
  /home/jacko/Documents/DSDev/build/font_si.h \
@@ -145,6 +146,7 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
 /opt/devkitpro/libnds/include/nds/input.h:
 /home/jacko/Documents/DSDev/source/ai.h:
 /home/jacko/Documents/DSDev/source/lang.h:
+/home/jacko/Documents/DSDev/source/progress.h:
 /home/jacko/Documents/DSDev/build/mmsolution.h:
 /home/jacko/Documents/DSDev/build/mmsolution_bin.h:
 /home/jacko/Documents/DSDev/build/font_si.h:

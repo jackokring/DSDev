@@ -218,6 +218,33 @@ int subBG[2];//2 sub backgrounds of 64 by 32 for clear space all around
 int mainBG[2];//2 main backgrounds of 64 by 64 for clear space and fill
 
 //================ TILES, LAYERS AND PALETTES ==================
+void putMain(int bg, int x, int y, int tile) {
+	u16 *map = bgGetMapPtr(mainBG[bg]);
+	x += y * 64;
+	x &= 4095;
+	map += x;
+	*map = tile;
+}
+
+void putSub(int bg, int x, int y, int tile, int attribute = 0) {
+	u16 *map = bgGetMapPtr(subBG[bg]);
+	x += y * 64;
+	x &= 2047;
+	map += x;
+	*map = tile;
+	u8 *at = (u8 *)bgGetMapPtr(subBG[bg]);
+	at += 4096;
+	at += x;
+	*at = (u8)attribute;
+}
+
+void clearMain(int bg) {
+	u16 *map = bgGetMapPtr(mainBG[bg]);
+	for(int i = 0; i < 4096; ++i) {
+		*map++ = 0;
+	}
+}
+
 void clearSub(int bg) {
 	u16 *map = bgGetMapPtr(subBG[bg]) + 2048;//advanced attributes ...
 	for(int i = 0; i < 1024; ++i) {
@@ -242,33 +269,6 @@ void loadTitleMain(u8 *tiles, int len) {
 void defaultTilesMain() {
 	dmaCopy(mainTilesTiles, bgGetGfxPtr(mainBG[0]), mainTilesTilesLen);
 	clearMain(0);
-}
-
-void clearMain(int bg) {
-	u16 *map = bgGetMapPtr(mainBG[bg]);
-	for(int i = 0; i < 4096; ++i) {
-		*map++ = 0;
-	}
-}
-
-void putMain(int bg, int x, int y, int tile) {
-	u16 *map = bgGetMapPtr(mainBG[bg]);
-	x += y * 64;
-	x &= 4095;
-	map += x;
-	*map = tile;
-}
-
-void putSub(int bg, int x, int y, int tile, int attribute = 0) {
-	u16 *map = bgGetMapPtr(subBG[bg]);
-	x += y * 64;
-	x &= 2047;
-	map += x;
-	*map = tile;
-	u8 *at = (u8 *)bgGetMapPtr(subBG[bg]);
-	at += 4096;
-	at += x;
-	*at = (u8)attribute;
 }
 
 void extendedPalettes(const unsigned short *pal, int len) {
@@ -534,10 +534,6 @@ void progressMessage(PROGRESS x) {
 			iprintf("\x1b[3;1HFonts by Adigun A. Polack");
 			iprintf("\x1b[6;1HRelminator");
 			iprintf("\x1b[7;1HHttp://Rel.Phatcode.Net");
-			// calculate the amount of 
-			// memory uploaded to VRAM in KB
-			int TextureSize = font_siBitmapLen + font_16x16BitmapLen;			  
-			iprintf("\x1b[10;1HTotal Texture size= %i kb", TextureSize / 1024);
 			break;
 
 		default:
