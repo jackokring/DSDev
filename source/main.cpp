@@ -195,14 +195,41 @@ int textureID[4];
 View *subViewRXInput;
 uint keyNoAuto = 0;//bitmask for one shot keys
 uint keyIntercepted = 0;
-int subBG[2];
+int subBG[2];//2 sub backgrounds of 64 by 32 for clear space all around
 
 void clearSub(int idx) {
 	idx = subBG[idx];
 	u16 *map = bgGetMapPtr(idx);
-	for(int i = 0; i < 1024; ++i) {
+	for(int i = 0; i < 2048; ++i) {
 		*map++ = 0;
 	}
+}
+
+void extendedPalettes(const unsigned short *pal, int len, u16 *vram) {
+	vramSetBankH(VRAM_H_LCD);
+	u16 palette[len / 2];
+	for(int i = 0; i < len / 2; ++i) {
+		palette[i] = pal[i];//copy for processing
+	}
+	dmaCopy(subTilesPal, &VRAM_H_EXT_PALETTE[2][0], subTilesPalLen);
+	//15 other palette slots for BG1 and BG2
+	//as console and keyboard are 4bpp backgrounds
+	//they are not affected with extended palettes
+	for(int i = 1; i < 3; ++i) {
+		for(int p = 0; p < 16; ++p) {
+			for(int i = 0; i < len / 2; ++i) {
+				palette[i] = pal[i];//copy for processing
+			}
+			//TODO: process depending on i and p
+			if(i == 1) {//BG1
+
+			} else { //BG2
+
+			}
+			dmaCopy(palette, &vram[i][p], len);//4096 colours max
+		}
+	}
+	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);//extended palette
 }
 
 uint drawSub() {
@@ -472,15 +499,8 @@ int main(int argc, char *argv[]) {
 	//upper screen
 	videoSetMode(MODE_5_3D);
 	bgExtPaletteEnableSub();
-	vramSetBankH(VRAM_H_LCD);
 
-	dmaCopy(subTilesPal, &VRAM_H_EXT_PALETTE[1][0], subTilesPalLen);
-	dmaCopy(subTilesPal, &VRAM_H_EXT_PALETTE[2][0], subTilesPalLen);
-	//15 other palette slots for BG1 and BG2
-	//as console and keyboard are 4bpp backgrounds
-	//they are not affected with extended palettes
-
-	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);//extended palette
+	extendedPalettes(subTilesPal, subTilesPalLen, &VRAM_H_EXT_PALETTE);
 
     //lower screen
 	//x, y, w, h in chars
@@ -491,14 +511,14 @@ int main(int argc, char *argv[]) {
     //BG0, mapbase 22 (2K) -> 21 extra free map, tilebase 3 (16K) = 48K, load-font
     //47,104 (map 23) -> also an extra free map
     //4096 byte tiles in default font 4bpp
-    //tilebase 4 is free @ 64K, map 26 to 31 free in lower 64K of VRAM_C
+    //tilebase 4 is free @ 64K, map 30 and 31 free in lower 64K of VRAM_C
     //BG1, BG2 not used
 	keyboardDemoInit();
     keyboardShow();
     //BG3, mapbase 20 (2K) -> just above tiles, tilebase 0 (16K) = 0K
     //40,960 byte tiles for keyboard (256 * 320 / 2) 4bpp
-	subBG[0] = bgInitSub(1, BgType_Text8bpp, BgSize_T_256x256, 26, 4);
-	subBG[1] = bgInitSub(2, BgType_Text8bpp, BgSize_T_256x256, 27, 4);
+	subBG[0] = bgInitSub(1, BgType_Text8bpp, BgSize_T_512x256, 26, 4);
+	subBG[1] = bgInitSub(2, BgType_Text8bpp, BgSize_T_512x256, 28, 4);
 	
 	dmaCopy(subTilesTiles, bgGetGfxPtr(subBG[0]), sizeof(subTilesTilesLen));
 	clearSub(0);
