@@ -437,13 +437,13 @@ int main(int argc, char *argv[]) {
     //VRAM ALLOCATIONS
     //A 128 -> PRIMARY TEXTURES (BIG + SMALL FONTS)
     //B 128 -> PRIMARY TEXTURES (TextureID[0,1])
-    //C 128 -> SUB CONSOLE, KEYBOARD, 2 * BG, (map 26 to 31 free)
+    //C 128 -> SUB CONSOLE, KEYBOARD, 2 * BG, (map 28 to 31 free)
     //D 128 -> PRIMARY TEXTURES (TextureID[2,3])
-    //E 64 -> TEXTURE PALETTE (6 * 512 (3K) used fades??)
-    //F 16 ->
-    //G 16 ->
-    //H 32 ->
-    //I 16 ->
+    //E 64 -> TEXTURE PALETTE (6 * 512 (3K) used fades??) -> full colour
+    //F 16 -> ?MAIN SPRITE?
+    //G 16 -> ?MAIN SPRITE?
+    //H 32 -> SUB BG EXT PALETTE
+    //I 16 -> ?SUB SPRITE?
 
     //BG_PALETTE(_SUB)[x] -> 1K (* 2) -> lower 1K is Main 512 colours, 256 BG, 256 OBJ, upper is Sub
     //console fills black 0, and (n * 16 - 1) for text colours (on SUB)
@@ -471,7 +471,16 @@ int main(int argc, char *argv[]) {
 	
 	//upper screen
 	videoSetMode(MODE_5_3D);
-	dmaCopy(subTilesPal, BG_PALETTE, subTilesPalLen);
+	bgExtPaletteEnableSub();
+	vramSetBankH(VRAM_H_LCD);
+
+	dmaCopy(subTilesPal, &VRAM_H_EXT_PALETTE[1][0], subTilesPalLen);
+	dmaCopy(subTilesPal, &VRAM_H_EXT_PALETTE[2][0], subTilesPalLen);
+	//15 other palette slots for BG1 and BG2
+	//as console and keyboard are 4bpp backgrounds
+	//they are not affected with extended palettes
+
+	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);//extended palette
 
     //lower screen
 	//x, y, w, h in chars
@@ -488,8 +497,8 @@ int main(int argc, char *argv[]) {
     keyboardShow();
     //BG3, mapbase 20 (2K) -> just above tiles, tilebase 0 (16K) = 0K
     //40,960 byte tiles for keyboard (256 * 320 / 2) 4bpp
-	subBG[0] = bgInitSub(1, BgType_Text8bpp, BgSize_T_256x256, 21, 4);
-	subBG[1] = bgInitSub(2, BgType_Text8bpp, BgSize_T_256x256, 23, 4);
+	subBG[0] = bgInitSub(1, BgType_Text8bpp, BgSize_T_256x256, 26, 4);
+	subBG[1] = bgInitSub(2, BgType_Text8bpp, BgSize_T_256x256, 27, 4);
 	
 	dmaCopy(subTilesTiles, bgGetGfxPtr(subBG[0]), sizeof(subTilesTilesLen));
 	clearSub(0);
