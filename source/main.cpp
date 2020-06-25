@@ -315,6 +315,7 @@ void waitForKey(int keys) {
 		scanKeys();
 		swiWaitForVBlank();//low power
 	}
+	playEffect(SFX_ZAP);
 }
 
 int textureID[4];
@@ -326,88 +327,8 @@ int mainBG[2];//2 main backgrounds of 64 by 64 for clear space and fill
 int32 gameSaveLoc = 0;
 
 //================ TILES, LAYERS AND PALETTES ==================
-void putMain(int bg, int x, int y, int tile) {
-	u16 *map = bgGetMapPtr(mainBG[bg]);
-	x += y * 64;
-	x &= 4095;
-	map += x;
-	*map = tile;
-}
-
-void putSub(int bg, int x, int y, int tile, int attribute = 0) {
-	u16 *map = bgGetMapPtr(subBG[bg]);
-	x += y * 64;
-	x &= 2047;
-	map += x;
-	*map = tile;
-	u8 *at = (u8 *)bgGetMapPtr(subBG[bg]);
-	at += 4096;
-	at += x;
-	*at = (u8)attribute;
-}
-
-void clearMain(int bg) {
-	u16 *map = bgGetMapPtr(mainBG[bg]);
-	for(int i = 0; i < 4096; ++i) {
-		*map++ = 0;
-	}
-}
-
-void clearSub(int bg) {
-	u16 *map = bgGetMapPtr(subBG[bg]) + 2048;//advanced attributes ...
-	for(int i = 0; i < 1024; ++i) {
-		*map++ = 0;
-	}
-	map = bgGetMapPtr(subBG[bg]);
-	for(int i = 0; i < 2048; ++i) {
-		*map++ = 0;
-	}
-}
-
-void loadTitleMain(const unsigned int *tiles, int len,
-		const unsigned short *pal, int palLen) {
-	dmaCopy(tiles, bgGetGfxPtr(mainBG[0]), len);
-	dmaCopy(pal, BG_PALETTE, palLen);
-	for(int x = 0; x < 32 * 24; ++x) {
-		putMain(0, x % 32, x / 32, x);
-	}
-	bgSetScroll(mainBG[0], 0, 0);//origin
-	bgSetRotateScale(mainBG[0], 0, 1 << 8, 1 << 8);
-	bgUpdate(); 
-}
-
-void defaultTilesMain() {
-	clearMain(0);
-	dmaCopy(mainTilesTiles, bgGetGfxPtr(mainBG[0]), mainTilesTilesLen);
-	dmaCopy(mainTilesPal, BG_PALETTE, mainTilesPalLen);
-}
-
-void extendedPalettes(const unsigned short *pal, int len) {
-	vramSetBankH(VRAM_H_LCD);
-	u16 palette[len / 2];
-	//16 palette slots for BG1 and BG2
-	//as console and keyboard are 4bpp backgrounds
-	//they are not affected with extended palettes
-	//USE LAST 2 PALETTE LINES AS LIGHT ADJUSTMENT
-	for(int i = 1; i < 3; ++i) {
-		for(int p = 0; p < 16; ++p) {
-			int col = palette[15 + i * 16 + p];//multiplyer of light
-			for(int k = 0; k < len / 2; ++k) {
-				int r = RED(col) * RED(pal[k]) / 31;
-				int b = BLUE(col) * BLUE(pal[k]) / 31;
-				int g = GREEN(col) * GREEN(pal[k]) /31;
-				palette[k] = RGB15(r, g, b);
-			}
-			DC_FlushAll();
-			dmaCopy(palette, &VRAM_H_EXT_PALETTE[i][p], len);//4096 colours max
-		}
-	}
-	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);//extended palette
-}
-
 bool currently2D = true;
 bool glInitialized = false;
-
 
 void setFor2D() {
 	videoSetMode(MODE_5_2D);
@@ -455,6 +376,85 @@ void setFor3D() {
 				0.0, 0.0, 0.0,		//look at
 				0.0, 1.0, 0.0);		//up
 	currently2D = false;
+}
+
+void putMain(int bg, int x, int y, int tile) {
+	u16 *map = bgGetMapPtr(mainBG[bg]);
+	x += y * 64;
+	x &= 4095;
+	map += x;
+	*map = tile;
+}
+
+void putSub(int bg, int x, int y, int tile, int attribute = 0) {
+	u16 *map = bgGetMapPtr(subBG[bg]);
+	x += y * 64;
+	x &= 2047;
+	map += x;
+	*map = tile;
+	u8 *at = (u8 *)bgGetMapPtr(subBG[bg]);
+	at += 4096;
+	at += x;
+	*at = (u8)attribute;
+}
+
+void clearMain(int bg) {
+	u16 *map = bgGetMapPtr(mainBG[bg]);
+	for(int i = 0; i < 4096; ++i) {
+		*map++ = 0;
+	}
+}
+
+void clearSub(int bg) {
+	u16 *map = bgGetMapPtr(subBG[bg]) + 2048;//advanced attributes ...
+	for(int i = 0; i < 1024; ++i) {
+		*map++ = 0;
+	}
+	map = bgGetMapPtr(subBG[bg]);
+	for(int i = 0; i < 2048; ++i) {
+		*map++ = 0;
+	}
+}
+
+void loadTitleMain(const unsigned int *tiles, int len,
+		const unsigned short *pal, int palLen) {
+	dmaCopy(tiles, bgGetGfxPtr(mainBG[0]), len);
+	dmaCopy(pal, BG_PALETTE, palLen);
+	for(int x = 0; x < 32 * 24; ++x) {
+		putMain(0, x % 32, x / 32, x);
+	}
+	bgSetScroll(mainBG[0], 0, 0);//origin
+	bgSetRotateScale(mainBG[0], 0, 1 << 8, 1 << 8);
+	bgUpdate();
+	setFor2D();
+}
+
+void defaultTilesMain() {
+	loadTitleMain(mainTilesTiles, mainTilesTilesLen, mainTilesPal, mainTilesPalLen);
+	clearMain(0);
+}
+
+void extendedPalettes(const unsigned short *pal, int len) {
+	vramSetBankH(VRAM_H_LCD);
+	u16 palette[len / 2];
+	//16 palette slots for BG1 and BG2
+	//as console and keyboard are 4bpp backgrounds
+	//they are not affected with extended palettes
+	//USE LAST 2 PALETTE LINES AS LIGHT ADJUSTMENT
+	for(int i = 1; i < 3; ++i) {
+		for(int p = 0; p < 16; ++p) {
+			int col = palette[15 + i * 16 + p];//multiplyer of light
+			for(int k = 0; k < len / 2; ++k) {
+				int r = RED(col) * RED(pal[k]) / 31;
+				int b = BLUE(col) * BLUE(pal[k]) / 31;
+				int g = GREEN(col) * GREEN(pal[k]) /31;
+				palette[k] = RGB15(r, g, b);
+			}
+			DC_FlushAll();
+			dmaCopy(palette, &VRAM_H_EXT_PALETTE[i][p], len);//4096 colours max
+		}
+	}
+	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);//extended palette
 }
 
 //=========================== DRAWING ROUTINES ============================
@@ -641,12 +641,14 @@ void menuText(const char *abxy[], const char *lrWhat, char *lr,
 //===================== GAME LOOP PROCESS FUNCTIONS ==================
 void loadGame(bool defaultGame = false) {
 
+	playEffect(SFX_ZAP);
 	//then after delay
 	enterFrameWhile();
 }
 
 void saveGame(bool defaultGame = false) {
 	
+	playEffect(SFX_ZAP);
 	//then after delay
 	enterFrameWhile();
 }
@@ -657,12 +659,18 @@ void gameSplash() {
 
 void initGame() {
 	gameSplash();
-	defaultTilesMain();//clears automatic
-	// initialize gl
-	setFor3D();
 
 	//get default
 	loadGame(true);
+	waitForKey(KEY_A_OR_START);
+	defaultTilesMain();//clears automatic
+}
+
+void startGame() {
+	// initialize gl?
+	setFor3D();
+
+	enterFrameWhile();
 }
 
 void processInputs(uint keysMasked) {
@@ -675,14 +683,17 @@ void drawAndProcessMenu(uint keysMasked) {
 		const char *buttons[] = { "PLAY", "LOAD GAME", "EXIT", "SAVE GAME" };
 		menuText(buttons, "SLOT", printValue(&gameSaveLoc),	"PLAY", "NEXT MUSIC TRACK");
 		//cursor??
-		
+
 		//menu keys
+		if(keysMasked & (KEY_ALL_BUTTONS)) playEffect(SFX_ZAP);
+		if(keysMasked & (KEY_DPAD)) playEffect(SFX_CHIPPULSE_C4);
 		if(keysMasked & KEY_A_OR_START) paused = false;//A
 		if(keysMasked & KEY_B) loadGame();//B
 		if(keysMasked & KEY_X) {
 			newGame = false;//X
 			exiting = true;//just an exit back to ?
 			saveGame(true);
+			playEffect(SFX_EXPLODE);
 		}
 		if(keysMasked & KEY_Y) saveGame();//Y
 		//TODO:
@@ -820,6 +831,7 @@ int main(int argc, char *argv[]) {
 	//setPowerButtonCB(powerButtonPressed);//?? NO REFERENCE
 	do {
 		initGame();
+		startGame();
 		while(!exiting) {
 			if(sheduleAudio) playMod(rand() % MSL_NSONGS);
 			while(inFrameCount()) {
@@ -831,10 +843,12 @@ int main(int argc, char *argv[]) {
 				}
 			}	
 			//3D
-			draw3D();
-			//2D
-			draw2D();
-			glFlush(0);
+			if(!currently2D) {
+				draw3D();
+				//2D on 3D
+				draw2D();
+				glFlush(0);
+			}
 			drawMain();
 			if(!paused) {
 				processInputs(drawSubMeta());//keysIntercepted?
