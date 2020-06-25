@@ -5,3 +5,6 @@
 build/DSDev.map
 build/main.o
 DSDev.elf
+build/mmsolution.bin
+build/mmsolution.bin.o
+DSDev.elf
