@@ -776,7 +776,6 @@ int main(int argc, char *argv[]) {
 	setFor3D();
 	do {
 		initGame();
-		enterFrameWhile();
 		while(!exiting) {
 			if(sheduleAudio) playMod(rand() % MSL_NSONGS);
 			while(inFrameCount()) {
