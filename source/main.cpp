@@ -3,11 +3,7 @@
     DSDev Template:
 	Simon Jackson
 	
-	Thanks to source examples from:
-	Adigun A. Polack, Richard Eric M. Lope BSN RN
-	
-	Music from Aminet:
-	Neurodancer
+	Check credits: progress.h
 	
 =============================================================================*/ 
 
@@ -327,6 +323,7 @@ uint keyNoAuto = 0;//bitmask for one shot keys
 uint keyIntercepted = 0;
 int subBG[2];//2 sub backgrounds of 64 by 32 for clear space all around
 int mainBG[2];//2 main backgrounds of 64 by 64 for clear space and fill
+int32 gameSaveLoc = 0;
 
 //================ TILES, LAYERS AND PALETTES ==================
 void putMain(int bg, int x, int y, int tile) {
@@ -605,6 +602,41 @@ uint drawSubMeta() {
 		~(~keysDown() & keyNoAuto);//one shots
 }
 
+void indent() {
+	const char *indent = "\n    ";
+	iprintf(indent);
+}
+
+void menuText(const char *abxy[], const char *lrWhat, char *lr,
+		const char *start, const char *select) {
+	consoleClear();
+	const char *butABXY[] = {
+		"[A] ",
+		"[B] ",
+		"[X] ",
+		"[Y] "
+	};
+	indent();
+	indent();
+	indent();
+	indent();
+	for(int i = 0; i < 4; ++i) {
+		iprintf(butABXY[i]);
+		iprintf(abxy[i]);
+		indent();
+	}
+	iprintf("[L] ");
+	iprintf(lr);
+	iprintf(" [R]");
+	indent();
+	iprintf("[START] ");
+	iprintf(start);
+	indent();
+	iprintf("[SELECT] ");
+	iprintf(select);
+	indent();
+}
+
 //===================== GAME LOOP PROCESS FUNCTIONS ==================
 void loadGame(bool defaultGame = false) {
 
@@ -618,7 +650,15 @@ void saveGame(bool defaultGame = false) {
 	enterFrameWhile();
 }
 
+void gameSplash() {
+
+}
+
 void initGame() {
+	gameSplash();
+	defaultTilesMain();//clears automatic
+	// initialize gl
+	setFor3D();
 
 	//get default
 	loadGame(true);
@@ -631,7 +671,8 @@ void processInputs(uint keysMasked) {
 void drawAndProcessMenu(uint keysMasked) {
 	if(subViewRXInput == NULL) {//intercept menu view for show special instead?
 		//menu display
-
+		const char *buttons[] = { "PLAY", "LOAD GAME", "EXIT", "SAVE GAME" };
+		menuText(buttons, "SLOT", printValue(&gameSaveLoc),	"PLAY", "NEXT MUSIC TRACK");
 		//menu keys
 		if(keysMasked & KEY_A_OR_START) paused = false;//A
 		if(keysMasked & KEY_B) loadGame();//B
@@ -672,10 +713,7 @@ void processStateMachine() {
 void progressMessage(PROGRESS x) {
 	switch(x) {
 		case INITIAL_LOAD:
-			iprintf("Easy GL2D Font Examplez\n");
-			iprintf("Fonts by Adigun A. Polack\n");
-			iprintf("Relminator\n");
-			iprintf("Http://Rel.Phatcode.Net\n");
+			iprintf(CREDITS);
 			break;
 
 		default:
@@ -690,9 +728,14 @@ void cleanUp() {
 	irqClear(IRQ_VBLANK);
 	setFor2D();
 	glResetTextures();
-	delete FontBig;
-	delete Font;
+	if(FontBig != NULL) delete FontBig;
+	if(Font != NULL) delete Font;
 	glInitialized = false;
+}
+
+void powerButtonPressed() {
+	cleanUp();
+	exit(0);
 }
 
 //=================== MAIN ENTRY ========================================
@@ -765,15 +808,13 @@ int main(int argc, char *argv[]) {
 	bgSetPriority(subBG[0],2);
 	bgSetPriority(subBG[1],3);
 
-	loadTitleMain(logoTiles, logoTilesLen, logoPal, logoPalLen);// << NO-SHOW TODO:
+	loadTitleMain(logoTiles, logoTilesLen, logoPal, logoPalLen);
 	progressMessage(INITIAL_LOAD);	
 	playEffect(SFX_EXPLODE);
 	//openAudioStream();
 	
 	waitForKey(KEY_A_OR_START);
-	defaultTilesMain();//clears automatic
-	// initialize gl
-	setFor3D();
+	//setPowerButtonCB(powerButtonPressed);//?? NO REFERENCE
 	do {
 		initGame();
 		while(!exiting) {
@@ -803,5 +844,5 @@ int main(int argc, char *argv[]) {
 		}
 	} while(newGame);
 	cleanUp();
-	return 0;
+	exit(0);
 }
