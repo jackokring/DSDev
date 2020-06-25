@@ -38,11 +38,7 @@ u8 audioMods[MSL_NSONGS] = {
 	MOD_TRICKTOP
 };
 
-u16 audioEffects[] = {
-	SFX_ZAP,
-	SFX_BOOM,
-	SFX_EXPLODE
-};
+#include "sfx.h"
 
 //============= FONT CLASS ==========================
 class Cglfont {
