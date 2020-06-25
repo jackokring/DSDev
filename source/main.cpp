@@ -195,6 +195,7 @@ char *printValue(int32 *value, bool comma = false,
 
 //=================== MASTER GLOBAL STATE =================
 int32 frame = 0;//frame counter
+int32 stepFrames;
 bool baulkAI = false;
 bool paused = false;
 bool inGame = false;
@@ -205,17 +206,18 @@ void updateFrame() {
 	baulkAI = true;
 }
 
-u16 frameCount() {
+bool inFrameCount() {
 	static u16 last = 0;
 	u16 x = frame - last;
 	if(x > 1) baulkAI = false;
 	last += x;
-	return x;
+	stepFrames = x;
+	return x == 0;
 }
 
 void enterFrameWhile() {
 	exiting = false;
-	while(frameCount() != 0);
+	while(!inFrameCount());
 }
 
 int textureID[4];
@@ -704,8 +706,7 @@ int main(int argc, char *argv[]) {
 	enterFrameWhile();
 	while(!exiting) {
 		if(sheduleAudio) playMod(++curentAudioMod);
-		u16 step;
-		while((step = frameCount()) < 1) {
+		while(inFrameCount()) {
 			//perform AI?? section
 			//check baulkAI in intensive search
 			swiWaitForVBlank();//or low power

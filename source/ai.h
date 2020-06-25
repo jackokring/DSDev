@@ -4,6 +4,7 @@
 #include <nds.h>
 extern bool baulkAI;
 extern int32 frame;
+extern int32 stepFrames;
 extern bool paused;
 extern bool inGame;
 extern bool exiting;
