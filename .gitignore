@@ -1,6 +1,4 @@
-/*.nds
-/*.elf
-/arm7/*.elf
-/arm9/*.elf
-/arm9/build
-/arm7/build
+*.nds
+*.elf
+*.map
+*.o

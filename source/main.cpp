@@ -539,10 +539,10 @@ void loadEffects() {
 void progressMessage(PROGRESS x) {
 	switch(x) {
 		case INITIAL_LOAD:
-			iprintf("\x1b[1;1HEasy GL2D Font Example");
-			iprintf("\x1b[3;1HFonts by Adigun A. Polack");
-			iprintf("\x1b[6;1HRelminator");
-			iprintf("\x1b[7;1HHttp://Rel.Phatcode.Net");
+			iprintf("Easy GL2D Font Examplez\n");
+			iprintf("Fonts by Adigun A. Polack\n");
+			iprintf("Relminator\n");
+			iprintf("Http://Rel.Phatcode.Net\n");
 			break;
 
 		default:
@@ -550,8 +550,11 @@ void progressMessage(PROGRESS x) {
 	}
 }
 
-//=================== ANYTHING MESSAGE FOR CHAIN LOADS ==================
+//=================== ANYTHING BAD FOR CHAIN LOADS ==================
 void cleanUp() {
+	mmStop();
+	while(mmActive());
+	irqClear(IRQ_VBLANK);
 	delete FontBig;
 	delete Font;
 }
@@ -593,7 +596,6 @@ int main(int argc, char *argv[]) {
 
 	//sound
 	mmInitDefaultMem((mm_addr)mmsolution_bin);
-	irqInit();
 	irqSet(IRQ_VBLANK, updateFrame);
 	loadMods();
 	loadEffects();
@@ -669,10 +671,9 @@ int main(int argc, char *argv[]) {
 				0.0, 0.0, 0.0,		//look at
 				0.0, 1.0, 0.0);		//up
 
-	loadTitleMain(logoTiles, logoTilesLen, logoPal, logoPalLen);
+	loadTitleMain(logoTiles, logoTilesLen, logoPal, logoPalLen);// << NO-SHOW TODO:
 	progressMessage(INITIAL_LOAD);	
 	scanKeys();//initial held propergation
-	progressMessage(INITIAL_LOAD);	//<< NOPE!!
 	playEffect(SFX_BOOM);
 	
 	while(!exiting) {
