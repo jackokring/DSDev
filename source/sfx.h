@@ -10,7 +10,6 @@ u16 audioEffects[] = {
     SFX_DRONE_C4,
     SFX_ELECTROGLICK_C2,
     SFX_GRISTLE_C4,
-    SFX_KORGAN_C4,
     SFX_POWERX_C2,
     SFX_ROBOZ_C4
 };
