@@ -39,8 +39,9 @@ u8 audioMods[MSL_NSONGS] = {
 };
 
 u16 audioEffects[] = {
-	SFX_AMBULANCE,
-	SFX_BOOM
+	SFX_ZAP,
+	SFX_BOOM,
+	SFX_EXPLODE
 };
 
 //============= FONT CLASS ==========================
@@ -556,6 +557,26 @@ mm_sfxhand playEffect(int effect, bool foreground = false) {
 	return hand;
 }
 
+/* mm_word fill_stream(mm_word length, mm_addr dest, mm_stream_formats format) {
+    s8* output = (s8*)dest;
+    for( ; length; length--) {
+        *output++ = rand();//L
+		*output++ = rand();//R
+    }
+    return length;
+}
+
+void openAudioStream() {
+    mm_stream stream;
+    stream.sampling_rate = 22000;        // 22khz
+    stream.buffer_length = 8096;         // should be adequate
+    stream.callback = fill_stream;       // give fill routine
+    stream.format = MM_STREAM_16BIT_STEREO;
+    stream.timer = MM_TIMER0;            // use timer0
+    stream.manual = 0;                   // auto filling
+    mmStreamOpen(&stream);
+} */
+
 mm_word myEventHandler(mm_word msg, mm_word param) {
 	//Avoid sheduling new music direct, use flag and do later after exit this
 	switch(msg) {
@@ -694,7 +715,8 @@ int main(int argc, char *argv[]) {
 	loadTitleMain(logoTiles, logoTilesLen, logoPal, logoPalLen);// << NO-SHOW TODO:
 	progressMessage(INITIAL_LOAD);	
 	scanKeys();//initial held propergation
-	playEffect(SFX_BOOM);
+	playEffect(SFX_EXPLODE);
+	//openAudioStream();
 	
 	while(!exiting) {
 		scanKeys();
@@ -705,7 +727,7 @@ int main(int argc, char *argv[]) {
 	setFor3D();
 	enterFrameWhile();
 	while(!exiting) {
-		if(sheduleAudio) playMod(++curentAudioMod);
+		if(sheduleAudio) playMod(rand() % MSL_NSONGS);
 		while(inFrameCount()) {
 			//perform AI?? section
 			//check baulkAI in intensive search
