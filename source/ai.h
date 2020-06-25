@@ -22,5 +22,7 @@ enum CORNER {
 #define BLUE(X) ((X >> 10)& 31)
 #define KEY_A_OR_START (KEY_A | KEY_START)
 #define KEY_ALL_BUTTONS (KEY_A | KEY_B | KEY_X | KEY_Y | KEY_L | KEY_R | KEY_START | KEY_SELECT)
-#define KEY_DPAD (KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT)
+#define KEY_DPAD_X (KEY_LEFT | KEY_RIGHT)
+#define KEY_DPAD_Y (KEY_UP | KEY_DOWN)
+#define KEY_DPAD (KEY_DPAD_Y | KEY_DPAD_X)
 #endif

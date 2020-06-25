@@ -2,7 +2,6 @@
 #include "mmsolution.h"
 u16 audioEffects[] = {
     SFX_ZAP,
-	SFX_BOOM,
 	SFX_EXPLODE,
 	SFX_ALERTZONE_C3,
 	SFX_CHIPPULSE_C4,
@@ -13,3 +12,9 @@ u16 audioEffects[] = {
     SFX_POWERX_C2,
     SFX_ROBOZ_C4
 };
+
+//ABXY? Not always
+#define ACTION_FX SFX_ZAP
+#define CANCEL_FX SFX_CRISPERROR_C4
+#define INFO_FX SFX_CHIPPULSE_C4
+#define OPTION_FX SFX_DRONE_C4

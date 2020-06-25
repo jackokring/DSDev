@@ -315,7 +315,7 @@ void waitForKey(int keys) {
 		scanKeys();
 		swiWaitForVBlank();//low power
 	}
-	playEffect(SFX_ZAP);
+	playEffect(ACTION_FX);
 }
 
 int textureID[4];
@@ -641,14 +641,14 @@ void menuText(const char *abxy[], const char *lrWhat, char *lr,
 //===================== GAME LOOP PROCESS FUNCTIONS ==================
 void loadGame(bool defaultGame = false) {
 
-	playEffect(SFX_ZAP);
+	playEffect(INFO_FX);
 	//then after delay
 	enterFrameWhile();
 }
 
 void saveGame(bool defaultGame = false) {
 	
-	playEffect(SFX_ZAP);
+	playEffect(INFO_FX);
 	//then after delay
 	enterFrameWhile();
 }
@@ -685,8 +685,9 @@ void drawAndProcessMenu(uint keysMasked) {
 		//cursor??
 
 		//menu keys
-		if(keysMasked & (KEY_ALL_BUTTONS)) playEffect(SFX_ZAP);
-		if(keysMasked & (KEY_DPAD)) playEffect(SFX_CHIPPULSE_C4);
+		if(keysMasked & (KEY_ALL_BUTTONS)) playEffect(ACTION_FX);
+		if(keysMasked & (KEY_DPAD_X)) playEffect(OPTION_FX);
+		if(keysMasked & (KEY_DPAD_Y)) playEffect(ACTION_FX);
 		if(keysMasked & KEY_A_OR_START) paused = false;//A
 		if(keysMasked & KEY_B) loadGame();//B
 		if(keysMasked & KEY_X) {
