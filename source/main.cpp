@@ -605,6 +605,7 @@ uint drawSubMeta() {
 void indent() {
 	const char *indent = "\n    ";
 	iprintf(indent);
+	iprintf(indent);
 }
 
 void menuText(const char *abxy[], const char *lrWhat, char *lr,
@@ -618,14 +619,14 @@ void menuText(const char *abxy[], const char *lrWhat, char *lr,
 	};
 	indent();
 	indent();
-	indent();
-	indent();
 	for(int i = 0; i < 4; ++i) {
 		iprintf(butABXY[i]);
 		iprintf(abxy[i]);
 		indent();
 	}
 	iprintf("[L] ");
+	iprintf(lrWhat);
+	iprintf(" ");
 	iprintf(lr);
 	iprintf(" [R]");
 	indent();
@@ -673,6 +674,8 @@ void drawAndProcessMenu(uint keysMasked) {
 		//menu display
 		const char *buttons[] = { "PLAY", "LOAD GAME", "EXIT", "SAVE GAME" };
 		menuText(buttons, "SLOT", printValue(&gameSaveLoc),	"PLAY", "NEXT MUSIC TRACK");
+		//cursor??
+		
 		//menu keys
 		if(keysMasked & KEY_A_OR_START) paused = false;//A
 		if(keysMasked & KEY_B) loadGame();//B
