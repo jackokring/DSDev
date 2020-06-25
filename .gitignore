@@ -2,3 +2,6 @@
 *.elf
 *.map
 *.o
+build/DSDev.map
+build/main.o
+DSDev.elf

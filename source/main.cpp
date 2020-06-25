@@ -66,7 +66,9 @@ class Cglfont {
 };
 
 Cglfont::~Cglfont() { 
-	if(font_sprite != NULL) delete[] font_sprite;
+	if(font_sprite != NULL) {
+		delete[] font_sprite;
+	}	
 }
 
 Cglfont::Cglfont(const uint tileSize,
@@ -275,8 +277,9 @@ void loadTitleMain(const unsigned int *tiles, int len,
 }
 
 void defaultTilesMain() {
-	dmaCopy(mainTilesTiles, bgGetGfxPtr(mainBG[0]), mainTilesTilesLen);
 	clearMain(0);
+	dmaCopy(mainTilesTiles, bgGetGfxPtr(mainBG[0]), mainTilesTilesLen);
+	dmaCopy(mainTilesPal, BG_PALETTE, mainTilesPalLen);
 }
 
 void extendedPalettes(const unsigned short *pal, int len) {
@@ -299,6 +302,58 @@ void extendedPalettes(const unsigned short *pal, int len) {
 		}
 	}
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);//extended palette
+}
+
+bool currently2D = true;
+bool glInitialized = false;
+
+
+void setFor2D() {
+	videoSetMode(MODE_5_2D);
+	currently2D = true;
+}
+
+void setFor3D() {
+	videoSetMode(MODE_5_3D);
+	if(!glInitialized) {
+		glInit();	
+		// Load font textures
+		Font = new Cglfont(8, (u16*)font_siPal,	(u8*)font_siBitmap);
+		FontBig = new Cglfont(16, (u16*)font_16x16Pal, (u8*)font_16x16Bitmap);
+		glGenTextures(4, (int *)&textureID);//make 4 textures
+		glBindTexture(0, textureID[0]);//bind it
+		glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
+			0, TEXGEN_TEXCOORD, (u8*)threeDtex0Bitmap);
+		glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex0Pal);
+		glBindTexture(0, textureID[1]);//bind it
+		glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
+			0, TEXGEN_TEXCOORD, (u8*)threeDtex1Bitmap);
+		glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex1Pal);
+		glBindTexture(0, textureID[2]);//bind it
+		glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
+			0, TEXGEN_TEXCOORD, (u8*)threeDtex2Bitmap);
+		glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex2Pal);
+		glBindTexture(0, textureID[3]);//bind it
+		glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
+			0, TEXGEN_TEXCOORD, (u8*)threeDtex3Bitmap);
+		glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex3Pal);
+	}
+	//enable textures
+	glEnable(GL_TEXTURE_2D);
+	// enable antialiasing
+	glEnable(GL_ANTIALIAS);
+	//this should work the same as the normal gl call
+	glViewport(0,0,255,191);
+	
+	//any floating point gl call is being converted to fixed prior to being implemented
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(70, 256.0 / 192.0, 0.1, 40);
+	
+	gluLookAt(	0.0, 0.0, 1.0,		//camera possition 
+				0.0, 0.0, 0.0,		//look at
+				0.0, 1.0, 0.0);		//up
+	currently2D = false;
 }
 
 //=========================== DRAWING ROUTINES ============================
@@ -367,7 +422,8 @@ void draw3D() {
 
 void draw2D() {
 	// set up GL2D for 2d mode
-	glBegin2D();			
+	glBegin2D();	
+	/*		
 		// fill the whole screen with a gradient box
 		glBoxFilledGradient(0, 0, 255, 191,
 			RGB15(31, 0, 0),
@@ -412,7 +468,8 @@ void draw2D() {
 		glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(2));
 		// Print the number of frames
 		Font->print(10, 170, "FRAMES = ");
-		Font->print(10 + 72, 170, printValue(&frame));		
+		Font->print(10 + 72, 170, printValue(&frame));	
+		*/
 	glEnd2D();
 }
 
@@ -555,8 +612,11 @@ void cleanUp() {
 	mmStop();
 	while(mmActive());
 	irqClear(IRQ_VBLANK);
+	setFor2D();
+	glResetTextures();
 	delete FontBig;
 	delete Font;
+	glInitialized = false;
 }
 
 //=================== MAIN ENTRY ========================================
@@ -601,7 +661,7 @@ int main(int argc, char *argv[]) {
 	loadEffects();
 
 	//upper screen
-	videoSetMode(MODE_5_3D);
+	setFor2D();
 	bgExtPaletteEnableSub();
 	extendedPalettes(subTilesPal, subTilesPalLen);
 	// Set Bank A+B+D to texture (256 K + 128K)
@@ -612,16 +672,14 @@ int main(int argc, char *argv[]) {
 	vramSetBankF(VRAM_F_TEX_PALETTE_SLOT0);
 	vramSetBankG(VRAM_G_TEX_PALETTE_SLOT1);
 	// Allocate VRAM bank for all the main palettes (32 K)
-	mainBG[0] = bgInit(2, BgType_Text8bpp, BgSize_ER_512x512, 24, 0);
-	mainBG[1] = bgInit(3, BgType_Text8bpp, BgSize_ER_512x512, 28, 0);	
-	clearMain(1);
+	mainBG[0] = bgInit(2, BgType_ExRotation, BgSize_ER_512x512, 24, 0);
+	mainBG[1] = bgInit(3, BgType_ExRotation, BgSize_ER_512x512, 28, 0);	
+	//clearMain(1);
 
 	//ready for priorities
-	bgSetPriority(mainBG[0],0);//HUD
-	//3D ---> hack to 0
-	REG_BG0CNT &= ~ 3;//mask out
-	REG_BG0CNT |= 1;//set new priority
-	bgSetPriority(mainBG[1],2);//SKY?
+	//3D ---> 0
+	bgSetPriority(mainBG[0],1);//SKY?
+	bgSetPriority(mainBG[1],2);
 	//BG1 is not in use
 
 	//Console
@@ -630,46 +688,6 @@ int main(int argc, char *argv[]) {
 	bgSetPriority(k->background, 1);
 	bgSetPriority(subBG[0],2);
 	bgSetPriority(subBG[1],3);
-	
-	// Load font textures
-	Font = new Cglfont(8, (u16*)font_siPal,	(u8*)font_siBitmap);
-	FontBig = new Cglfont(16, (u16*)font_16x16Pal, (u8*)font_16x16Bitmap);
-	
-	// initialize gl
-	glInit();	
-	//enable textures
-	glEnable(GL_TEXTURE_2D);
-	// enable antialiasing
-	glEnable(GL_ANTIALIAS);
-	//this should work the same as the normal gl call
-	glViewport(0,0,255,191);
-	
-	glGenTextures(4, (int *)&textureID);//make 4 textures
-	glBindTexture(0, textureID[0]);//bind it
-	glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
-		0, TEXGEN_TEXCOORD, (u8*)threeDtex0Bitmap);
-	glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex0Pal);
-	glBindTexture(0, textureID[1]);//bind it
-	glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
-		0, TEXGEN_TEXCOORD, (u8*)threeDtex1Bitmap);
-	glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex1Pal);
-	glBindTexture(0, textureID[2]);//bind it
-	glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
-		0, TEXGEN_TEXCOORD, (u8*)threeDtex2Bitmap);
-	glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex2Pal);
-	glBindTexture(0, textureID[3]);//bind it
-	glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
-		0, TEXGEN_TEXCOORD, (u8*)threeDtex3Bitmap);
-	glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex3Pal);
-	
-	//any floating point gl call is being converted to fixed prior to being implemented
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(70, 256.0 / 192.0, 0.1, 40);
-	
-	gluLookAt(	0.0, 0.0, 1.0,		//camera possition 
-				0.0, 0.0, 0.0,		//look at
-				0.0, 1.0, 0.0);		//up
 
 	loadTitleMain(logoTiles, logoTilesLen, logoPal, logoPalLen);// << NO-SHOW TODO:
 	progressMessage(INITIAL_LOAD);	
@@ -681,6 +699,8 @@ int main(int argc, char *argv[]) {
 		if(keysDown() & (KEY_START | KEY_A)) exiting = true;//next
 	}
 	defaultTilesMain();//clears automatic
+	// initialize gl
+	setFor3D();
 	enterFrameWhile();
 	while(!exiting) {
 		if(sheduleAudio) playMod(++curentAudioMod);
