@@ -43,8 +43,8 @@ mm_sound_effect effectHandles[numberOfEffects];
 
 u8 curentAudioMod = -1;
 bool sheduleAudio = true;
-u8 volumeModPercent = 99;
-u8 volumeEffectPercent = 99;
+int32 volumeModPercent = 100;
+int32 volumeEffectPercent = 100;
 
 void playMod(u8 current) {
 	if(curentAudioMod >= 0 && !sheduleAudio) mmStop();
@@ -608,6 +608,49 @@ void indent() {
 	iprintf(indent);
 }
 
+#define NUM_OPTIONS_MENU 2
+int currentOption = 0;
+
+int32 * const addressOpt[] = {
+	&volumeModPercent,
+	&volumeEffectPercent
+};
+
+const char *nameOpt[] = {
+	"MUSIC VOLUME",
+	"FX VOLUME"
+};
+
+const int32 incrementsOpt[] = {//100% scale int32 for all passed to decimal conversion
+	5, 5
+};
+
+const FORMAT_PRINT printAsOpt[] = {
+	PERCENT, PERCENT
+};
+
+void optionsText() {
+	iprintf("[<] ");
+	iprintf(nameOpt[currentOption]);
+	iprintf(" ");
+	switch(printAsOpt[currentOption]) {
+		case(PERCENT):
+			iprintf(printValue(addressOpt[currentOption]));
+			iprintf("%%");
+			break;
+		case(ON_OFF):
+			if(*(addressOpt[currentOption]) > 50) {
+				iprintf("ON");
+			} else {
+				iprintf("OFF");
+			}
+			break;
+		default:
+			break;
+	}
+	iprintf(" [>]");
+}
+
 void menuText(const char *abxy[], const char *lrWhat, char *lr,
 		const char *start, const char *select) {
 	consoleClear();
@@ -683,7 +726,7 @@ void drawAndProcessMenu(uint keysMasked) {
 		const char *buttons[] = { "PLAY", "LOAD GAME", "EXIT", "SAVE GAME" };
 		menuText(buttons, "SLOT", printValue(&gameSaveLoc),	"PLAY", "NEXT MUSIC TRACK");
 		//cursor??
-
+		optionsText();
 		//menu keys
 		if(keysMasked & (KEY_ALL_BUTTONS)) playEffect(ACTION_FX);
 		if(keysMasked & (KEY_DPAD_X)) playEffect(OPTION_FX);
@@ -701,10 +744,24 @@ void drawAndProcessMenu(uint keysMasked) {
 		if(keysMasked & KEY_L);//save slot?
 		if(keysMasked & KEY_R);//save slot?
 
-		if(keysMasked & KEY_LEFT);//setting index
-		if(keysMasked & KEY_RIGHT);
-		if(keysMasked & KEY_UP);//setting value
-		if(keysMasked & KEY_DOWN);
+		if(keysMasked & KEY_LEFT) {
+			currentOption = (currentOption - 1);//setting index
+			if(currentOption < 0) currentOption += NUM_OPTIONS_MENU;
+		}
+		if(keysMasked & KEY_RIGHT) {
+			currentOption = (currentOption + 1);//setting index
+			currentOption %= NUM_OPTIONS_MENU;
+		}
+		if(keysMasked & KEY_UP) {
+			int32 *opt = addressOpt[currentOption];
+			*opt = (*opt - incrementsOpt[currentOption]);;//setting value
+			if(*opt < 0) *opt = 0;
+		}
+		if(keysMasked & KEY_DOWN) {
+			int32 *opt = addressOpt[currentOption];
+			*opt = (*opt + incrementsOpt[currentOption]);;//setting value
+			if(*opt > 100) *opt = 100;
+		};
 
 		if(keysMasked & KEY_SELECT) {//BO SALECTA!!
 			playMod(++curentAudioMod);

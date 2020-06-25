@@ -17,6 +17,11 @@ enum CORNER {
     BOTTOM_RIGHT_FONT = 3
 };
 
+enum FORMAT_PRINT {
+    PERCENT,
+    ON_OFF
+};
+
 #define RED(X) ((X >> 0) & 31)
 #define GREEN(X) ((X >> 5) & 31)
 #define BLUE(X) ((X >> 10)& 31)
