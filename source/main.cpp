@@ -40,6 +40,99 @@ u8 audioMods[MSL_NSONGS] = {
 
 #include "sfx.h"
 
+//===================== SOUND PROCESSING =======================
+#define numberOfEffects sizeof(audioEffects) / sizeof(u16)
+
+mm_sound_effect effectHandles[numberOfEffects];
+
+u8 curentAudioMod = -1;
+bool sheduleAudio = true;
+u8 volumeModPercent = 99;
+u8 volumeEffectPercent = 99;
+
+void playMod(u8 current) {
+	if(curentAudioMod >= 0 && !sheduleAudio) mmStop();
+	mmSetModuleVolume(volumeModPercent * 1024 / 100);
+	mmStart(current, MM_PLAY_ONCE);
+	curentAudioMod = current;
+	sheduleAudio = false;
+}
+
+mm_sfxhand playEffect(int effect, bool foreground = false) {
+	mm_sound_effect *snd = NULL;
+	for(uint i = 0; i < numberOfEffects; ++i) {
+		if(audioEffects[i] == effect) {
+			snd = &effectHandles[i];
+			break;
+		}
+	}	
+	if(snd == NULL) return 0;
+	mmSetEffectsVolume(volumeEffectPercent * 1024 / 100);
+	mm_sfxhand hand = mmEffectEx(snd);
+	if(!foreground) {
+		mmEffectRelease(hand);//for low priority
+	}
+	return hand;
+}
+
+/* mm_word fill_stream(mm_word length, mm_addr dest, mm_stream_formats format) {
+    s8* output = (s8*)dest;
+    for( ; length; length--) {
+        *output++ = rand();//L
+		*output++ = rand();//R
+    }
+    return length;
+}
+
+void openAudioStream() {
+    mm_stream stream;
+    stream.sampling_rate = 22000;        // 22khz
+    stream.buffer_length = 8096;         // should be adequate
+    stream.callback = fill_stream;       // give fill routine
+    stream.format = MM_STREAM_16BIT_STEREO;
+    stream.timer = MM_TIMER0;            // use timer0
+    stream.manual = 0;                   // auto filling
+    mmStreamOpen(&stream);
+} */
+
+mm_word myEventHandler(mm_word msg, mm_word param) {
+	//Avoid sheduling new music direct, use flag and do later after exit this
+	switch(msg) {
+		case MMCB_SONGMESSAGE:	// process song messages
+			// if song event 1 is triggered, set sprite's y velocity to make it jump
+			//if (param == 1) spriteDy = -16;
+			//EFx EFFECT MESSAGE (param = x)
+			break;	
+		case MMCB_SONGFINISHED:	// process song finish message (only triggered in songs played with MM_PLAY_ONCE)
+			sheduleAudio = true;
+			break;
+		default:
+			break;
+    }
+	return 0;
+}
+
+void loadMods() {
+	for(u8 i = 0; i < MSL_NSONGS; ++i) {
+		mmLoad(audioMods[i]);
+	}
+	// setup maxmod to use the song event handler
+	mmSetEventHandler(myEventHandler);
+}
+
+void loadEffects() {
+	for(u8 i = 0; i < numberOfEffects; ++i) {
+		mmLoadEffect(audioEffects[i]);	
+		effectHandles[i] = {
+			{ audioEffects[i] } ,	// id
+			(int)(1.0f * (1<<10)),	// rate
+			0,		// handle (for recycling)
+			255,	// volume
+			128,	// panning
+		};
+	}
+}
+
 //============= FONT CLASS ==========================
 class Cglfont {
 	public:	
@@ -194,9 +287,10 @@ char *printValue(int32 *value, bool comma = false,
 int32 frame = 0;//frame counter
 int32 stepFrames;
 bool baulkAI = false;
-bool paused = false;
+bool paused = true;
 bool inGame = false;
 bool exiting = false;
+bool newGame = true;//loop until official exit
 
 void updateFrame() {
 	frame++;
@@ -214,7 +308,17 @@ bool inFrameCount() {
 
 void enterFrameWhile() {
 	exiting = false;
+	scanKeys();//just to catch buffer state for held
 	while(!inFrameCount());
+}
+
+void waitForKey(int keys) {
+	enterFrameWhile();
+	while(!exiting) {
+		if(keysDown() & keys) exiting = true;//next
+		scanKeys();
+		swiWaitForVBlank();//low power
+	}
 }
 
 int textureID[4];
@@ -502,9 +606,54 @@ uint drawSubMeta() {
 }
 
 //===================== GAME LOOP PROCESS FUNCTIONS ==================
-void processInputs(uint keysMasked) {
+void loadGame(bool defaultGame = false) {
 
-	if(keysMasked & KEY_START) exiting = true;
+	//then after delay
+	enterFrameWhile();
+}
+
+void saveGame(bool defaultGame = false) {
+	
+	//then after delay
+	enterFrameWhile();
+}
+
+void initGame() {
+
+	//get default
+	loadGame(true);
+}
+
+void processInputs(uint keysMasked) {
+	if(keysMasked & KEY_START) paused = true;//enter menu
+}
+
+void drawAndProcessMenu(uint keysMasked) {
+	if(subViewRXInput == NULL) {//intercept menu view for show special instead?
+		//menu display
+
+		//menu keys
+		if(keysMasked & KEY_A_OR_START) paused = false;//A
+		if(keysMasked & KEY_B) loadGame();//B
+		if(keysMasked & KEY_X) {
+			newGame = false;//X
+			exiting = true;//just an exit back to ?
+			saveGame(true);
+		}
+		if(keysMasked & KEY_Y) saveGame();//Y
+		//TODO:
+		if(keysMasked & KEY_L);//save slot?
+		if(keysMasked & KEY_R);//save slot?
+
+		if(keysMasked & KEY_LEFT);//setting index
+		if(keysMasked & KEY_RIGHT);
+		if(keysMasked & KEY_UP);//setting value
+		if(keysMasked & KEY_DOWN);
+
+		if(keysMasked & KEY_SELECT) {//BO SALECTA!!
+			playMod(++curentAudioMod);
+		}
+	}
 }
 
 void processMotions() {
@@ -517,99 +666,6 @@ void processCollisions() {
 
 void processStateMachine() {
 	
-}
-
-//===================== SOUND PROCESSING =======================
-#define numberOfEffects sizeof(audioEffects) / sizeof(u16)
-
-mm_sound_effect effectHandles[numberOfEffects];
-
-u8 curentAudioMod = -1;
-bool sheduleAudio = true;
-u8 volumeModPercent = 100;
-u8 volumeEffectPercent = 100;
-
-void playMod(u8 current) {
-	if(curentAudioMod >= 0 && !sheduleAudio) mmStop();
-	mmSetModuleVolume(volumeModPercent * 1024 / 100);
-	mmStart(current, MM_PLAY_ONCE);
-	curentAudioMod = current;
-	sheduleAudio = false;
-}
-
-mm_sfxhand playEffect(int effect, bool foreground = false) {
-	mm_sound_effect *snd = NULL;
-	for(uint i = 0; i < numberOfEffects; ++i) {
-		if(audioEffects[i] == effect) {
-			snd = &effectHandles[i];
-			break;
-		}
-	}	
-	if(snd == NULL) return 0;
-	mmSetEffectsVolume(volumeEffectPercent * 1024 / 100);
-	mm_sfxhand hand = mmEffectEx(snd);
-	if(!foreground) {
-		mmEffectRelease(hand);//for low priority
-	}
-	return hand;
-}
-
-/* mm_word fill_stream(mm_word length, mm_addr dest, mm_stream_formats format) {
-    s8* output = (s8*)dest;
-    for( ; length; length--) {
-        *output++ = rand();//L
-		*output++ = rand();//R
-    }
-    return length;
-}
-
-void openAudioStream() {
-    mm_stream stream;
-    stream.sampling_rate = 22000;        // 22khz
-    stream.buffer_length = 8096;         // should be adequate
-    stream.callback = fill_stream;       // give fill routine
-    stream.format = MM_STREAM_16BIT_STEREO;
-    stream.timer = MM_TIMER0;            // use timer0
-    stream.manual = 0;                   // auto filling
-    mmStreamOpen(&stream);
-} */
-
-mm_word myEventHandler(mm_word msg, mm_word param) {
-	//Avoid sheduling new music direct, use flag and do later after exit this
-	switch(msg) {
-		case MMCB_SONGMESSAGE:	// process song messages
-			// if song event 1 is triggered, set sprite's y velocity to make it jump
-			//if (param == 1) spriteDy = -16;
-			//EFx EFFECT MESSAGE (param = x)
-			break;	
-		case MMCB_SONGFINISHED:	// process song finish message (only triggered in songs played with MM_PLAY_ONCE)
-			sheduleAudio = true;
-			break;
-		default:
-			break;
-    }
-	return 0;
-}
-
-void loadMods() {
-	for(u8 i = 0; i < MSL_NSONGS; ++i) {
-		mmLoad(audioMods[i]);
-	}
-	// setup maxmod to use the song event handler
-	mmSetEventHandler(myEventHandler);
-}
-
-void loadEffects() {
-	for(u8 i = 0; i < numberOfEffects; ++i) {
-		mmLoadEffect(audioEffects[i]);	
-		effectHandles[i] = {
-			{ audioEffects[i] } ,	// id
-			(int)(1.0f * (1<<10)),	// rate
-			0,		// handle (for recycling)
-			255,	// volume
-			128,	// panning
-		};
-	}
 }
 
 //=================== SELF TEST LOADING =================================
@@ -711,36 +767,42 @@ int main(int argc, char *argv[]) {
 
 	loadTitleMain(logoTiles, logoTilesLen, logoPal, logoPalLen);// << NO-SHOW TODO:
 	progressMessage(INITIAL_LOAD);	
-	scanKeys();//initial held propergation
 	playEffect(SFX_EXPLODE);
 	//openAudioStream();
 	
-	while(!exiting) {
-		scanKeys();
-		if(keysDown() & (KEY_START | KEY_A)) exiting = true;//next
-	}
+	waitForKey(KEY_A_OR_START);
 	defaultTilesMain();//clears automatic
 	// initialize gl
 	setFor3D();
-	enterFrameWhile();
-	while(!exiting) {
-		if(sheduleAudio) playMod(rand() % MSL_NSONGS);
-		while(inFrameCount()) {
-			//perform AI?? section
-			//check baulkAI in intensive search
-			swiWaitForVBlank();//or low power
-		}	
-		//3D
-		draw3D();
-		//2D
-		draw2D();
-		glFlush(0);
-		processInputs(drawSubMeta());//keysIntercepted?
-		drawMain();
-		processMotions();
-		processCollisions();
-		processStateMachine();
-	}
+	do {
+		initGame();
+		enterFrameWhile();
+		while(!exiting) {
+			if(sheduleAudio) playMod(rand() % MSL_NSONGS);
+			while(inFrameCount()) {
+				if(paused) {
+					swiWaitForVBlank();//low power
+				} else {
+					//perform AI?? section
+					//check baulkAI in intensive search
+				}
+			}	
+			//3D
+			draw3D();
+			//2D
+			draw2D();
+			glFlush(0);
+			drawMain();
+			if(!paused) {
+				processInputs(drawSubMeta());//keysIntercepted?
+				processMotions();
+				processCollisions();
+				processStateMachine();
+			} else {
+				drawAndProcessMenu(drawSubMeta());
+			}
+		}
+	} while(newGame);
 	cleanUp();
 	return 0;
 }

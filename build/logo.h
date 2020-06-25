@@ -4,12 +4,12 @@
 //======================================================================
 //
 //	logo, 256x192@8, 
-//	Transparent color : FF,00,FF
+//	Transparent color : FF,00,FE
 //	+ palette 256 entries, not compressed
 //	+ 768 tiles not compressed
 //	Total size: 512 + 49152 = 49664
 //
-//	Time-stamp: 2020-06-25, 02:30:09
+//	Time-stamp: 2020-06-25, 19:25:44
 //	Exported by Cearn's GBA Image Transmogrifier, v0.8.15
 //	( http://www.coranac.com/projects/#grit )
 //
