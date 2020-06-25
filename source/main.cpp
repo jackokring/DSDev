@@ -287,6 +287,7 @@ void extendedPalettes(const unsigned short *pal, int len) {
 	//16 palette slots for BG1 and BG2
 	//as console and keyboard are 4bpp backgrounds
 	//they are not affected with extended palettes
+	//USE LAST 2 PALETTE LINES AS LIGHT ADJUSTMENT
 	for(int i = 1; i < 3; ++i) {
 		for(int p = 0; p < 16; ++p) {
 			int col = palette[15 + i * 16 + p];//multiplyer of light
@@ -480,12 +481,12 @@ uint drawSubMeta() {
 		for(int j = frame & 15; j < 2048; j+= 16) {
 			//process attribute
 			int a = *at;
-			if(((frame + (frame << 2)) & 0xF0) >= a) {//test percent slow (BITS 4-7)
+			if(((frame ^ rand()) & 0xF0) <= a) {//test percent fast (BITS 4-7)
 				int t = *map;
 				int mask = ((1 << (a & 7)) - 1);
 				int low = t & mask;
-				low = (low + 1 - ((a & 8) >> 2)) & mask;//direction 0UP/1DWN (BIT 3)
-				*map = ((*map) & ~mask) | low;//auto rotate nth low bits (BIT 0-2)
+				low = ((low + 1) & mask) + ((a & 8) << 8);//extended colour? (BIT 3)
+				*map = ((*map) & ~mask) + low;//auto rotate nth low bits (BIT 0-2)
 			}
 			map++;
 			at++;
