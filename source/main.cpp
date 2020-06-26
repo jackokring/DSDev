@@ -116,6 +116,12 @@ void loadMods() {
 	mmSetEventHandler(myEventHandler);
 }
 
+void unloadMods() {
+	for(u8 i = 0; i < MSL_NSONGS; ++i) {
+		mmUnload(audioMods[i]);
+	}
+}
+
 void loadEffects() {
 	for(u8 i = 0; i < numberOfEffects; ++i) {
 		mmLoadEffect(audioEffects[i]);	
@@ -126,6 +132,12 @@ void loadEffects() {
 			255,	// volume
 			128,	// panning
 		};
+	}
+}
+
+void unloadEffects() {
+	for(u8 i = 0; i < numberOfEffects; ++i) {
+		mmUnloadEffect(audioEffects[i]);	
 	}
 }
 
@@ -805,6 +817,8 @@ void progressMessage(PROGRESS x) {
 void cleanUp() {
 	mmStop();
 	while(mmActive());
+	unloadMods();
+	unloadEffects();
 	irqClear(IRQ_VBLANK);
 	setFor2D();
 	glResetTextures();
