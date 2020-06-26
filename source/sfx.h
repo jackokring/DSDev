@@ -1,5 +1,29 @@
 #include <nds.h>
 #include "mmsolution.h"
+
+//cummulative totals for ? but may change ...
+//#define SFX_DRONE_C4	0
+#define CMOD_WF_COURIER	1
+//#define SFX_ZAP	32
+//#define SFX_CHIPPULSE_C4	33
+//#define SFX_GRISTLE_C4	34
+#define CMOD_MATHHYSTERIA	35
+#define CMOD_TIMETRAP	(CMOD_MATHHYSTERIA + 17)
+#define CMOD_QUASAR	    (CMOD_TIMETRAP + 17)
+#define CMOD_ALIENTEMPLE	(CMOD_QUASAR + 31)
+#define CMOD_LILHOUSE	(CMOD_ALIENTEMPLE + 20)
+//#define SFX_POWERX_C2	190
+#define CMOD_AGRESSOR8	191
+//#define SFX_CRISPERROR_C4	222
+//#define SFX_ALERTZONE_C3	223
+#define CMOD_FLOOR_23	224
+//#define SFX_ELECTROGLICK_C2	255
+//#define SFX_EXPLODE	256
+#define CMOD_TRICKTOP	257
+//#define SFX_ROBOZ_C4	288
+
+//#define SFX_new CMOD_x + n
+
 u16 audioEffects[] = {
     //primary feedback sound set
     SFX_ZAP,//primary action feedback

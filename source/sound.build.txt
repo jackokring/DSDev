@@ -1,0 +1,371 @@
+Loading WAV file...
+Sample Rate...26460
+Bit Depth.....16-bit
+Loading Sample Data...
+Loading MOD, "waveform courier"
+4 channels (M.K.)
+--------------------------------------------
+Loading Samples...
+--------------------------------------------
+ INDEX LENGTH LOOP  VOLUME  MID-C   NAME                   
+ 0     3460   No    100%    8363hz  (c) by alex23          
+ 1     14006  Yes   100%    8363hz  made for t/raver!      
+ 2     8548   Yes   100%    8363hz  playtime 00:00:05:32   
+ 3     63462  Yes   100%    8363hz                         
+ 4     37572  Yes   100%    8393hz                         
+ 12    9568   No    100%    8363hz                         
+ 13    3982   No    100%    8363hz                         
+ 14    684    No    100%    8363hz                         
+ 15    4696   No    100%    8363hz                         
+ 16    37028  No    100%    8423hz                         
+--------------------------------------------
+Sequence has 59 entries.
+Module has 35 patterns.
+--------------------------------------------
+Loading Patterns...
+--------------------------------------------
+ *  1 *  2 *  3 *  4 *  5 *  6 *  7 *  8 *  9 * 10 * 11 * 12 * 13 * 14 * 15
+ * 16 * 17 * 18 * 19 * 20 * 21 * 22 * 23 * 24 * 25 * 26 * 27 * 28 * 29 * 30
+ * 31 * 32 * 33 * 34 * 35
+--------------------------------------------
+Loading Sample Data...
+--------------------------------------------
+Loading WAV file...
+Sample Rate...22050
+Bit Depth.....8-bit
+Loading Sample Data...
+Loading WAV file...
+Sample Rate...26460
+Bit Depth.....16-bit
+Loading Sample Data...
+Loading WAV file...
+Sample Rate...26460
+Bit Depth.....16-bit
+Loading Sample Data...
+Loading MOD, "Math Hysteria"
+4 channels (M.K.)
+--------------------------------------------
+Loading Samples...
+--------------------------------------------
+ INDEX LENGTH LOOP  VOLUME  MID-C   NAME                   
+ 0     32064  Yes   100%    8363hz  by Neurodancer / 1oo%  
+ 1     64264  Yes   100%    8363hz                         
+ 2     15692  No    100%    8363hz                         
+ 3     13138  No     93%    8363hz                         
+ 4     25134  No    100%    8363hz                         
+ 5     20252  No     84%    8363hz                         
+ 6     35094  Yes    93%    8363hz                         
+ 7     41546  No     90%    8363hz                         
+ 8     42742  Yes    87%    8363hz                         
+ 11    10358  No     87%    8363hz                         
+ 12    1334   No     87%    8363hz                         
+ 13    15420  No     65%    8363hz                         
+ 14    10980  No    100%    8363hz                         
+ 15    36432  No    100%    8363hz                         
+ 16    12254  No    100%    8363hz                         
+--------------------------------------------
+Sequence has 77 entries.
+Module has 48 patterns.
+--------------------------------------------
+Loading Patterns...
+--------------------------------------------
+ *  1 *  2 *  3 *  4 *  5 *  6 *  7 *  8 *  9 * 10 * 11 * 12 * 13 * 14 * 15
+ * 16 * 17 * 18 * 19 * 20 * 21 * 22 * 23 * 24 * 25 * 26 * 27 * 28 * 29 * 30
+ * 31 * 32 * 33 * 34 * 35 * 36 * 37 * 38 * 39 * 40 * 41 * 42 * 43 * 44 * 45
+ * 46 * 47 * 48
+--------------------------------------------
+Loading Sample Data...
+--------------------------------------------
+Loading MOD, "time trap"
+4 channels (M.K.)
+--------------------------------------------
+Loading Samples...
+--------------------------------------------
+ INDEX LENGTH LOOP  VOLUME  MID-C   NAME                   
+ 0     5882   Yes    93%    8363hz  microloglo             
+ 1     12336  No    100%    8363hz  v50.pizza              
+ 2     13496  Yes    93%    8363hz  dronewest              
+ 3     14136  No    100%    8363hz  choir.add2             
+ 4     3934   Yes   100%    8363hz  psitrumpet1            
+ 5     4056   Yes   100%    8363hz  psitrumpet2            
+ 6     3934   Yes   100%    8363hz  psitrumpet3            
+ 7     4044   Yes   100%    8363hz  psitrumpet4            
+ 8     4064   Yes   100%    8363hz  psitrumpet5            
+ 9     4034   Yes   100%    8363hz  psitrumpet6            
+ 10    16436  No    100%    8363hz  hyp.intime             
+ 11    3294   No    100%    8363hz  acidha                 
+ 12    2788   Yes   100%    8363hz  lisahatopen1           
+ 16    30604  Yes   100%    8213hz  quad.drumpatt          
+--------------------------------------------
+Sequence has 43 entries.
+Module has 30 patterns.
+--------------------------------------------
+Loading Patterns...
+--------------------------------------------
+ *  1 *  2 *  3 *  4 *  5 *  6 *  7 *  8 *  9 * 10 * 11 * 12 * 13 * 14 * 15
+ * 16 * 17 * 18 * 19 * 20 * 21 * 22 * 23 * 24 * 25 * 26 * 27 * 28 * 29 * 30
+
+--------------------------------------------
+Loading Sample Data...
+--------------------------------------------
+Loading MOD, "quasar"
+4 channels (M.K.)
+--------------------------------------------
+Loading Samples...
+--------------------------------------------
+ INDEX LENGTH LOOP  VOLUME  MID-C   NAME                   
+ 0     4664   No    100%    8363hz  KOMABASS1              
+ 1     3350   No    100%    8363hz  KOMABASS2              
+ 2     5154   No    100%    8363hz  KOMABASS3              
+ 3     3354   No    100%    8363hz  KOMABASS.HI            
+ 4     1798   No    100%    8363hz  ATLANTICSAW1           
+ 5     1922   No    100%    8363hz  ATLANTICSAW2           
+ 6     2060   No    100%    8363hz  ATLANTICSAW3           
+ 7     1830   No    100%    8363hz  ATLANTICSAW4           
+ 8     55248  Yes   100%    8363hz  SAWWIND                
+ 9     7120   No    100%    8243hz  struct2                
+ 10    7544   No    100%    8243hz  struct3                
+ 11    7338   No    100%    8243hz  struct4                
+ 12    12410  No     60%    8363hz  ZONEOPENHAT            
+ 13    5022   No    100%    8363hz  SIMPLEKICK+SNARE       
+ 14    7638   No    100%    8363hz  SIMPLEKICK2X1X+HH      
+ 15    2502   No    100%    8363hz  ACIDSNAREFILL          
+ 16    2850   No     43%    8363hz  BRUCKENHIHAT1          
+ 17    1860   No    100%    8363hz  BRIGHTFILTER1          
+ 18    2410   No    100%    8363hz  BRIGHTFILTER2          
+ 19    2204   No    100%    8363hz  BRIGHTFILTER3          
+ 20    2550   No    100%    8363hz  BRIGHTFILTER4          
+ 21    2434   No    100%    8363hz  BRIGHTFILTER5          
+ 22    2284   No    100%    8363hz  BRIGHTFILTER6          
+ 23    62462  Yes   100%    8302hz  RESOSYN                
+ 24    2346   No    100%    8272hz  back                   
+ 25    1698   No    100%    8272hz  for                    
+ 26    61810  Yes   100%    8302hz  RESOSYN                
+ 27    28696  Yes   100%    8363hz  ATMOLOVE.MAJ           
+ 28    29724  Yes   100%    8363hz  ATMOLOVE.MIN           
+ 29    33996  Yes   100%    8363hz  ATMOLOVE.SUS4          
+ 30    32100  Yes   100%    8363hz  ATMOLOVE.SUS2          
+--------------------------------------------
+Sequence has 57 entries.
+Module has 48 patterns.
+--------------------------------------------
+Loading Patterns...
+--------------------------------------------
+ *  1 *  2 *  3 *  4 *  5 *  6 *  7 *  8 *  9 * 10 * 11 * 12 * 13 * 14 * 15
+ * 16 * 17 * 18 * 19 * 20 * 21 * 22 * 23 * 24 * 25 * 26 * 27 * 28 * 29 * 30
+ * 31 * 32 * 33 * 34 * 35 * 36 * 37 * 38 * 39 * 40 * 41 * 42 * 43 * 44 * 45
+ * 46 * 47 * 48
+--------------------------------------------
+Loading Sample Data...
+--------------------------------------------
+Loading MOD, "Alien Temple"
+4 channels (M.K.)
+--------------------------------------------
+Loading Samples...
+--------------------------------------------
+ INDEX LENGTH LOOP  VOLUME  MID-C   NAME                   
+ 0     38966  No    100%    8363hz  by Neurodancer / 1oo%  
+ 1     30136  Yes   100%    8363hz                         
+ 2     37610  Yes   100%    8363hz                         
+ 3     44316  Yes    70%    8363hz                         
+ 4     9866   Yes    78%    8363hz                         
+ 5     25314  No    100%    8363hz                         
+ 6     2984   No    100%    8393hz                         
+ 7     3108   No    100%    8393hz                         
+ 8     56808  No    100%    8363hz                         
+ 9     16686  Yes    75%    8363hz                         
+ 10    6718   No    100%    8363hz                         
+ 11    518    No    100%    8363hz                         
+ 12    9570   No    100%    8363hz                         
+ 13    3984   No     68%    8363hz                         
+ 14    10980  No    100%    8363hz                         
+ 15    36466  No    100%    8363hz                         
+ 16    12146  No    100%    8363hz                         
+ 17    4096   No    100%    8363hz                         
+ 18    49422  No     87%    8363hz                         
+ 19    4914   Yes    90%    8363hz                         
+--------------------------------------------
+Sequence has 88 entries.
+Module has 54 patterns.
+--------------------------------------------
+Loading Patterns...
+--------------------------------------------
+ *  1 *  2 *  3 *  4 *  5 *  6 *  7 *  8 *  9 * 10 * 11 * 12 * 13 * 14 * 15
+ * 16 * 17 * 18 * 19 * 20 * 21 * 22 * 23 * 24 * 25 * 26 * 27 * 28 * 29 * 30
+ * 31 * 32 * 33 * 34 * 35 * 36 * 37 * 38 * 39 * 40 * 41 * 42 * 43 * 44 * 45
+ * 46 * 47 * 48 * 49 * 50 * 51 * 52 * 53 * 54
+--------------------------------------------
+Loading Sample Data...
+--------------------------------------------
+Loading MOD, "little house"
+4 channels (M.K.)
+--------------------------------------------
+Loading Samples...
+--------------------------------------------
+ INDEX LENGTH LOOP  VOLUME  MID-C   NAME                   
+ 0     19086  No    100%    8363hz  too bad just 4 vox!    
+ 1     7854   No    100%    8363hz                         
+ 2     1988   No     87%    8363hz  neurodancer / abyss!   
+ 3     7914   No    100%    8363hz                         
+ 4     1308   No    100%    8363hz                         
+ 5     13302  No    100%    8363hz                         
+ 6     54812  Yes   100%    8393hz                         
+ 7     8548   Yes   100%    8393hz                         
+ 8     5404   Yes   100%    8363hz                         
+ 9     8394   Yes   100%    8363hz                         
+ 10    2942   No    100%    8363hz                         
+ 11    7914   No    100%    8363hz                         
+ 12    17098  Yes   100%    8393hz                         
+--------------------------------------------
+Sequence has 92 entries.
+Module has 54 patterns.
+--------------------------------------------
+Loading Patterns...
+--------------------------------------------
+ *  1 *  2 *  3 *  4 *  5 *  6 *  7 *  8 *  9 * 10 * 11 * 12 * 13 * 14 * 15
+ * 16 * 17 * 18 * 19 * 20 * 21 * 22 * 23 * 24 * 25 * 26 * 27 * 28 * 29 * 30
+ * 31 * 32 * 33 * 34 * 35 * 36 * 37 * 38 * 39 * 40 * 41 * 42 * 43 * 44 * 45
+ * 46 * 47 * 48 * 49 * 50 * 51 * 52 * 53 * 54
+--------------------------------------------
+Loading Sample Data...
+--------------------------------------------
+Loading WAV file...
+Sample Rate...26460
+Bit Depth.....16-bit
+Loading Sample Data...
+Loading MOD, "agressor 8"
+4 channels (M.K.)
+--------------------------------------------
+Loading Samples...
+--------------------------------------------
+ INDEX LENGTH LOOP  VOLUME  MID-C   NAME                   
+ 0     23116  Yes   100%    8363hz  synbrass-steplo        
+ 1     13296  No    100%    8363hz  lfobeeb                
+ 2     29792  Yes   100%    8363hz  ultimochord            
+ 3     5464   Yes    75%    8363hz  tekknowave             
+ 4     2740   No    100%    8363hz  242breath1             
+ 5     3090   No    100%    8363hz  242breath2             
+ 6     16708  No    100%    8363hz  a8.ecro                
+ 7     9854   No    100%    8363hz                         
+ 8     5638   No    100%    8363hz  outtarangelo           
+ 10    1802   No    100%    8363hz  crucifiedsnare         
+ 11    2330   No     62%    8363hz  zonehihat              
+ 12    11860  No     50%    8363hz  zoneopenhat            
+ 13    1902   No    100%    8363hz  crucifiedpatt2         
+ 14    1902   No    100%    8363hz  crucifiedpatt1         
+ 15    2212   No    100%    8363hz  crucifiedpatt1         
+ 16    6786   No    100%    8363hz  jarre                  
+ 17    7284   No    100%    8363hz                         
+ 18    7382   No    100%    8363hz                         
+ 19    7178   No    100%    8363hz                         
+--------------------------------------------
+Sequence has 80 entries.
+Module has 37 patterns.
+--------------------------------------------
+Loading Patterns...
+--------------------------------------------
+ *  1 *  2 *  3 *  4 *  5 *  6 *  7 *  8 *  9 * 10 * 11 * 12 * 13 * 14 * 15
+ * 16 * 17 * 18 * 19 * 20 * 21 * 22 * 23 * 24 * 25 * 26 * 27 * 28 * 29 * 30
+ * 31 * 32 * 33 * 34 * 35 * 36 * 37
+--------------------------------------------
+Loading Sample Data...
+--------------------------------------------
+Loading WAV file...
+Sample Rate...26460
+Bit Depth.....16-bit
+Loading Sample Data...
+Loading WAV file...
+Sample Rate...26460
+Bit Depth.....16-bit
+Loading Sample Data...
+Loading MOD, "floor 23"
+4 channels (M.K.)
+--------------------------------------------
+Loading Samples...
+--------------------------------------------
+ INDEX LENGTH LOOP  VOLUME  MID-C   NAME                   
+ 0     1342   Yes   100%    8363hz  n e u r o d a n c e r  
+ 1     10458  Yes   100%    8363hz  a b y s s  ^  1 o o %  
+ 2     4868   Yes   100%    8363hz                         
+ 3     3522   No    100%    8393hz  fuck all you whimps!!  
+ 4     3564   Yes   100%    8393hz  having a sampler and   
+ 5     4868   Yes   100%    8363hz  the latest bravo hits  
+ 6     13600  No    100%    8332hz  is not enuff to rule!  
+ 7     10458  Yes    37%    8363hz                         
+ 10    18004  No    100%    8363hz  techno rulez and you:  
+ 11    9568   No     75%    8363hz    - s - u - c - k -    
+ 12    1766   No     75%    8363hz                         
+ 13    5416   No    100%    8363hz  greets to all friends  
+ 14    4984   No    100%    8363hz  for their *positive*   
+ 15    5520   No    100%    8363hz  vibes, for pushing me  
+ 16    45026  No    100%    8454hz  forward, 4 making me   
+ 18    44684  No    100%    8454hz  dreamer/anti-g/toxic/  
+--------------------------------------------
+Sequence has 99 entries.
+Module has 58 patterns.
+--------------------------------------------
+Loading Patterns...
+--------------------------------------------
+ *  1 *  2 *  3 *  4 *  5 *  6 *  7 *  8 *  9 * 10 * 11 * 12 * 13 * 14 * 15
+ * 16 * 17 * 18 * 19 * 20 * 21 * 22 * 23 * 24 * 25 * 26 * 27 * 28 * 29 * 30
+ * 31 * 32 * 33 * 34 * 35 * 36 * 37 * 38 * 39 * 40 * 41 * 42 * 43 * 44 * 45
+ * 46 * 47 * 48 * 49 * 50 * 51 * 52 * 53 * 54 * 55 * 56 * 57 * 58
+--------------------------------------------
+Loading Sample Data...
+--------------------------------------------
+Loading WAV file...
+Sample Rate...26460
+Bit Depth.....16-bit
+Loading Sample Data...
+Loading WAV file...
+Sample Rate...6615
+Bit Depth.....16-bit
+Loading Sample Data...
+Loading MOD, "the trick top hat"
+4 channels (M.K.)
+--------------------------------------------
+Loading Samples...
+--------------------------------------------
+ INDEX LENGTH LOOP  VOLUME  MID-C   NAME                   
+ 0     2426   No    100%    8363hz  <    conjured by    >  
+ 1     3120   No    100%    8363hz  < neurodancer/abyss >  
+ 2     3074   No    100%    8363hz                         
+ 3     36670  Yes   100%    8363hz  fuck those lame msgs   
+ 4     11360  No    100%    8363hz  in lame 4 chn. tunez.  
+ 5     11456  Yes   100%    8363hz                         
+ 6     11430  Yes   100%    8363hz  buyin a gus equipped   
+ 7     11000  Yes   100%    8363hz  pc soon and kick some  
+ 8     11498  Yes   100%    8363hz  16bit 44.1khz 32chn.   
+ 9     11084  Yes   100%    8363hz  ass soooooooon!!!      
+ 10    11208  Yes   100%    8363hz  sorry to say so, but   
+ 11    11622  Yes   100%    8363hz  although amiga is a    
+ 12    4856   No     87%    8363hz  great computer i'm     
+ 13    1140   No    100%    8363hz  pissed off with its    
+ 14    3168   No    100%    8363hz  sound abilities. who   
+ 15    9358   No    100%    8363hz  cares for aa bullshit  
+ 16    3168   No    100%    8363hz  if we have stupid 4    
+ 17    2084   No    100%    8363hz  vox 8bit sound that    
+ 18    3168   No    100%    8363hz  doesn't get us any     
+ 19    1228   Yes   100%    8363hz  further... suxx. its   
+ 20    2646   Yes   100%    8454hz  clear my tunez from    
+ 21    2394   Yes   100%    8454hz  da pc won't fit into   
+ 22    1862   Yes   100%    8454hz  any prods but hey...   
+ 23    2064   Yes   100%    8454hz  i love it to make diz  
+ 24    2542   Yes   100%    8454hz  music, and i don't     
+--------------------------------------------
+Sequence has 39 entries.
+Module has 33 patterns.
+--------------------------------------------
+Loading Patterns...
+--------------------------------------------
+ *  1 *  2 *  3 *  4 *  5 *  6 *  7 *  8 *  9 * 10 * 11 * 12 * 13 * 14 * 15
+ * 16 * 17 * 18 * 19 * 20 * 21 * 22 * 23 * 24 * 25 * 26 * 27 * 28 * 29 * 30
+ * 31 * 32 * 33
+--------------------------------------------
+Loading Sample Data...
+--------------------------------------------
+Loading WAV file...
+Sample Rate...26460
+Bit Depth.....16-bit
+Loading Sample Data...
+mmsolution.bin
