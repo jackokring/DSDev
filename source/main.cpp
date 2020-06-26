@@ -720,6 +720,12 @@ void processInputs(uint keysMasked) {
 	if(keysMasked & KEY_START) paused = true;//enter menu
 }
 
+void applyInfrequentlyAccessedSettings() {
+	mmSetModuleVolume(volumeModPercent * 1024 / 100);
+	mmSetJingleVolume(volumeEffectPercent * 1024 / 100);//an effect
+	//actual effects are short and setting used on playEffect()
+}
+
 void drawAndProcessMenu(uint keysMasked) {
 	if(subViewRXInput == NULL) {//intercept menu view for show special instead?
 		//menu display
@@ -756,11 +762,13 @@ void drawAndProcessMenu(uint keysMasked) {
 			int32 *opt = addressOpt[currentOption];
 			*opt = (*opt - incrementsOpt[currentOption]);;//setting value
 			if(*opt < 0) *opt = 0;
+			applyInfrequentlyAccessedSettings();
 		}
 		if(keysMasked & KEY_DOWN) {
 			int32 *opt = addressOpt[currentOption];
 			*opt = (*opt + incrementsOpt[currentOption]);;//setting value
 			if(*opt > 100) *opt = 100;
+			applyInfrequentlyAccessedSettings();
 		};
 
 		if(keysMasked & KEY_SELECT) {//BO SALECTA!!
