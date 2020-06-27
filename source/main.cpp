@@ -438,7 +438,7 @@ void loadTitleMain(const unsigned int *tiles, int len,
 	bgSetScroll(mainBG[0], 0, 0);//origin
 	bgSetRotateScale(mainBG[0], 0, 1 << 8, 1 << 8);
 	bgUpdate();
-	setFor2D();
+	//setFor2D();
 }
 
 void defaultTilesMain() {
@@ -588,7 +588,7 @@ void draw2D() {
 
 //===================== INTERNAL AUTOMATION DRAWING HELP =====================
 uint drawSubMeta() {
-	for(int i = 0; i < 2; ++i) {
+	/* for(int i = 0; i < 2; ++i) {
 		u16 *map = bgGetMapPtr(subBG[i]);
 		u8 *at = (u8 *)(map + 2048);//attribute pointer
 		for(int j = frame & 15; j < 2048; j+= 16) {
@@ -604,14 +604,15 @@ uint drawSubMeta() {
 			map++;
 			at++;
 		}
-	}
+	} */
 	drawSub();
-	int keyCode = keyboardUpdate();//for later
+	//int keyCode = keyboardUpdate();//for later
 	//return masked keys
 	scanKeys();
-	if(subViewRXInput != NULL);//process
-	return (keysHeld() & ~keyIntercepted) &
-		~(~keysDown() & keyNoAuto);//one shots
+	//iprintf("ok ");
+	//if(subViewRXInput != NULL);//process
+	//return ~keyIntercepted & ((keysDown()) | (keysHeld() & ~keyNoAuto));
+	return keysDown();
 }
 
 void indent() {
@@ -718,13 +719,12 @@ void initGame() {
 	//get default
 	loadGame(true);
 	waitForKey(KEY_A_OR_START);
-	defaultTilesMain();//clears automatic
 }
 
 void startGame() {
 	// initialize gl?
-	setFor3D();
-
+	setFor3D();//??
+	defaultTilesMain();//clears automatic (not sure if these are then useable)
 	enterFrameWhile();
 }
 
@@ -772,13 +772,13 @@ void drawAndProcessMenu(uint keysMasked) {
 		}
 		if(keysMasked & KEY_UP) {
 			int32 *opt = addressOpt[currentOption];
-			*opt = (*opt - incrementsOpt[currentOption]);;//setting value
+			*opt = (*opt + incrementsOpt[currentOption]);;//setting value
 			if(*opt < 0) *opt = 0;
 			applyInfrequentlyAccessedSettings();
 		}
 		if(keysMasked & KEY_DOWN) {
 			int32 *opt = addressOpt[currentOption];
-			*opt = (*opt + incrementsOpt[currentOption]);;//setting value
+			*opt = (*opt - incrementsOpt[currentOption]);;//setting value
 			if(*opt > 100) *opt = 100;
 			applyInfrequentlyAccessedSettings();
 		};
@@ -914,12 +914,13 @@ int main(int argc, char *argv[]) {
 		startGame();
 		while(!exiting) {
 			if(sheduleAudio) playMod(rand() % MSL_NSONGS);
-			while(inFrameCount()) {
+			/* while(inFrameCount()) {
 				if(paused) {
 					swiWaitForVBlank();//low power
 				} else {
 					//perform AI?? section
 					//check baulkAI in intensive search
+					swiWaitForVBlank();//low power
 				}
 			}	
 			//3D
@@ -937,7 +938,10 @@ int main(int argc, char *argv[]) {
 				processStateMachine();
 			} else {
 				drawAndProcessMenu(drawSubMeta());
-			}
+			} */
+			//test hack
+			swiWaitForVBlank();
+			drawAndProcessMenu(drawSubMeta());
 		}
 	} while(newGame);
 	cleanUp();
