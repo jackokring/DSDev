@@ -749,7 +749,10 @@ void drawAndProcessMenu(uint keysMasked) {
 		if(keysMasked & (KEY_ALL_BUTTONS)) playEffect(ACTION_FX);
 		if(keysMasked & (KEY_DPAD_X)) playEffect(OPTION_FX);
 		if(keysMasked & (KEY_DPAD_Y)) playEffect(ACTION_FX);
-		if(keysMasked & KEY_A_OR_START) paused = false;//A
+		if(keysMasked & KEY_A_OR_START) {
+			paused = false;//A
+			consoleClear();//remove menu
+		}
 		if(keysMasked & KEY_B) loadGame();//B
 		if(keysMasked & KEY_X) {
 			newGame = false;//X
