@@ -588,7 +588,7 @@ void draw2D() {
 
 //===================== INTERNAL AUTOMATION DRAWING HELP =====================
 uint drawSubMeta() {
-	/* for(int i = 0; i < 2; ++i) {
+	for(int i = 0; i < 2; ++i) {
 		u16 *map = bgGetMapPtr(subBG[i]);
 		u8 *at = (u8 *)(map + 2048);//attribute pointer
 		for(int j = frame & 15; j < 2048; j+= 16) {
@@ -604,15 +604,15 @@ uint drawSubMeta() {
 			map++;
 			at++;
 		}
-	} */
+	}
 	drawSub();
 	//int keyCode = keyboardUpdate();//for later
 	//return masked keys
 	scanKeys();
 	//iprintf("ok ");
 	//if(subViewRXInput != NULL);//process
-	//return ~keyIntercepted & ((keysDown()) | (keysHeld() & ~keyNoAuto));
-	return keysDown();
+	return ~keyIntercepted & ((keysDown()) | (keysHeld() & ~keyNoAuto));
+	//return keysDown();
 }
 
 void indent() {
@@ -700,15 +700,11 @@ void menuText(const char *abxy[], const char *lrWhat, char *lr,
 void loadGame(bool defaultGame = false) {
 
 	playEffect(INFO_FX);
-	//then after delay
-	enterFrameWhile();
 }
 
 void saveGame(bool defaultGame = false) {
 	
 	playEffect(INFO_FX);
-	//then after delay
-	enterFrameWhile();
 }
 
 void gameSplash() {
