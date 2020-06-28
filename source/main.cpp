@@ -668,15 +668,17 @@ void menuText(const char *abxy[], const char *lrWhat, char *lr,
 		const char *start, const char *select) {
 	consoleClear();
 	const char *butABXY[] = {
-		"[A] ",
-		"[B] ",
-		"[X] ",
-		"[Y] "
+		ANSI_RED "A",
+		ANSI_YEL "B",
+		ANSI_BLU "X",
+		ANSI_GRN "Y"
 	};
 	indent();
 	indent();
 	for(int i = 0; i < 4; ++i) {
+		iprintf("[");
 		iprintf(butABXY[i]);
+		iprintf(ANSI_WHT "] ");
 		iprintf(abxy[i]);
 		indent();
 	}

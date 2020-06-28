@@ -30,4 +30,10 @@ enum FORMAT_PRINT {
 #define KEY_DPAD_X (KEY_LEFT | KEY_RIGHT)
 #define KEY_DPAD_Y (KEY_UP | KEY_DOWN)
 #define KEY_DPAD (KEY_DPAD_Y | KEY_DPAD_X)
+
+#define ANSI_RED "\e[1m\e[41m"
+#define ANSI_YEL "\e[1m\e[43m"
+#define ANSI_BLU "\e[1m\e[44m"
+#define ANSI_GRN "\e[1m\e[42m"
+#define ANSI_WHT "\e[1m\e[47m"
 #endif
