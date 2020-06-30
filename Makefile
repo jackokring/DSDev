@@ -111,10 +111,10 @@ export INCLUDE	:=	$(foreach dir,$(INCLUDES),-iquote $(CURDIR)/$(dir)) \
  
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 
-icons = $(wildcard *.bmp)
+icons := $(wildcard *.bmp)
 
 ifneq (,$(findstring icon.bmp,$(icons)))
-	export GAME_ICON := $(CURDIR)/icon.bmp
+	export ICON := $(CURDIR)/icon.bmp
 endif
 
 export GAME_TITLE := DSDev

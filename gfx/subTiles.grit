@@ -15,3 +15,7 @@
 
 #transparent MAGENTA-ISH
 -gT FF00FE
+
+#compress
+-Zl
+

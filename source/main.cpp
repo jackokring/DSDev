@@ -259,6 +259,7 @@ Cglfont *FontBig;//256
 #include "subTiles.h"
 #include "mainTiles.h"
 #include "logo.h"
+#include <decompress.h>
 
 //================ DECIMAL STRINGS ==========================
 void overflowDefault(int32 *value) {
@@ -428,10 +429,10 @@ void clearSub(int bg) {
 	}
 }
 
-void loadTitleMain(const unsigned int *tiles, int len,
-		const unsigned short *pal, int palLen) {
-	dmaCopy(tiles, bgGetGfxPtr(mainBG[0]), len);
-	dmaCopy(pal, BG_PALETTE, palLen);
+void loadTitleMain(const unsigned int *tiles,
+		const unsigned short *pal) {
+	decompress(tiles, bgGetGfxPtr(mainBG[0]), LZ77Vram);
+	decompress(pal, BG_PALETTE, LZ77Vram);
 	for(int x = 0; x < 32 * 24; ++x) {
 		putMain(0, x % 32, x / 32, x);
 	}
@@ -442,7 +443,7 @@ void loadTitleMain(const unsigned int *tiles, int len,
 }
 
 void defaultTilesMain() {
-	loadTitleMain(mainTilesTiles, mainTilesTilesLen, mainTilesPal, mainTilesPalLen);
+	loadTitleMain(mainTilesTiles, mainTilesPal);
 	clearMain(0);
 }
 
@@ -463,7 +464,7 @@ void extendedPalettes(const unsigned short *pal, int len) {
 				palette[k] = RGB15(r, g, b);
 			}
 			DC_FlushAll();
-			dmaCopy(palette, &VRAM_H_EXT_PALETTE[i][p], len);//4096 colours max
+			decompress(palette, &VRAM_H_EXT_PALETTE[i][p], LZ77Vram);//4096 colours max
 		}
 	}
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);//extended palette
@@ -864,7 +865,7 @@ int main(int argc, char *argv[]) {
     //40,960 byte tiles for keyboard (256 * 320 / 2) 4bpp
 	subBG[0] = bgInitSub(1, BgType_Text8bpp, BgSize_T_512x256, 26, 4);
 	subBG[1] = bgInitSub(2, BgType_Text8bpp, BgSize_T_512x256, 29, 4);
-	dmaCopy(subTilesTiles, bgGetGfxPtr(subBG[0]), subTilesTilesLen);
+	decompress(subTilesTiles, bgGetGfxPtr(subBG[0]), LZ77Vram);
 	clearSub(0);
 	clearSub(1);
 
@@ -903,7 +904,7 @@ int main(int argc, char *argv[]) {
 	bgSetPriority(subBG[0],2);
 	bgSetPriority(subBG[1],3);
 
-	loadTitleMain(logoTiles, logoTilesLen, logoPal, logoPalLen);
+	loadTitleMain(logoTiles, logoPal);
 	progressMessage(INITIAL_LOAD);	
 	playEffect(SFX_EXPLODE);
 	//openAudioStream();
