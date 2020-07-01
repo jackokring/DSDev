@@ -761,6 +761,7 @@ void gameCompleteRestart() {//call when ending happened
 	winSplash();
 	completeReset = true;
 	exiting = true;
+	paused = true;
 }
 
 void loseSplash() {
@@ -770,6 +771,7 @@ void loseSplash() {
 void gameLostResume() {//call when ending happened
 	loseSplash();
 	exiting = true;
+	paused = true;
 }
 
 void processInputs(uint keysMasked) {
