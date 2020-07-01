@@ -301,6 +301,7 @@ bool paused = true;
 bool inGame = false;
 bool exiting = false;
 bool newGame = true;//loop until official exit
+bool completeReset = false;
 
 void updateFrame() {
 	frame++;
@@ -740,7 +741,8 @@ void initGame() {
 	gameSplash();
 
 	//get default
-	loadGame(true);
+	if(!completeReset) loadGame(true);
+	completeReset = false;
 	waitForKey(KEY_A_OR_START);
 }
 
@@ -749,6 +751,16 @@ void startGame() {
 	// initialize gl?
 	setFor3D();//??
 	enterFrameWhile();
+}
+
+void winSplash() {
+
+}
+
+void gameComplete() {//call when ending happened
+	winSplash();
+	completeReset = true;
+	exiting = true;
 }
 
 void processInputs(uint keysMasked) {
@@ -774,6 +786,7 @@ void drawAndProcessMenu(uint keysMasked) {
 		if(keysMasked & (KEY_DPAD_Y)) playEffect(ACTION_FX);
 		if(keysMasked & KEY_A) {
 			newGame = true;//A
+			completeReset = true;
 			exiting = true;//just an exit back to ?
 		}
 		if(keysMasked & KEY_B) loadGame();//B
@@ -784,7 +797,6 @@ void drawAndProcessMenu(uint keysMasked) {
 			playEffect(SFX_EXPLODE);
 		}
 		if(keysMasked & KEY_Y) saveGame();//Y
-		//TODO:
 		if(keysMasked & KEY_L) {
 			gameSaveLoc -= 1;
 			if(gameSaveLoc < 0) gameSaveLoc = numSaveLocs - 2;//save slot?
