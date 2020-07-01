@@ -338,6 +338,7 @@ uint keyIntercepted = 0;
 int subBG[2];//2 sub backgrounds of 64 by 32 for clear space all around
 int mainBG[2];//2 main backgrounds of 64 by 64 for clear space and fill
 int32 gameSaveLoc = 0;
+int32 numSaveLocs = 4 + 1;//last for default
 
 //================ TILES, LAYERS AND PALETTES ==================
 bool currently2D = true;
@@ -610,7 +611,10 @@ uint drawSubMeta() {
 	//int keyCode = keyboardUpdate();//for later
 	//return masked keys
 	scanKeys();
-	//iprintf("ok ");
+	if(keysDown() & KEY_START) {
+		paused = !paused;//open pause state
+		consoleClear();
+	}
 	//if(subViewRXInput != NULL);//process
 	return ~keyIntercepted & ((keysDown()) | (keysHeld() & ~keyNoAuto));
 	//return keysDown();
@@ -677,7 +681,7 @@ void menuText(const char *abxy[], const char *lrWhat, char *lr,
 	indent();
 	indent();
 	for(int i = 0; i < 4; ++i) {
-		iprintf("[");
+		iprintf(ANSI_WHT "[");
 		iprintf(butABXY[i]);
 		iprintf(ANSI_WHT "] ");
 		iprintf(abxy[i]);
@@ -701,11 +705,13 @@ void menuText(const char *abxy[], const char *lrWhat, char *lr,
 void loadGame(bool defaultGame = false) {
 
 	playEffect(INFO_FX);
+	enterFrameWhile();
 }
 
 void saveGame(bool defaultGame = false) {
 	
 	playEffect(INFO_FX);
+	if(!defaultGame) enterFrameWhile();//not the last save before exit?
 }
 
 void gameSplash() {
@@ -740,17 +746,17 @@ void applyInfrequentlyAccessedSettings() {
 void drawAndProcessMenu(uint keysMasked) {
 	if(subViewRXInput == NULL) {//intercept menu view for show special instead?
 		//menu display
-		const char *buttons[] = { "PLAY", "LOAD GAME", "EXIT", "SAVE GAME" };
-		menuText(buttons, "SLOT", printValue(&gameSaveLoc),	"PLAY", "NEXT MUSIC TRACK");
+		const char *buttons[] = { "NEW GAME", "LOAD GAME", "EXIT", "SAVE GAME" };
+		menuText(buttons, "SLOT", printValue(&gameSaveLoc),	"CONTINUE", "NEXT MUSIC TRACK");
 		//cursor??
 		optionsText();
 		//menu keys
 		if(keysMasked & (KEY_ALL_BUTTONS)) playEffect(ACTION_FX);
 		if(keysMasked & (KEY_DPAD_X)) playEffect(OPTION_FX);
 		if(keysMasked & (KEY_DPAD_Y)) playEffect(ACTION_FX);
-		if(keysMasked & KEY_A_OR_START) {
-			paused = false;//A
-			consoleClear();//remove menu
+		if(keysMasked & KEY_A) {
+			newGame = true;//A
+			exiting = true;//just an exit back to ?
 		}
 		if(keysMasked & KEY_B) loadGame();//B
 		if(keysMasked & KEY_X) {
@@ -761,9 +767,15 @@ void drawAndProcessMenu(uint keysMasked) {
 		}
 		if(keysMasked & KEY_Y) saveGame();//Y
 		//TODO:
-		if(keysMasked & KEY_L);//save slot?
-		if(keysMasked & KEY_R);//save slot?
-
+		if(keysMasked & KEY_L) {
+			gameSaveLoc -= 1;
+			if(gameSaveLoc < 0) gameSaveLoc = numSaveLocs - 1;//save slot?
+		}
+		if(keysMasked & KEY_R) {
+			gameSaveLoc += 1;
+			//a general slot too
+			if(gameSaveLoc == numSaveLocs - 2) gameSaveLoc = 0;//save slot?
+		}
 		if(keysMasked & KEY_LEFT) {
 			currentOption = (currentOption - 1);//setting index
 			if(currentOption < 0) currentOption += NUM_OPTIONS_MENU;
@@ -784,7 +796,10 @@ void drawAndProcessMenu(uint keysMasked) {
 			if(*opt > 100) *opt = 100;
 			applyInfrequentlyAccessedSettings();
 		};
-
+		/* if(keysMasked & KEY_START) {//unpause
+			paused = false;//A
+			consoleClear();//remove menu
+		} */
 		if(keysMasked & KEY_SELECT) {//BO SALECTA!!
 			playMod(++curentAudioMod);
 		}
