@@ -9,6 +9,8 @@ extern bool paused;
 extern bool inGame;
 extern bool exiting;
 extern bool newGame;
+extern uint keyIntercepted;
+extern uint keyHoldAllow;
 
 enum CORNER {
     TOP_LEFT_FONT = 0,

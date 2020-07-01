@@ -335,8 +335,9 @@ void waitForKey(int keys) {
 int textureID[4];
 View *subViewRXInput;
 uint keyIntercepted = 0;
+uint keyHoldAllow = 0;
 int subBG[2];//2 sub backgrounds of 64 by 32 for clear space all around
-int mainBG[3];//2 main backgrounds of 64 by 64 for clear space and fill (plus 3D)
+int mainBG[2];//2 main backgrounds of 64 by 64 for clear space and fill (plus 3D NO!)
 int32 gameSaveLoc = 0;
 int32 numSaveLocs = 4 + 1;//last for default
 
@@ -630,7 +631,8 @@ uint drawSubMeta() {
 		consoleClear();
 	}
 	//if(subViewRXInput != NULL);//process
-	return ~keyIntercepted & keysDown();
+	uint activeKeys = keysDown() | (keyHoldAllow & keysHeld());
+	return ~keyIntercepted & activeKeys;
 	//return keysDown();
 }
 
@@ -750,7 +752,7 @@ void startGame() {
 }
 
 void processInputs(uint keysMasked) {
-	if(keysMasked & KEY_START) paused = true;//enter menu
+	/* if(keysMasked & KEY_START) paused = true; */
 }
 
 void applyInfrequentlyAccessedSettings() {
@@ -848,6 +850,7 @@ void progressMessage(PROGRESS x) {
 
 //=================== ANYTHING BAD FOR CHAIN LOADS ==================
 void cleanUp() {
+	consoleClear();
 	unloadMods();
 	while(mmActive()) swiWaitForVBlank();
 	mmStop();
@@ -928,7 +931,7 @@ int main(int argc, char *argv[]) {
 	loadTitleMain(logoTiles, logoPal);
 	progressMessage(INITIAL_LOAD);	
 	playEffect(SFX_EXPLODE);
-	//openAudioStream();
+	//openAudioStream();// <-- can't have .mod aswell
 	
 	waitForKey(KEY_A_OR_START);
 	//setPowerButtonCB(powerButtonPressed);//?? NO REFERENCE
