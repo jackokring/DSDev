@@ -334,7 +334,6 @@ void waitForKey(int keys) {
 
 int textureID[4];
 View *subViewRXInput;
-uint keyNoAuto = 0;//bitmask for one shot keys
 uint keyIntercepted = 0;
 int subBG[2];//2 sub backgrounds of 64 by 32 for clear space all around
 int mainBG[2];//2 main backgrounds of 64 by 64 for clear space and fill
@@ -616,7 +615,7 @@ uint drawSubMeta() {
 		consoleClear();
 	}
 	//if(subViewRXInput != NULL);//process
-	return ~keyIntercepted & ((keysDown()) | (keysHeld() & ~keyNoAuto));
+	return ~keyIntercepted & keysDown();
 	//return keysDown();
 }
 
@@ -658,9 +657,9 @@ void optionsText() {
 			break;
 		case(ON_OFF):
 			if(*(addressOpt[currentOption]) > 50) {
-				iprintf("ON");
+				iprintf(ANSI_GRN "ON" ANSI_WHT);
 			} else {
-				iprintf("OFF");
+				iprintf(ANSI_RED "OFF" ANSI_WHT);
 			}
 			break;
 		default:
@@ -715,6 +714,7 @@ void saveGame(bool defaultGame = false) {
 }
 
 void gameSplash() {
+	//setFor2D();
 	loadTitleMain(introTiles, introPal);//a screen
 }
 
@@ -787,13 +787,13 @@ void drawAndProcessMenu(uint keysMasked) {
 		if(keysMasked & KEY_UP) {
 			int32 *opt = addressOpt[currentOption];
 			*opt = (*opt + incrementsOpt[currentOption]);;//setting value
-			if(*opt < 0) *opt = 0;
+			if(*opt > 100) *opt = 100;
 			applyInfrequentlyAccessedSettings();
 		}
 		if(keysMasked & KEY_DOWN) {
 			int32 *opt = addressOpt[currentOption];
 			*opt = (*opt - incrementsOpt[currentOption]);;//setting value
-			if(*opt > 100) *opt = 100;
+			if(*opt < 0) *opt = 0;
 			applyInfrequentlyAccessedSettings();
 		};
 		/* if(keysMasked & KEY_START) {//unpause
@@ -832,9 +832,9 @@ void progressMessage(PROGRESS x) {
 
 //=================== ANYTHING BAD FOR CHAIN LOADS ==================
 void cleanUp() {
-	mmStop();
-	while(mmActive());
 	unloadMods();
+	while(mmActive()) swiWaitForVBlank();
+	mmStop();
 	unloadEffects();
 	irqClear(IRQ_VBLANK);
 	setFor2D();
