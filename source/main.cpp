@@ -757,9 +757,18 @@ void winSplash() {
 
 }
 
-void gameComplete() {//call when ending happened
+void gameCompleteRestart() {//call when ending happened
 	winSplash();
 	completeReset = true;
+	exiting = true;
+}
+
+void loseSplash() {
+
+}
+
+void gameLostResume() {//call when ending happened
+	loseSplash();
 	exiting = true;
 }
 
