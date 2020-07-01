@@ -336,7 +336,7 @@ int textureID[4];
 View *subViewRXInput;
 uint keyIntercepted = 0;
 int subBG[2];//2 sub backgrounds of 64 by 32 for clear space all around
-int mainBG[2];//2 main backgrounds of 64 by 64 for clear space and fill
+int mainBG[3];//2 main backgrounds of 64 by 64 for clear space and fill (plus 3D)
 int32 gameSaveLoc = 0;
 int32 numSaveLocs = 4 + 1;//last for default
 
@@ -346,6 +346,20 @@ bool glInitialized = false;
 
 void setFor2D() {
 	videoSetMode(MODE_5_2D);
+	// Allocate VRAM bank for all the main palettes (32 K)
+	mainBG[0] = bgInit(2, BgType_ExRotation, BgSize_ER_512x512, 24, 0);
+	mainBG[1] = bgInit(3, BgType_ExRotation, BgSize_ER_512x512, 28, 0);
+	//mainBG[2] = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 0);
+	//clearMain(1);
+	//ready for priorities
+	//bgSetPriority(mainBG[2], 3);
+	//3D ---> 0
+	bgSetPriority(mainBG[0],1);//SKY?
+	bgSetPriority(mainBG[1],2);
+	//BG1 is not in use
+	//bgHide(mainBG[2]);//hide 3D plane
+	bgShow(mainBG[0]);
+	bgShow(mainBG[1]);
 	currently2D = true;
 }
 
@@ -432,6 +446,7 @@ void clearSub(int bg) {
 
 void loadTitleMain(const unsigned int *tiles,
 		const unsigned short *pal) {
+	setFor2D();
 	decompress(tiles, bgGetGfxPtr(mainBG[0]), LZ77Vram);
 	decompress(pal, BG_PALETTE, LZ77Vram);
 	for(int x = 0; x < 32 * 24; ++x) {
@@ -716,6 +731,7 @@ void saveGame(bool defaultGame = false) {
 void gameSplash() {
 	//setFor2D();
 	loadTitleMain(introTiles, introPal);//a screen
+	consoleClear();
 }
 
 void initGame() {
@@ -727,9 +743,9 @@ void initGame() {
 }
 
 void startGame() {
+	defaultTilesMain();//clears automatic (not sure if these are then useable)
 	// initialize gl?
 	setFor3D();//??
-	defaultTilesMain();//clears automatic (not sure if these are then useable)
 	enterFrameWhile();
 }
 
@@ -769,12 +785,12 @@ void drawAndProcessMenu(uint keysMasked) {
 		//TODO:
 		if(keysMasked & KEY_L) {
 			gameSaveLoc -= 1;
-			if(gameSaveLoc < 0) gameSaveLoc = numSaveLocs - 1;//save slot?
+			if(gameSaveLoc < 0) gameSaveLoc = numSaveLocs - 2;//save slot?
 		}
 		if(keysMasked & KEY_R) {
 			gameSaveLoc += 1;
 			//a general slot too
-			if(gameSaveLoc == numSaveLocs - 2) gameSaveLoc = 0;//save slot?
+			if(gameSaveLoc > numSaveLocs - 2) gameSaveLoc = 0;//save slot?
 		}
 		if(keysMasked & KEY_LEFT) {
 			currentOption = (currentOption - 1);//setting index
@@ -891,7 +907,6 @@ int main(int argc, char *argv[]) {
 	loadEffects();
 
 	//upper screen
-	setFor2D();
 	bgExtPaletteEnableSub();
 	extendedPalettes(subTilesPal, subTilesPalLen);
 	// Set Bank A+B+D to texture (256 K + 128K)
@@ -901,16 +916,6 @@ int main(int argc, char *argv[]) {
 	vramSetBankE(VRAM_E_MAIN_BG);//for intro screens and ...
 	vramSetBankF(VRAM_F_TEX_PALETTE_SLOT0);
 	vramSetBankG(VRAM_G_TEX_PALETTE_SLOT1);
-	// Allocate VRAM bank for all the main palettes (32 K)
-	mainBG[0] = bgInit(2, BgType_ExRotation, BgSize_ER_512x512, 24, 0);
-	mainBG[1] = bgInit(3, BgType_ExRotation, BgSize_ER_512x512, 28, 0);	
-	//clearMain(1);
-
-	//ready for priorities
-	//3D ---> 0
-	bgSetPriority(mainBG[0],1);//SKY?
-	bgSetPriority(mainBG[1],2);
-	//BG1 is not in use
 
 	//Console
 	bgSetPriority(console->bgId, 0);
@@ -919,6 +924,7 @@ int main(int argc, char *argv[]) {
 	bgSetPriority(subBG[0],2);
 	bgSetPriority(subBG[1],3);
 
+	//setFor2D();
 	loadTitleMain(logoTiles, logoPal);
 	progressMessage(INITIAL_LOAD);	
 	playEffect(SFX_EXPLODE);
