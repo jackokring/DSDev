@@ -259,6 +259,7 @@ Cglfont *FontBig;//256
 #include "subTiles.h"
 #include "mainTiles.h"
 #include "logo.h"
+#include "intro.h"
 #include <decompress.h>
 
 //================ DECIMAL STRINGS ==========================
@@ -440,7 +441,6 @@ void loadTitleMain(const unsigned int *tiles,
 	bgSetScroll(mainBG[0], 0, 0);//origin
 	bgSetRotateScale(mainBG[0], 0, 1 << 8, 1 << 8);
 	bgUpdate();
-	//setFor2D();
 }
 
 void defaultTilesMain() {
@@ -715,7 +715,7 @@ void saveGame(bool defaultGame = false) {
 }
 
 void gameSplash() {
-
+	loadTitleMain(introTiles, introPal);//a screen
 }
 
 void initGame() {

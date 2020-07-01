@@ -80,6 +80,7 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
  /home/jacko/Documents/DSDev/build/subTiles.h \
  /home/jacko/Documents/DSDev/build/mainTiles.h \
  /home/jacko/Documents/DSDev/build/logo.h \
+ /home/jacko/Documents/DSDev/build/intro.h \
  /opt/devkitpro/libnds/include/nds/arm9/decompress.h
 /opt/devkitpro/libnds/include/nds.h:
 /opt/devkitpro/libnds/include/nds/libversion.h:
@@ -162,4 +163,5 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
 /home/jacko/Documents/DSDev/build/subTiles.h:
 /home/jacko/Documents/DSDev/build/mainTiles.h:
 /home/jacko/Documents/DSDev/build/logo.h:
+/home/jacko/Documents/DSDev/build/intro.h:
 /opt/devkitpro/libnds/include/nds/arm9/decompress.h:
