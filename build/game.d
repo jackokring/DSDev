@@ -61,7 +61,12 @@ game.o: /home/jacko/Documents/DSDev/source/game.cpp \
  /opt/devkitpro/libnds/include/nds/arm9/video.h \
  /opt/devkitpro/libnds/include/nds/arm9/videoGL.h \
  /opt/devkitpro/libnds/include/nds/arm9/nand.h \
- /opt/devkitpro/libnds/include/gl2d.h
+ /home/jacko/Documents/DSDev/source/gfx.h \
+ /opt/devkitpro/libnds/include/gl2d.h \
+ /home/jacko/Documents/DSDev/source/sfx.h \
+ /opt/devkitpro/libnds/include/maxmod9.h \
+ /opt/devkitpro/libnds/include/mm_types.h \
+ /home/jacko/Documents/DSDev/build/mmsolution.h
 /home/jacko/Documents/DSDev/source/game.h:
 /home/jacko/Documents/DSDev/source/ctl.h:
 /opt/devkitpro/libnds/include/nds.h:
@@ -124,4 +129,9 @@ game.o: /home/jacko/Documents/DSDev/source/game.cpp \
 /opt/devkitpro/libnds/include/nds/arm9/video.h:
 /opt/devkitpro/libnds/include/nds/arm9/videoGL.h:
 /opt/devkitpro/libnds/include/nds/arm9/nand.h:
+/home/jacko/Documents/DSDev/source/gfx.h:
 /opt/devkitpro/libnds/include/gl2d.h:
+/home/jacko/Documents/DSDev/source/sfx.h:
+/opt/devkitpro/libnds/include/maxmod9.h:
+/opt/devkitpro/libnds/include/mm_types.h:
+/home/jacko/Documents/DSDev/build/mmsolution.h:

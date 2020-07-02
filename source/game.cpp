@@ -8,11 +8,11 @@ void GameLogic::startGame() {
 
 }
 
-void loadGame(int slot) {
+void GameLogic::loadGame(int slot) {
 
 }
     
-void saveGame(int slot) {
+void GameLogic::saveGame(int slot) {
 	
 }
 

@@ -2,6 +2,7 @@
 #define SFX__H
 //============================== GRAPHICS INCLUDES ====================
 #include <nds.h>
+#include <maxmod9.h>
 #include "mmsolution.h"
 
 //cummulative totals for ? but may change ...

@@ -70,9 +70,9 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
  /home/jacko/Documents/DSDev/source/lang.h \
  /home/jacko/Documents/DSDev/source/progress.h \
  /home/jacko/Documents/DSDev/source/game.h \
+ /home/jacko/Documents/DSDev/source/sfx.h \
  /home/jacko/Documents/DSDev/build/mmsolution.h \
  /home/jacko/Documents/DSDev/build/mmsolution_bin.h \
- /home/jacko/Documents/DSDev/source/sfx.h \
  /home/jacko/Documents/DSDev/build/font_si.h \
  /home/jacko/Documents/DSDev/build/font_16x16.h \
  /home/jacko/Documents/DSDev/build/threeDtex0.h \
@@ -155,9 +155,9 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
 /home/jacko/Documents/DSDev/source/lang.h:
 /home/jacko/Documents/DSDev/source/progress.h:
 /home/jacko/Documents/DSDev/source/game.h:
+/home/jacko/Documents/DSDev/source/sfx.h:
 /home/jacko/Documents/DSDev/build/mmsolution.h:
 /home/jacko/Documents/DSDev/build/mmsolution_bin.h:
-/home/jacko/Documents/DSDev/source/sfx.h:
 /home/jacko/Documents/DSDev/build/font_si.h:
 /home/jacko/Documents/DSDev/build/font_16x16.h:
 /home/jacko/Documents/DSDev/build/threeDtex0.h:
