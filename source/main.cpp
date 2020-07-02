@@ -15,6 +15,7 @@
 #include <keyboard.h>
 #include <input.h>
 #include "ctl.h"
+#include "gfx.h"
 #include "lang.h"
 #include "progress.h"
 
@@ -35,6 +36,23 @@ u8 audioMods[MSL_NSONGS] = {
 };
 
 #include "sfx.h"
+
+u16 audioEffects[] = {
+    //primary feedback sound set
+    SFX_ZAP,//primary action feedback
+    SFX_CRISPERROR_C4,//displeasure or cancel sound
+    SFX_CHIPPULSE_C4,//working on it sound, tick, tick ..
+    SFX_DRONE_C4,//buzzing about somewhere
+
+    //must have game sounds
+	SFX_EXPLODE,//classic bang reverb
+
+	SFX_ALERTZONE_C3,//bubbly query
+    SFX_ELECTROGLICK_C2,//boing electro thing
+    SFX_GRISTLE_C4,//distorted chopper
+    SFX_POWERX_C2,//electro buzz stab
+    SFX_ROBOZ_C4//vocoder-ish
+};
 
 //===================== SOUND PROCESSING =======================
 #define numberOfEffects sizeof(audioEffects) / sizeof(u16)
@@ -142,34 +160,13 @@ void unloadEffects() {
 }
 
 //============= FONT CLASS ==========================
-class Cglfont {
-	public:	
-	~Cglfont();
-	Cglfont(const uint tileSize, 
-		const u16 *palette,
-		const u8 *texture);
-	void print(int x, int y, const char *text);
-	void printRight(int x, int y, const char *text);
-	void printCentered(int y, const char *text);
-	int printWidth(const char *text);
-	void setExtended(bool low, bool high);//for small font
-	void printOutline(int x, int y);
-	int getTextureID();
-	int getTexturePack(uint tile, CORNER coordinate, uint scale = 1);
-	
-	private:
-	glImage *font_sprite;
-	int textureID;
-	int extended = 0;
-};
-
-Cglfont::~Cglfont() { 
+Font::~Font() { 
 	if(font_sprite != NULL) {
 		delete[] font_sprite;
 	}	
 }
 
-Cglfont::Cglfont(const uint tileSize,
+Font::Font(const u16 tileSize,
 	const u16 *palette,
 	const u8 *texture) {
 		int sz = 256 / tileSize;
@@ -187,11 +184,11 @@ Cglfont::Cglfont(const uint tileSize,
 			texture);					   
 }
 
-void Cglfont::setExtended(bool low, bool high) {
+void Font::setExtended(bool low, bool high) {
 	extended = ((low ? 1 : 0) | (high ? 2 : 0)) << 8;
 }
 
-void Cglfont::print(int x, int y, const char *text) {
+void Font::print(int x, int y, const char *text) {
 	uint font_char;
 	while(*text) { 
 		font_char = (*(unsigned char*)text++) | extended;
@@ -200,21 +197,21 @@ void Cglfont::print(int x, int y, const char *text) {
 	}
 }
 
-void Cglfont::printOutline(int x, int y) {
+void Font::printOutline(int x, int y) {
 	glSprite(x, y, GL_FLIP_NONE, &font_sprite[0]);//use for null
 }
 
-void Cglfont::printRight(int x, int y, const char *text) {
+void Font::printRight(int x, int y, const char *text) {
 	x -= printWidth(text); 
 	print(x, y, text);
 }
 
-void Cglfont::printCentered(int y, const char *text) {
+void Font::printCentered(int y, const char *text) {
 	int x = (SCREEN_WIDTH - printWidth(text)) / 2; 
 	print(x, y, text);
 }
 
-int Cglfont::printWidth(const char *text) {
+int Font::printWidth(const char *text) {
 	uint font_char;
 	int total_width = 0;
 	while(*text) {
@@ -224,11 +221,11 @@ int Cglfont::printWidth(const char *text) {
 	return total_width;
 }
 
-int Cglfont::getTextureID() {
+int Font::getTextureID() {
 	return textureID;//useful for 3D text
 }
 
-int Cglfont::getTexturePack(uint tile, CORNER coordinate, uint scale) {
+int Font::getTexturePack(u16 tile, CORNER coordinate, u16 scale) {
 	uint sz = font_sprite[0].width;
 	uint x = (256 / sz) * (tile % (256 / sz));
 	uint y = (256 / sz) * (tile / (256 / sz));
@@ -246,8 +243,8 @@ int Cglfont::getTexturePack(uint tile, CORNER coordinate, uint scale) {
 	}
 }
 
-Cglfont *Font;//1024
-Cglfont *FontBig;//256
+Font *font;//1024
+Font *fontBig;//256
 
 //================== TILES AND TEXTURES =======================
 #include "font_si.h"
@@ -369,8 +366,8 @@ void setFor3D() {
 	if(!glInitialized) {
 		glInit();	
 		// Load font textures
-		Font = new Cglfont(8, (u16*)font_siPal,	(u8*)font_siBitmap);
-		FontBig = new Cglfont(16, (u16*)font_16x16Pal, (u8*)font_16x16Bitmap);
+		font = new Font(8, (u16*)font_siPal, (u8*)font_siBitmap);
+		fontBig = new Font(16, (u16*)font_16x16Pal, (u8*)font_16x16Bitmap);
 		glGenTextures(4, (int *)&textureID);//make 4 textures
 		glBindTexture(0, textureID[0]);//bind it
 		glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
@@ -894,8 +891,8 @@ void cleanUp() {
 	irqClear(IRQ_VBLANK);
 	setFor2D();
 	glResetTextures();
-	if(FontBig != NULL) delete FontBig;
-	if(Font != NULL) delete Font;
+	if(fontBig != NULL) delete fontBig;
+	if(font != NULL) delete font;
 	glInitialized = false;
 }
 

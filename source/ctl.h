@@ -1,6 +1,6 @@
 #ifndef CTL__H
 #define CTL__H
-//============================== AI HANDLER AND GENERAL INCLUDES ====================
+//============================== GENERAL INCLUDES ====================
 #include <nds.h>
 extern bool baulkAI;
 extern int32 frame;
