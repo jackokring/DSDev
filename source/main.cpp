@@ -632,7 +632,9 @@ uint drawSubMeta() {
 		consoleClear();
 	}
 	//if(subViewRXInput != NULL);//process
-	uint activeKeys = keysDown() | (keyHoldAllow & keysHeld());
+	uint activeKeys = keysDown();
+	//held keys check
+	if(!paused) activeKeys |= (keyHoldAllow & keysHeld());
 	return ~keyIntercepted & activeKeys;
 	//return keysDown();
 }
