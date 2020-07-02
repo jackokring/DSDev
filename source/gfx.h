@@ -25,4 +25,12 @@ class Font {
 	int extended = 0;
 };
 
+class BG {
+    public:
+        static void putMain(int bg, int x, int y, int tile);
+        static void putSub(int bg, int x, int y, int tile, int attribute = 0);
+        static void clearMain(int bg);
+        static void clearSub(int bg);
+};
+
 #endif

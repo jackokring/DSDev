@@ -404,7 +404,7 @@ void setFor3D() {
 	currently2D = false;
 }
 
-void putMain(int bg, int x, int y, int tile) {
+void BG::putMain(int bg, int x, int y, int tile) {
 	u16 *map = bgGetMapPtr(mainBG[bg]);
 	x += y * 64;
 	x &= 4095;
@@ -412,7 +412,7 @@ void putMain(int bg, int x, int y, int tile) {
 	*map = tile;
 }
 
-void putSub(int bg, int x, int y, int tile, int attribute = 0) {
+void BG::putSub(int bg, int x, int y, int tile, int attribute) {
 	u16 *map = bgGetMapPtr(subBG[bg]);
 	x += y * 64;
 	x &= 2047;
@@ -424,14 +424,14 @@ void putSub(int bg, int x, int y, int tile, int attribute = 0) {
 	*at = (u8)attribute;
 }
 
-void clearMain(int bg) {
+void BG::clearMain(int bg) {
 	u16 *map = bgGetMapPtr(mainBG[bg]);
 	for(int i = 0; i < 4096; ++i) {
 		*map++ = 0;
 	}
 }
 
-void clearSub(int bg) {
+void BG::clearSub(int bg) {
 	u16 *map = bgGetMapPtr(subBG[bg]) + 2048;//advanced attributes ...
 	for(int i = 0; i < 1024; ++i) {
 		*map++ = 0;
@@ -448,7 +448,7 @@ void loadTitleMain(const unsigned int *tiles,
 	decompress(tiles, bgGetGfxPtr(mainBG[0]), LZ77Vram);
 	decompress(pal, BG_PALETTE, LZ77Vram);
 	for(int x = 0; x < 32 * 24; ++x) {
-		putMain(0, x % 32, x / 32, x);
+		BG::putMain(0, x % 32, x / 32, x);
 	}
 	bgSetScroll(mainBG[0], 0, 0);//origin
 	bgSetRotateScale(mainBG[0], 0, 1 << 8, 1 << 8);
@@ -457,7 +457,7 @@ void loadTitleMain(const unsigned int *tiles,
 
 void defaultTilesMain() {
 	loadTitleMain(mainTilesTiles, mainTilesPal);
-	clearMain(0);
+	BG::clearMain(0);
 }
 
 void extendedPalettes(const unsigned short *pal, int len) {
@@ -933,8 +933,8 @@ int main(int argc, char *argv[]) {
 	subBG[0] = bgInitSub(1, BgType_Text8bpp, BgSize_T_512x256, 26, 4);
 	subBG[1] = bgInitSub(2, BgType_Text8bpp, BgSize_T_512x256, 29, 4);
 	decompress(subTilesTiles, bgGetGfxPtr(subBG[0]), LZ77Vram);
-	clearSub(0);
-	clearSub(1);
+	BG::clearSub(0);
+	BG::clearSub(1);
 
 	//sound
 	mmInitDefaultMem((mm_addr)mmsolution_bin);
