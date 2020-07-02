@@ -9,8 +9,8 @@ enum PROGRESS {
 };
 
 #define CREDITS "FONTS/SRC: Adigun A. Polack\nSRC: Richard Eric M. Lope BSN RNMUSIC: Neurodancer, Aminet\nSOUND: Caustic\nGFX: Gimp\nDEV: devkitPro"
-#define GOALS ""
-#define YOU_WIN ""
-#define YOU_LOSE ""
+#define GOALS "Win or Lose!"
+#define YOU_WIN "Win!"
+#define YOU_LOSE "Lose!"
 
 #endif
