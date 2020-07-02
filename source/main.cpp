@@ -734,7 +734,7 @@ void saveGame(bool defaultGame = false) {
 void gameSplash() {
 	//setFor2D();
 	loadTitleMain(introTiles, introPal);//a screen
-	consoleClear();
+	progressMessage(GAME_INTRO_SCREEN);
 }
 
 void initGame() {
@@ -754,7 +754,8 @@ void startGame() {
 }
 
 void winSplash() {
-
+	loadTitleMain(introTiles, introPal);//a screen
+	progressMessage(GAME_WIN_SCREEN);
 }
 
 void gameCompleteRestart() {//call when ending happened
@@ -765,7 +766,8 @@ void gameCompleteRestart() {//call when ending happened
 }
 
 void loseSplash() {
-
+	loadTitleMain(introTiles, introPal);//a screen
+	progressMessage(GAME_LOSE_SCREEN);
 }
 
 void gameLostResume() {//call when ending happened
@@ -861,11 +863,20 @@ void processStateMachine() {
 
 //=================== SELF TEST LOADING =================================
 void progressMessage(PROGRESS x) {
+	consoleClear();
 	switch(x) {
 		case INITIAL_LOAD:
 			iprintf(CREDITS);
 			break;
-
+		case GAME_INTRO_SCREEN:
+			iprintf(GOALS);
+			break;
+		case GAME_WIN_SCREEN:
+			iprintf(YOU_WIN);
+			break;
+		case GAME_LOSE_SCREEN:
+			iprintf(YOU_LOSE);
+			break;
 		default:
 			break;
 	}
