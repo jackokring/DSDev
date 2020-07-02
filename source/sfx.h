@@ -46,3 +46,9 @@ u16 audioEffects[] = {
 #define CANCEL_FX SFX_CRISPERROR_C4
 #define INFO_FX SFX_CHIPPULSE_C4
 #define OPTION_FX SFX_DRONE_C4
+
+class Audio {
+    public:
+        static void playMod(u8 current);
+        static mm_sfxhand playEffect(int effect, bool foreground = false);
+};

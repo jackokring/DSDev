@@ -1,16 +1,13 @@
-#ifndef AI__H
-#define AI__H
+#ifndef CTL__H
+#define CTL__H
 //============================== AI HANDLER AND GENERAL INCLUDES ====================
 #include <nds.h>
 extern bool baulkAI;
 extern int32 frame;
 extern int32 stepFrames;
 extern bool paused;
-extern bool inGame;
-extern bool exiting;
-extern bool newGame;
-extern uint keyIntercepted;
-extern uint keyHoldAllow;
+extern uint16 keyIntercepted;
+extern uint16 keyHoldAllow;
 
 enum CORNER {
     TOP_LEFT_FONT = 0,
@@ -26,7 +23,7 @@ enum FORMAT_PRINT {
 
 #define RED(X) ((X >> 0) & 31)
 #define GREEN(X) ((X >> 5) & 31)
-#define BLUE(X) ((X >> 10)& 31)
+#define BLUE(X) ((X >> 10) & 31)
 #define KEY_A_OR_START (KEY_A | KEY_START)
 #define KEY_ALL_BUTTONS (KEY_A | KEY_B | KEY_X | KEY_Y | KEY_L | KEY_R | KEY_START | KEY_SELECT)
 #define KEY_DPAD_X (KEY_LEFT | KEY_RIGHT)

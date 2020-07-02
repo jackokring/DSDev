@@ -14,7 +14,7 @@
 #include <console.h>
 #include <keyboard.h>
 #include <input.h>
-#include "ai.h"
+#include "ctl.h"
 #include "lang.h"
 #include "progress.h"
 
@@ -46,7 +46,7 @@ bool sheduleAudio = true;
 int32 volumeModPercent = 100;
 int32 volumeEffectPercent = 100;
 
-void playMod(u8 current) {
+void Audio::playMod(u8 current) {
 	if(curentAudioMod >= 0 && !sheduleAudio) mmStop();
 	mmSetModuleVolume(volumeModPercent * 1024 / 100);
 	mmStart(current, MM_PLAY_ONCE);
@@ -54,7 +54,7 @@ void playMod(u8 current) {
 	sheduleAudio = false;
 }
 
-mm_sfxhand playEffect(int effect, bool foreground = false) {
+mm_sfxhand Audio::playEffect(int effect, bool foreground) {
 	mm_sound_effect *snd = NULL;
 	for(uint i = 0; i < numberOfEffects; ++i) {
 		if(audioEffects[i] == effect) {
@@ -298,7 +298,6 @@ int32 frame = 0;//frame counter
 int32 stepFrames;
 bool baulkAI = false;
 bool paused = true;
-bool inGame = false;
 bool exiting = false;
 bool newGame = true;//loop until official exit
 bool completeReset = false;
@@ -330,13 +329,13 @@ void waitForKey(int keys) {
 		scanKeys();
 		swiWaitForVBlank();//low power
 	}
-	playEffect(ACTION_FX);
+	Audio::playEffect(ACTION_FX);
 }
 
 int textureID[4];
 View *subViewRXInput;
-uint keyIntercepted = 0;
-uint keyHoldAllow = 0;
+uint16 keyIntercepted = 0;
+uint16 keyHoldAllow = 0;
 int subBG[2];//2 sub backgrounds of 64 by 32 for clear space all around
 int mainBG[2];//2 main backgrounds of 64 by 64 for clear space and fill (plus 3D NO!)
 int32 gameSaveLoc = 0;
@@ -722,13 +721,13 @@ void menuText(const char *abxy[], const char *lrWhat, char *lr,
 //===================== GAME LOOP PROCESS FUNCTIONS ==================
 void loadGame(bool defaultGame = false) {
 
-	playEffect(INFO_FX);
+	Audio::playEffect(INFO_FX);
 	enterFrameWhile();
 }
 
 void saveGame(bool defaultGame = false) {
 	
-	playEffect(INFO_FX);
+	Audio::playEffect(INFO_FX);
 	if(!defaultGame) enterFrameWhile();//not the last save before exit?
 }
 
@@ -795,9 +794,9 @@ void drawAndProcessMenu(uint keysMasked) {
 		//cursor??
 		optionsText();
 		//menu keys
-		if(keysMasked & (KEY_ALL_BUTTONS)) playEffect(ACTION_FX);
-		if(keysMasked & (KEY_DPAD_X)) playEffect(OPTION_FX);
-		if(keysMasked & (KEY_DPAD_Y)) playEffect(ACTION_FX);
+		if(keysMasked & (KEY_ALL_BUTTONS)) Audio::playEffect(ACTION_FX);
+		if(keysMasked & (KEY_DPAD_X)) Audio::playEffect(OPTION_FX);
+		if(keysMasked & (KEY_DPAD_Y)) Audio::playEffect(ACTION_FX);
 		if(keysMasked & KEY_A) {
 			newGame = true;//A
 			completeReset = true;
@@ -808,7 +807,7 @@ void drawAndProcessMenu(uint keysMasked) {
 			newGame = false;//X
 			exiting = true;//just an exit back to ?
 			saveGame(true);
-			playEffect(SFX_EXPLODE);
+			Audio::playEffect(SFX_EXPLODE);
 		}
 		if(keysMasked & KEY_Y) saveGame();//Y
 		if(keysMasked & KEY_L) {
@@ -845,7 +844,7 @@ void drawAndProcessMenu(uint keysMasked) {
 			consoleClear();//remove menu
 		} */
 		if(keysMasked & KEY_SELECT) {//BO SALECTA!!
-			playMod(++curentAudioMod);
+			Audio::playMod(++curentAudioMod);
 		}
 	}
 }
@@ -965,7 +964,7 @@ int main(int argc, char *argv[]) {
 	//setFor2D();
 	loadTitleMain(logoTiles, logoPal);
 	progressMessage(INITIAL_LOAD);	
-	playEffect(SFX_EXPLODE);
+	Audio::playEffect(SFX_EXPLODE);
 	//openAudioStream();// <-- can't have .mod aswell
 	
 	waitForKey(KEY_A_OR_START);
@@ -974,7 +973,7 @@ int main(int argc, char *argv[]) {
 		initGame();
 		startGame();
 		while(!exiting) {
-			if(sheduleAudio) playMod(rand() % MSL_NSONGS);
+			if(sheduleAudio) Audio::playMod(rand() % MSL_NSONGS);
 			//3D? Draw main screen
 			if(!currently2D) {
 				draw3D();
