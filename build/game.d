@@ -1,4 +1,6 @@
-main.o: /home/jacko/Documents/DSDev/source/main.cpp \
+game.o: /home/jacko/Documents/DSDev/source/game.cpp \
+ /home/jacko/Documents/DSDev/source/game.h \
+ /home/jacko/Documents/DSDev/source/ctl.h \
  /opt/devkitpro/libnds/include/nds.h \
  /opt/devkitpro/libnds/include/nds/libversion.h \
  /opt/devkitpro/libnds/include/nds/ndstypes.h \
@@ -59,31 +61,9 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
  /opt/devkitpro/libnds/include/nds/arm9/video.h \
  /opt/devkitpro/libnds/include/nds/arm9/videoGL.h \
  /opt/devkitpro/libnds/include/nds/arm9/nand.h \
- /opt/devkitpro/libnds/include/gl2d.h \
- /opt/devkitpro/libnds/include/maxmod9.h \
- /opt/devkitpro/libnds/include/mm_types.h \
- /opt/devkitpro/libnds/include/nds/arm9/console.h \
- /opt/devkitpro/libnds/include/nds/arm9/keyboard.h \
- /opt/devkitpro/libnds/include/nds/input.h \
- /home/jacko/Documents/DSDev/source/ctl.h \
- /home/jacko/Documents/DSDev/source/gfx.h \
- /home/jacko/Documents/DSDev/source/lang.h \
- /home/jacko/Documents/DSDev/source/progress.h \
- /home/jacko/Documents/DSDev/source/game.h \
- /home/jacko/Documents/DSDev/build/mmsolution.h \
- /home/jacko/Documents/DSDev/build/mmsolution_bin.h \
- /home/jacko/Documents/DSDev/source/sfx.h \
- /home/jacko/Documents/DSDev/build/font_si.h \
- /home/jacko/Documents/DSDev/build/font_16x16.h \
- /home/jacko/Documents/DSDev/build/threeDtex0.h \
- /home/jacko/Documents/DSDev/build/threeDtex1.h \
- /home/jacko/Documents/DSDev/build/threeDtex2.h \
- /home/jacko/Documents/DSDev/build/threeDtex3.h \
- /home/jacko/Documents/DSDev/build/subTiles.h \
- /home/jacko/Documents/DSDev/build/mainTiles.h \
- /home/jacko/Documents/DSDev/build/logo.h \
- /home/jacko/Documents/DSDev/build/intro.h \
- /opt/devkitpro/libnds/include/nds/arm9/decompress.h
+ /opt/devkitpro/libnds/include/gl2d.h
+/home/jacko/Documents/DSDev/source/game.h:
+/home/jacko/Documents/DSDev/source/ctl.h:
 /opt/devkitpro/libnds/include/nds.h:
 /opt/devkitpro/libnds/include/nds/libversion.h:
 /opt/devkitpro/libnds/include/nds/ndstypes.h:
@@ -145,27 +125,3 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
 /opt/devkitpro/libnds/include/nds/arm9/videoGL.h:
 /opt/devkitpro/libnds/include/nds/arm9/nand.h:
 /opt/devkitpro/libnds/include/gl2d.h:
-/opt/devkitpro/libnds/include/maxmod9.h:
-/opt/devkitpro/libnds/include/mm_types.h:
-/opt/devkitpro/libnds/include/nds/arm9/console.h:
-/opt/devkitpro/libnds/include/nds/arm9/keyboard.h:
-/opt/devkitpro/libnds/include/nds/input.h:
-/home/jacko/Documents/DSDev/source/ctl.h:
-/home/jacko/Documents/DSDev/source/gfx.h:
-/home/jacko/Documents/DSDev/source/lang.h:
-/home/jacko/Documents/DSDev/source/progress.h:
-/home/jacko/Documents/DSDev/source/game.h:
-/home/jacko/Documents/DSDev/build/mmsolution.h:
-/home/jacko/Documents/DSDev/build/mmsolution_bin.h:
-/home/jacko/Documents/DSDev/source/sfx.h:
-/home/jacko/Documents/DSDev/build/font_si.h:
-/home/jacko/Documents/DSDev/build/font_16x16.h:
-/home/jacko/Documents/DSDev/build/threeDtex0.h:
-/home/jacko/Documents/DSDev/build/threeDtex1.h:
-/home/jacko/Documents/DSDev/build/threeDtex2.h:
-/home/jacko/Documents/DSDev/build/threeDtex3.h:
-/home/jacko/Documents/DSDev/build/subTiles.h:
-/home/jacko/Documents/DSDev/build/mainTiles.h:
-/home/jacko/Documents/DSDev/build/logo.h:
-/home/jacko/Documents/DSDev/build/intro.h:
-/opt/devkitpro/libnds/include/nds/arm9/decompress.h:

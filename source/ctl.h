@@ -6,8 +6,8 @@ extern bool baulkAI;
 extern int32 frame;
 extern int32 stepFrames;
 extern bool paused;
-extern uint16 keyIntercepted;
-extern uint16 keyHoldAllow;
+extern u16 keyIntercepted;
+extern u16 keyHoldAllow;
 
 enum CORNER {
     TOP_LEFT_FONT = 0,

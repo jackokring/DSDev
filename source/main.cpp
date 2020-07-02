@@ -18,6 +18,28 @@
 #include "gfx.h"
 #include "lang.h"
 #include "progress.h"
+#include "game.h"
+
+//=================== SELF TEST LOADING =================================
+void progressMessage(PROGRESS x) {
+	consoleClear();
+	switch(x) {
+		case INITIAL_LOAD:
+			iprintf(CREDITS);
+			break;
+		case GAME_INTRO_SCREEN:
+			iprintf(GOALS);
+			break;
+		case GAME_WIN_SCREEN:
+			iprintf(YOU_WIN);
+			break;
+		case GAME_LOSE_SCREEN:
+			iprintf(YOU_LOSE);
+			break;
+		default:
+			break;
+	}
+}
 
 //============= SOUND BUILD =========================
 #include "mmsolution.h"		// solution definitions
@@ -331,8 +353,8 @@ void waitForKey(int keys) {
 
 int textureID[4];
 View *subViewRXInput;
-uint16 keyIntercepted = 0;
-uint16 keyHoldAllow = 0;
+u16 keyIntercepted = 0;
+u16 keyHoldAllow = 0;
 int subBG[2];//2 sub backgrounds of 64 by 32 for clear space all around
 int mainBG[2];//2 main backgrounds of 64 by 64 for clear space and fill (plus 3D NO!)
 int32 gameSaveLoc = 0;
@@ -484,125 +506,10 @@ void extendedPalettes(const unsigned short *pal, int len) {
 }
 
 //=========================== DRAWING ROUTINES ============================
-void drawMain() {
-
-}
-
-void drawSub() {
-
-}
-
-void draw2D() {
-	// set up GL2D for 2d mode
-	glBegin2D();	
-	/*		
-		// fill the whole screen with a gradient box
-		glBoxFilledGradient(0, 0, 255, 191,
-			RGB15(31, 0, 0),
-			RGB15(0, 31, 0),
-			RGB15(31, 0, 31),
-			RGB15(0, 31, 31)
-		);
-		
-		// Center print the title
-		glColor(RGB15(0,0,0));
-		FontBig->printCentered(0, "EASY GL2D");
-		glColor(RGB15((frame*6)&31,(-frame*4)&31, (frame*2)&31));
-		FontBig->printCentered(20,  "FONT EXAMPLE");
-
-		// Fixed-point sinusoidal movement
-		int x = (sinLerp(frame * 400) * 30) >> 12;
-	
-		// Make the fonts sway left and right
-		// Also change coloring of fonts
-		glColor(RGB15(31,0,0));
-		FontBig->print(25 + x, 50, "hfDEVKITPROfh");
-		glColor(RGB15(31,0,31) );
-		glColor(RGB15(x, 31 - x, x * 2));
-		FontBig->print(50 - x, 70, "dcLIBNDScd");
-
-		// change fontsets and  print some spam
-		glColor(RGB15(0,31,31));
-		Font->printCentered(100, "FONTS BY ADIGUN A. POLACK" );
-		Font->printCentered(120, "CODE BY RELMINATOR" );
-		
-		// Restore normal coloring
-		glColor(RGB15(31,31,31));
-		
-		// Change opacity relative to frame
-		int opacity = abs(sinLerp(frame * 245) * 30) >> 12;
-		
-		// translucent mode 
-		// Add 1 to opacity since at 0 we will get into wireframe mode
-		glPolyFmt(POLY_ALPHA(1 + opacity) | POLY_CULL_NONE | POLY_ID(1));
-		FontBig->print(35 + x, 140, "ANYA THERESE");
-		
-		glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(2));
-		// Print the number of frames
-		Font->print(10, 170, "FRAMES = ");
-		Font->print(10 + 72, 170, printValue(&frame));	
-		*/
-	glEnd2D();
-}
-
-void draw3D() {
-	int rotateX = 0;
-	int rotateY = 0;
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-
-	//move it away from the camera
-	glTranslatef32(0, 0, floattof32(-1));
-			
-	glRotateXi(rotateX);
-	glRotateYi(rotateY);
-	
-	glMaterialf(GL_AMBIENT, RGB15(16,16,16));
-	glMaterialf(GL_DIFFUSE, RGB15(16,16,16));
-	glMaterialf(GL_SPECULAR, BIT(15) | RGB15(8,8,8));
-	glMaterialf(GL_EMISSION, RGB15(16,16,16));
-
-	//ds uses a table for shinyness..this generates a half-ass one
-	glMaterialShinyness();
-
-	//not a real gl function and will likely change
-	glPolyFmt(POLY_ALPHA(31) | POLY_CULL_BACK);
-
-	scanKeys();
-	
-	u16 keys = keysHeld();
-	
-	if((keys & KEY_UP)) rotateX += 3;
-	if((keys & KEY_DOWN)) rotateX -= 3;
-	if((keys & KEY_LEFT)) rotateY += 3;
-	if((keys & KEY_RIGHT)) rotateY -= 3;
-	
-	glBindTexture(0, textureID[0]);
-
-	//draw the obj
-	glBegin(GL_QUAD);
-		glNormal(NORMAL_PACK(0,inttov10(-1),0));
-
-		GFX_TEX_COORD = (TEXTURE_PACK(0, inttot16(512)));
-		glVertex3v16(floattov16(-0.5),	floattov16(-0.5), 0 );
-
-		GFX_TEX_COORD = (TEXTURE_PACK(inttot16(64),inttot16(512)));
-		glVertex3v16(floattov16(0.5),	floattov16(-0.5), 0 );
-
-		GFX_TEX_COORD = (TEXTURE_PACK(inttot16(64), 0));
-		glVertex3v16(floattov16(0.5),	floattov16(0.5), 0 );
-
-		GFX_TEX_COORD = (TEXTURE_PACK(0,0));
-		glVertex3v16(floattov16(-0.5),	floattov16(0.5), 0 );
-	
-	glEnd();
-	
-	glPopMatrix(1);
-	draw2D();
-}
+GameLogic *game = new GameLogic();
 
 //===================== INTERNAL AUTOMATION DRAWING HELP =====================
-uint drawSubMeta() {
+u16 drawSubMeta() {
 	for(int i = 0; i < 2; ++i) {
 		u16 *map = bgGetMapPtr(subBG[i]);
 		u8 *at = (u8 *)(map + 2048);//attribute pointer
@@ -620,7 +527,7 @@ uint drawSubMeta() {
 			at++;
 		}
 	}
-	drawSub();
+	game->drawSub();
 	//int keyCode = keyboardUpdate();//for later
 	//return masked keys
 	scanKeys();
@@ -775,17 +682,13 @@ void gameLostResume() {//call when ending happened
 	paused = true;
 }
 
-void processInputs(uint keysMasked) {
-	/* if(keysMasked & KEY_START) paused = true; */
-}
-
 void applyInfrequentlyAccessedSettings() {
 	mmSetModuleVolume(volumeModPercent * 1024 / 100);
 	mmSetJingleVolume(volumeEffectPercent * 1024 / 100);//an effect
 	//actual effects are short and setting used on playEffect()
 }
 
-void drawAndProcessMenu(uint keysMasked) {
+void drawAndProcessMenu(u16 keysMasked) {
 	if(subViewRXInput == NULL) {//intercept menu view for show special instead?
 		//menu display
 		const char *buttons[] = { "NEW GAME", "LOAD GAME", "EXIT", "SAVE GAME" };
@@ -845,39 +748,6 @@ void drawAndProcessMenu(uint keysMasked) {
 		if(keysMasked & KEY_SELECT) {//BO SALECTA!!
 			Audio::playMod(++curentAudioMod);
 		}
-	}
-}
-
-void processMotions() {
-
-}
-
-void processCollisions() {
-
-}
-
-void processStateMachine() {
-	
-}
-
-//=================== SELF TEST LOADING =================================
-void progressMessage(PROGRESS x) {
-	consoleClear();
-	switch(x) {
-		case INITIAL_LOAD:
-			iprintf(CREDITS);
-			break;
-		case GAME_INTRO_SCREEN:
-			iprintf(GOALS);
-			break;
-		case GAME_WIN_SCREEN:
-			iprintf(YOU_WIN);
-			break;
-		case GAME_LOSE_SCREEN:
-			iprintf(YOU_LOSE);
-			break;
-		default:
-			break;
 	}
 }
 
@@ -975,17 +845,17 @@ int main(int argc, char *argv[]) {
 			if(sheduleAudio) Audio::playMod(rand() % MSL_NSONGS);
 			//3D? Draw main screen
 			if(!currently2D) {
-				draw3D();
+				game->draw3D();
 				glFlush(0);
 			} else {
-				drawMain();
+				game->drawMain();
 			}
 			//Draw sub screen
 			if(!paused) {
-				processInputs(drawSubMeta());//keysIntercepted?
-				processMotions();
-				processCollisions();
-				processStateMachine();
+				game->processInputs(drawSubMeta());//keysIntercepted?
+				game->processMotions();
+				game->processCollisions();
+				game->processStateMachine();
 			} else {
 				drawAndProcessMenu(drawSubMeta());
 			}

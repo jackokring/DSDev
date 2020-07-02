@@ -67,5 +67,5 @@ class Machine {//singleton?
 };
 
 extern View *subViewRXInput;//set view to draw?
-extern uint keyIntercepted;//mask of keys intercepted
+extern u16 keyIntercepted;//mask of keys intercepted
 #endif
