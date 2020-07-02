@@ -364,7 +364,7 @@ int32 numSaveLocs = 4 + 1;//last for default
 bool currently2D = true;
 bool glInitialized = false;
 
-void setFor2D() {
+void BG::setFor2D() {
 	videoSetMode(MODE_5_2D);
 	// Allocate VRAM bank for all the main palettes (32 K)
 	mainBG[0] = bgInit(2, BgType_ExRotation, BgSize_ER_512x512, 24, 0);
@@ -383,7 +383,7 @@ void setFor2D() {
 	currently2D = true;
 }
 
-void setFor3D() {
+void BG::setFor3D() {
 	videoSetMode(MODE_5_3D);
 	if(!glInitialized) {
 		glInit();	
@@ -466,7 +466,7 @@ void BG::clearSub(int bg) {
 
 void loadTitleMain(const unsigned int *tiles,
 		const unsigned short *pal) {
-	setFor2D();
+	BG::setFor2D();
 	decompress(tiles, bgGetGfxPtr(mainBG[0]), LZ77Vram);
 	decompress(pal, BG_PALETTE, LZ77Vram);
 	for(int x = 0; x < 32 * 24; ++x) {
@@ -626,13 +626,17 @@ void menuText(const char *abxy[], const char *lrWhat, char *lr,
 
 //===================== GAME LOOP PROCESS FUNCTIONS ==================
 void loadGame(bool defaultGame = false) {
-
+	int slot = gameSaveLoc;
+	if(defaultGame) slot = numSaveLocs - 1;
+	game->loadGame(slot);
 	Audio::playEffect(INFO_FX);
 	enterFrameWhile();
 }
 
 void saveGame(bool defaultGame = false) {
-	
+	int slot = gameSaveLoc;
+	if(defaultGame) slot = numSaveLocs - 1;
+	game->saveGame(slot);
 	Audio::playEffect(INFO_FX);
 	if(!defaultGame) enterFrameWhile();//not the last save before exit?
 }
@@ -645,7 +649,7 @@ void gameSplash() {
 
 void initGame() {
 	gameSplash();
-
+	game->initGame();
 	//get default
 	if(!completeReset) loadGame(true);
 	completeReset = false;
@@ -655,7 +659,8 @@ void initGame() {
 void startGame() {
 	defaultTilesMain();//clears automatic (not sure if these are then useable)
 	// initialize gl?
-	setFor3D();//??
+	//BG::setFor3D();//??
+	game->startGame();
 	enterFrameWhile();
 }
 
@@ -664,7 +669,7 @@ void winSplash() {
 	progressMessage(GAME_WIN_SCREEN);
 }
 
-void gameCompleteRestart() {//call when ending happened
+void CTL::gameCompleteRestart() {//call when ending happened
 	winSplash();
 	completeReset = true;
 	exiting = true;
@@ -676,7 +681,7 @@ void loseSplash() {
 	progressMessage(GAME_LOSE_SCREEN);
 }
 
-void gameLostResume() {//call when ending happened
+void CTL::gameLostResume() {//call when ending happened
 	loseSplash();
 	exiting = true;
 	paused = true;
@@ -759,7 +764,7 @@ void cleanUp() {
 	mmStop();
 	unloadEffects();
 	irqClear(IRQ_VBLANK);
-	setFor2D();
+	BG::setFor2D();
 	glResetTextures();
 	if(fontBig != NULL) delete fontBig;
 	if(font != NULL) delete font;

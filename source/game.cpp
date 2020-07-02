@@ -1,5 +1,20 @@
 #include "game.h"
 //============================== GAME INCLUDES ====================
+void GameLogic::initGame() {
+
+}
+    
+void GameLogic::startGame() {
+
+}
+
+void loadGame(int slot) {
+
+}
+    
+void saveGame(int slot) {
+	
+}
 
 void GameLogic::drawMain() {
 

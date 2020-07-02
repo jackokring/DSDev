@@ -31,6 +31,10 @@ class BG {
         static void putSub(int bg, int x, int y, int tile, int attribute = 0);
         static void clearMain(int bg);
         static void clearSub(int bg);
+
+		//upper display (main) 2 or 3 D select
+		static void setFor2D();
+		static void setFor3D();
 };
 
 #endif

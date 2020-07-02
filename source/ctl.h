@@ -35,4 +35,10 @@ enum FORMAT_PRINT {
 #define ANSI_BLU "\e[1m\e[44m"
 #define ANSI_GRN "\e[1m\e[42m"
 #define ANSI_WHT "\e[1m\e[47m"
+
+class CTL {
+    public:
+        static void gameLostResume();
+        static void gameCompleteRestart();
+};
 #endif
