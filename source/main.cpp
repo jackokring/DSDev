@@ -383,30 +383,42 @@ void BG::setFor2D() {
 	currently2D = true;
 }
 
+void loadCompressedTex(u8 *text, u16 *pal) {
+	decompress(text, memory, LZ77Vram);//to buffer
+	decompress(pal, strings, LZ77Vram);
+}
+
 void BG::setFor3D() {
 	videoSetMode(MODE_5_3D);
 	if(!glInitialized) {
 		glInit();	
 		// Load font textures
-		font = new Font(8, (u16*)font_siPal, (u8*)font_siBitmap);
-		fontBig = new Font(16, (u16*)font_16x16Pal, (u8*)font_16x16Bitmap);
+		//use memory and strings from lang.h to load
+		loadCompressedTex((u8*)font_siBitmap, (u16*)font_siPal);
+		font = new Font(8, (u16 *)strings, (u8 *)memory);
+		loadCompressedTex((u8*)font_16x16Bitmap, (u16*)font_16x16Pal);
+		fontBig = new Font(16, (u16 *)strings, (u8 *)memory);
 		glGenTextures(4, (int *)&textureID);//make 4 textures
 		glBindTexture(0, textureID[0]);//bind it
+		loadCompressedTex((u8*)threeDtex0Bitmap, (u16*)threeDtex0Pal);
 		glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
-			0, TEXGEN_TEXCOORD, (u8*)threeDtex0Bitmap);
-		glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex0Pal);
+			0, TEXGEN_TEXCOORD, memory);
+		glColorTableEXT(0, 0, 255, 0, 0, (uint16 *)strings);
 		glBindTexture(0, textureID[1]);//bind it
+		loadCompressedTex((u8*)threeDtex1Bitmap, (u16*)threeDtex1Pal);
 		glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
-			0, TEXGEN_TEXCOORD, (u8*)threeDtex1Bitmap);
-		glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex1Pal);
+			0, TEXGEN_TEXCOORD, memory);
+		glColorTableEXT(0, 0, 255, 0, 0, (uint16 *)strings);
 		glBindTexture(0, textureID[2]);//bind it
+		loadCompressedTex((u8*)threeDtex2Bitmap, (u16*)threeDtex2Pal);
 		glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
-			0, TEXGEN_TEXCOORD, (u8*)threeDtex2Bitmap);
-		glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex2Pal);
+			0, TEXGEN_TEXCOORD, memory);
+		glColorTableEXT(0, 0, 255, 0, 0, (uint16 *)strings);
 		glBindTexture(0, textureID[3]);//bind it
+		loadCompressedTex((u8*)threeDtex3Bitmap, (u16*)threeDtex3Pal);
 		glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
-			0, TEXGEN_TEXCOORD, (u8*)threeDtex3Bitmap);
-		glColorTableEXT(0, 0, 255, 0, 0, (u16*)threeDtex3Pal);
+			0, TEXGEN_TEXCOORD, memory);
+		glColorTableEXT(0, 0, 255, 0, 0, (uint16 *)strings);
 	}
 	//enable textures
 	glEnable(GL_TEXTURE_2D);
