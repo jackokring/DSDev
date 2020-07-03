@@ -5,9 +5,9 @@
 #include <stdio.h>
 
 extern u16 memory[65536];//can be used as a loading buffer
-extern char strings[65536];
+extern char strings[65536];//for texture LZ77
 
-class List;
+/* class List;
 
 class Link {
     u16 val;
@@ -57,10 +57,10 @@ class Macro : Symbol {//immediate
 //thread
 class Thread : Type {//cooperative
 
-};
+}; */
 
 //views
-class View : Type {
+class View {
 
 };
 
