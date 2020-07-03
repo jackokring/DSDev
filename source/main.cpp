@@ -669,6 +669,7 @@ void initGame() {
 }
 
 void startGame() {
+	BG::setFor3D();//does preload through buffers of compressed textures once
 	defaultTilesMain();//clears automatic (not sure if these are then useable)
 	// initialize gl?
 	//BG::setFor3D();//??
