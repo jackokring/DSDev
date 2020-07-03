@@ -15,7 +15,7 @@ class Link {
     int asInt();
     bool asBool();
     char *asString();
-    List asList();
+    List *asList();
 };
 
 class Type : Link {
