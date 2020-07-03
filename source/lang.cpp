@@ -24,7 +24,7 @@ bool memoryFull() {
 }
 
 bool stringFull(char *alloc) {
-    return (maxString + strlen(alloc) + 1) > 65536;//overflow with \0
+    return (maxString + strlen(alloc)) > 65535;//overflow with \0
     //a list of strings recycled can be kept to compact
 } 
 
