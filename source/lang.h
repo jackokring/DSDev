@@ -7,11 +7,15 @@
 extern u16 memory[65536];//can be used as a loading buffer
 extern char strings[65536];
 
-class Type;
+class List;
 
 class Link {
-    Type *val;
-    Link *next;
+    u16 val;
+    u16 next;
+    int asInt();
+    bool asBool();
+    char *asString();
+    List asList();
 };
 
 class Type : Link {
