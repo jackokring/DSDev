@@ -11,6 +11,10 @@ void qRand(u32 seed) {
 	randVal = seed;
 }
 
+void rRand() {
+	randVal = (randVal - 1) * 3645876429;//reverse by multiplicative inverse
+}
+
 void GameLogic::initGame() {
 
 }
