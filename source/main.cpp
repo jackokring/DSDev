@@ -669,7 +669,6 @@ void initGame() {
 }
 
 void startGame() {
-	BG::setFor3D();//does preload through buffers of compressed textures once
 	defaultTilesMain();//clears automatic (not sure if these are then useable)
 	// initialize gl?
 	//BG::setFor3D();//??
@@ -848,7 +847,7 @@ int main(int argc, char *argv[]) {
 	bgSetPriority(subBG[0],2);
 	bgSetPriority(subBG[1],3);
 
-	//setFor2D();
+	BG::setFor3D();//does preload through buffers of compressed textures once
 	loadTitleMain(logoTiles, logoPal);
 	progressMessage(INITIAL_LOAD);	
 	Audio::playEffect(SFX_EXPLODE);
