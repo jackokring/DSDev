@@ -1,7 +1,9 @@
 #include "lang.h"
 //========================== DSL PROCESSOR =================
 
+//384 kB memory space
 u16 memory[65536];
+u16 links[65536];
 char strings[65536];
 u8 types[65536];
 

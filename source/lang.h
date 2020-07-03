@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 extern u16 memory[65536];//can be used as a loading buffer
-extern char strings[65536];//for texture LZ77
+extern char strings[65536];//for texture LZ77 in BOOT only
 
 /* class List;
 
