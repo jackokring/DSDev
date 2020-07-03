@@ -6,6 +6,8 @@
 #include <nds.h>
 #include <gl2d.h>
 //============================== GAME INCLUDES ====================
+extern u16 pRand(u16 range);
+extern void qRand(u32 seed);
 
 class GameLogic {
     public:

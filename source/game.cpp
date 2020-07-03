@@ -1,5 +1,16 @@
 #include "game.h"
 //============================== GAME INCLUDES ====================
+u32 randVal;
+
+u16 pRand(u16 range) {//level generator random as seed can be set and independant
+	randVal = randVal * 134775813 + 1;
+  	return ((randVal >> 16) * range) >> 16;
+}
+
+void qRand(u32 seed) {
+	randVal = seed;
+}
+
 void GameLogic::initGame() {
 
 }
