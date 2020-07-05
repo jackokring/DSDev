@@ -496,6 +496,7 @@ void defaultTilesMain() {
 
 void extendedPalettes(const unsigned short *pal, int len) {
 	vramSetBankH(VRAM_H_LCD);
+	decompress(pal, memory, LZ77Vram);
 	u16 palette[len / 2];
 	//16 palette slots for BG1 and BG2
 	//as console and keyboard are 4bpp backgrounds
@@ -503,15 +504,15 @@ void extendedPalettes(const unsigned short *pal, int len) {
 	//USE LAST 2 PALETTE LINES AS LIGHT ADJUSTMENT
 	for(int i = 1; i < 3; ++i) {
 		for(int p = 0; p < 16; ++p) {
-			int col = palette[15 + i * 16 + p];//multiplyer of light
+			int col = memory[15 + i * 16 + p];//multiplyer of light
 			for(int k = 0; k < len / 2; ++k) {
-				int r = RED(col) * RED(pal[k]) / 31;
-				int b = BLUE(col) * BLUE(pal[k]) / 31;
-				int g = GREEN(col) * GREEN(pal[k]) /31;
+				int r = RED(col) * RED(memory[k]) / 31;
+				int b = BLUE(col) * BLUE(memory[k]) / 31;
+				int g = GREEN(col) * GREEN(memory[k]) /31;
 				palette[k] = RGB15(r, g, b);
 			}
 			DC_FlushAll();
-			decompress(palette, &VRAM_H_EXT_PALETTE[i][p], LZ77Vram);//4096 colours max
+			dmaCopy(palette, &VRAM_H_EXT_PALETTE[i][p], 512);//4096 colours max
 		}
 	}
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);//extended palette
