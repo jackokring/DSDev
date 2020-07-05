@@ -65,6 +65,7 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
  /opt/devkitpro/libnds/include/nds/arm9/console.h \
  /opt/devkitpro/libnds/include/nds/arm9/keyboard.h \
  /opt/devkitpro/libnds/include/nds/input.h \
+ /opt/devkitpro/libnds/include/nds/arm9/sprite.h \
  /home/jacko/Documents/DSDev/source/ctl.h \
  /home/jacko/Documents/DSDev/source/gfx.h \
  /home/jacko/Documents/DSDev/source/lang.h \
@@ -81,6 +82,7 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
  /home/jacko/Documents/DSDev/build/threeDtex3.h \
  /home/jacko/Documents/DSDev/build/subTiles.h \
  /home/jacko/Documents/DSDev/build/mainTiles.h \
+ /home/jacko/Documents/DSDev/build/spriteTiles.h \
  /home/jacko/Documents/DSDev/build/logo.h \
  /home/jacko/Documents/DSDev/build/intro.h \
  /opt/devkitpro/libnds/include/nds/arm9/decompress.h
@@ -150,6 +152,7 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
 /opt/devkitpro/libnds/include/nds/arm9/console.h:
 /opt/devkitpro/libnds/include/nds/arm9/keyboard.h:
 /opt/devkitpro/libnds/include/nds/input.h:
+/opt/devkitpro/libnds/include/nds/arm9/sprite.h:
 /home/jacko/Documents/DSDev/source/ctl.h:
 /home/jacko/Documents/DSDev/source/gfx.h:
 /home/jacko/Documents/DSDev/source/lang.h:
@@ -166,6 +169,7 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
 /home/jacko/Documents/DSDev/build/threeDtex3.h:
 /home/jacko/Documents/DSDev/build/subTiles.h:
 /home/jacko/Documents/DSDev/build/mainTiles.h:
+/home/jacko/Documents/DSDev/build/spriteTiles.h:
 /home/jacko/Documents/DSDev/build/logo.h:
 /home/jacko/Documents/DSDev/build/intro.h:
 /opt/devkitpro/libnds/include/nds/arm9/decompress.h:

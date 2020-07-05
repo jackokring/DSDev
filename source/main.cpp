@@ -14,6 +14,7 @@
 #include <console.h>
 #include <keyboard.h>
 #include <input.h>
+#include <sprite.h>
 #include "ctl.h"
 #include "gfx.h"
 #include "lang.h"
@@ -277,6 +278,7 @@ Font *fontBig;//256
 #include "threeDtex3.h"
 #include "subTiles.h"
 #include "mainTiles.h"
+#include "spriteTiles.h"
 #include "logo.h"
 #include "intro.h"
 #include <decompress.h>
@@ -494,6 +496,30 @@ void defaultTilesMain() {
 	BG::clearMain(0);
 }
 
+u16 *sprites[256];//pointers to VRAM_I
+
+void initSprites() {
+	decompress(spriteTilesPal, memory, LZ77Vram);
+	dmaCopy(memory, SPRITE_PALETTE_SUB, 512);//non extended palette for sprites
+	//decompress(subTilesTiles, bgGetGfxPtr(subBG[0]), LZ77Vram);
+	//16kB divided by 64 is 256 glyphs
+	decompress(spriteTilesTiles, strings, LZ77Vram);
+	for(int i = 0; i < 256; ++i) {
+		sprites[i] = oamAllocateGfx(&oamSub, SpriteSize_8x8, SpriteColorFormat_256Color);
+		dmaCopy(strings + i * 64, sprites[i], 64);
+	}
+}
+
+void BG::drawSprite(int number, int x, int y, int glyph) {
+	oamSet(&oamSub, number & 127, x, y, 0, 0, SpriteSize_8x8, SpriteColorFormat_256Color, 
+			sprites[glyph & 255], -1, false, false,
+			TILE_FLIP_H & glyph, TILE_FLIP_V & glyph, false);
+}
+
+void BG::hideSprite(int number) {
+	oamSetHidden(&oamSub, number, true);
+}
+
 void extendedPalettes(const unsigned short *pal, int len) {
 	vramSetBankH(VRAM_H_LCD);
 	decompress(pal, memory, LZ77Vram);
@@ -541,6 +567,7 @@ u16 drawSubMeta() {
 		}
 	}
 	game->drawSub();
+	oamUpdate(&oamSub);//sprites
 	//int keyCode = keyboardUpdate();//for later
 	//return masked keys
 	scanKeys();
@@ -801,7 +828,7 @@ int main(int argc, char *argv[]) {
     //F 16 -> TEXTURE PALETTE (6 * 512 (3K of 32K) used) -> hi-colour
     //G 16 -> TEXTURE PALETTE -> overflow from above
     //H 32 -> SUB BG EXT PALETTE -> 4096 colours (auto palette by last 32 colour lights)
-    //I 16 -> ?SUB SPRITE? -> vramSetBankI(VRAM_I_SUB_SPRITE);
+    //I 16 -> SUB SPRITE -> vramSetBankI(VRAM_I_SUB_SPRITE);
 
     //lower screen
 	//x, y, w, h in chars
@@ -840,6 +867,10 @@ int main(int argc, char *argv[]) {
 	vramSetBankE(VRAM_E_MAIN_BG);//for intro screens and ...
 	vramSetBankF(VRAM_F_TEX_PALETTE_SLOT0);
 	vramSetBankG(VRAM_G_TEX_PALETTE_SLOT1);
+	vramSetBankI(VRAM_I_SUB_SPRITE);
+	oamInit(&oamSub, SpriteMapping_1D_64, false);//only 16kB so could go as low as 1D_16
+	//if it were possible
+	initSprites();
 
 	//Console
 	bgSetPriority(console->bgId, 0);

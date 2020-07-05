@@ -1,0 +1,1 @@
+spriteTiles.o: spriteTiles.s
