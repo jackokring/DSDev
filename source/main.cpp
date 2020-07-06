@@ -538,7 +538,7 @@ void extendedPalettes() {
 		}
 	}
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);//extended palette
-	vramSetBankH(VRAM_H_LCD);
+	vramSetBankG(VRAM_G_LCD);
 	decompress(mainTilesPal, memory, LZ77Vram);
 	for(int i = 1; i < 3; ++i) {
 		for(int p = 0; p < 16; ++p) {
@@ -550,7 +550,7 @@ void extendedPalettes() {
 				palette[k] = RGB15(r, g, b);
 			}
 			DC_FlushAll();
-			dmaCopy(palette, &VRAM_H_EXT_PALETTE[i + 1][p], 512);//4096 colours max
+			dmaCopy(palette, &VRAM_G_EXT_PALETTE[i + 1][p], 512);//4096 colours max
 		}
 	}
 	vramSetBankG(VRAM_G_BG_EXT_PALETTE_SLOT23);
