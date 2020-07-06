@@ -485,6 +485,7 @@ void defaultTilesMain() {
 }
 
 u16 *sprites[2048];//pointers to VRAM_D
+int hiSprites = 0;
 
 void initSprites() {
 	decompress(spriteTilesPal, memory, LZ77Vram);
@@ -495,14 +496,18 @@ void initSprites() {
 	for(int i = 0; i < 2048; ++i) {
 		sprites[i] = oamAllocateGfx(&oamSub, SpriteSize_8x8, SpriteColorFormat_256Color);
 		dmaCopy(strings + i * 64, sprites[i], 64);
-	}??extra bit set
+	}
 }
 
 void BG::drawSprite(int number, int x, int y, int glyph) {
 	oamSet(&oamSub, number & 127, x, y, 0, glyph >> 12,//same as tile format
 			SpriteSize_8x8, SpriteColorFormat_256Color, 
-			sprites[glyph & 1023], -1, false, false,
+			sprites[(glyph & 1023) + hiSprites], -1, false, false,
 			TILE_FLIP_H & glyph, TILE_FLIP_V & glyph, false);
+}
+
+void BG::setHighSprites(bool hi) {
+	hiSprites = hi ? 1024 : 0;
 }
 
 void BG::hideSprite(int number) {
