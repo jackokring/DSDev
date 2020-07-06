@@ -374,8 +374,8 @@ void BG::setFor2D() {
 	//ready for priorities
 	//bgSetPriority(mainBG[2], 3);
 	//3D ---> 0
-	bgSetPriority(mainBG[0],1);//SKY?
-	bgSetPriority(mainBG[1],2);
+	bgSetPriority(mainBG[0], 1);//SKY?
+	bgSetPriority(mainBG[1], 2);
 	//BG1 is not in use
 	//bgHide(mainBG[2]);//hide 3D plane
 	bgShow(mainBG[0]);
@@ -477,10 +477,12 @@ void loadTitleMain(const unsigned int *tiles,
 	bgSetScroll(mainBG[0], 0, 0);//origin
 	bgSetRotateScale(mainBG[0], 0, 1 << 8, 1 << 8);
 	bgUpdate();
+	bgExtPaletteDisable();//not needed?
 }
 
 void defaultTilesMain() {
 	loadTitleMain(mainTilesTiles, mainTilesPal);
+	bgExtPaletteEnable();//option
 	BG::clearMain(0);
 }
 
@@ -536,6 +538,22 @@ void extendedPalettes() {
 		}
 	}
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);//extended palette
+	vramSetBankH(VRAM_H_LCD);
+	decompress(mainTilesPal, memory, LZ77Vram);
+	for(int i = 1; i < 3; ++i) {
+		for(int p = 0; p < 16; ++p) {
+			int col = memory[256 - 32 + (i - 1) * 16 + p];//multiplyer of light
+			for(int k = 0; k < 256; ++k) {
+				int r = RED(col) * RED(memory[k]) / 31;
+				int b = BLUE(col) * BLUE(memory[k]) / 31;
+				int g = GREEN(col) * GREEN(memory[k]) /31;
+				palette[k] = RGB15(r, g, b);
+			}
+			DC_FlushAll();
+			dmaCopy(palette, &VRAM_H_EXT_PALETTE[i + 1][p], 512);//4096 colours max
+		}
+	}
+	vramSetBankG(VRAM_G_BG_EXT_PALETTE_SLOT23);
 	vramSetBankI(VRAM_I_LCD);
 	decompress(spriteTilesPal, memory, LZ77Vram);
 	//16 palette slots for sprites
@@ -834,8 +852,8 @@ int main(int argc, char *argv[]) {
     //C 128 -> SUB CONSOLE, KEYBOARD, 2 * BG, (map 23 free)
     //D 128 -> SUB SPRITE
     //E 64 -> MAIN BG (EE) -> uses main palette as 3D doesn't
-    //F 16 -> TEXTURE PALETTE (6 * 512 (3K of 32K) used) -> hi-colour
-    //G 16 -> TEXTURE PALETTE extended
+    //F 16 -> TEXTURE PALETTE (4 * 512 (2K of 16K) used) -> hi-colour
+    //G 16 -> MAIN BG EXT PALETTE
     //H 32 -> SUB BG EXT PALETTE -> 4096 colours (auto palette by last 32 colour lights)
     //I 16 -> SUB SPRITE EXT PALETTE
 
@@ -869,13 +887,12 @@ int main(int argc, char *argv[]) {
 	//upper screen
 	bgExtPaletteEnableSub();
 	extendedPalettes();
-	// Set Bank A+B+D to texture (256 K + 128K)
+	// Set Bank A+B to texture (256 K)
 	vramSetBankA(VRAM_A_TEXTURE);
     vramSetBankB(VRAM_B_TEXTURE);
 	vramSetBankD(VRAM_D_SUB_SPRITE);
 	vramSetBankE(VRAM_E_MAIN_BG);//for intro screens and ...
 	vramSetBankF(VRAM_F_TEX_PALETTE_SLOT0);
-	vramSetBankG(VRAM_G_TEX_PALETTE_SLOT1);
 	oamInit(&oamSub, SpriteMapping_1D_64, false);//only 16kB so could go as low as 1D_16
 	//if it were possible
 	initSprites();
