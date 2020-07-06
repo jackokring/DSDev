@@ -78,8 +78,6 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
  /home/jacko/Documents/DSDev/build/font_16x16.h \
  /home/jacko/Documents/DSDev/build/threeDtex0.h \
  /home/jacko/Documents/DSDev/build/threeDtex1.h \
- /home/jacko/Documents/DSDev/build/threeDtex2.h \
- /home/jacko/Documents/DSDev/build/threeDtex3.h \
  /home/jacko/Documents/DSDev/build/subTiles.h \
  /home/jacko/Documents/DSDev/build/mainTiles.h \
  /home/jacko/Documents/DSDev/build/spriteTiles.h \
@@ -165,8 +163,6 @@ main.o: /home/jacko/Documents/DSDev/source/main.cpp \
 /home/jacko/Documents/DSDev/build/font_16x16.h:
 /home/jacko/Documents/DSDev/build/threeDtex0.h:
 /home/jacko/Documents/DSDev/build/threeDtex1.h:
-/home/jacko/Documents/DSDev/build/threeDtex2.h:
-/home/jacko/Documents/DSDev/build/threeDtex3.h:
 /home/jacko/Documents/DSDev/build/subTiles.h:
 /home/jacko/Documents/DSDev/build/mainTiles.h:
 /home/jacko/Documents/DSDev/build/spriteTiles.h:

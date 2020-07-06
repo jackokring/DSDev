@@ -274,8 +274,6 @@ Font *fontBig;//256
 #include "font_16x16.h"
 #include "threeDtex0.h"
 #include "threeDtex1.h"
-#include "threeDtex2.h"
-#include "threeDtex3.h"
 #include "subTiles.h"
 #include "mainTiles.h"
 #include "spriteTiles.h"
@@ -353,7 +351,7 @@ void waitForKey(int keys) {
 	Audio::playEffect(ACTION_FX);
 }
 
-int textureID[4];
+int textureID[2];
 View *subViewRXInput;
 u16 keyIntercepted = 0;
 u16 keyHoldAllow = 0;
@@ -408,16 +406,6 @@ void BG::setFor3D() {
 		glColorTableEXT(0, 0, 255, 0, 0, (uint16 *)strings);
 		glBindTexture(0, textureID[1]);//bind it
 		loadCompressedTex((u8*)threeDtex1Bitmap, (u16*)threeDtex1Pal);
-		glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
-			0, TEXGEN_TEXCOORD, memory);
-		glColorTableEXT(0, 0, 255, 0, 0, (uint16 *)strings);
-		glBindTexture(0, textureID[2]);//bind it
-		loadCompressedTex((u8*)threeDtex2Bitmap, (u16*)threeDtex2Pal);
-		glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
-			0, TEXGEN_TEXCOORD, memory);
-		glColorTableEXT(0, 0, 255, 0, 0, (uint16 *)strings);
-		glBindTexture(0, textureID[3]);//bind it
-		loadCompressedTex((u8*)threeDtex3Bitmap, (u16*)threeDtex3Pal);
 		glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
 			0, TEXGEN_TEXCOORD, memory);
 		glColorTableEXT(0, 0, 255, 0, 0, (uint16 *)strings);
@@ -496,23 +484,24 @@ void defaultTilesMain() {
 	BG::clearMain(0);
 }
 
-u16 *sprites[256];//pointers to VRAM_I
+u16 *sprites[2048];//pointers to VRAM_D
 
 void initSprites() {
 	decompress(spriteTilesPal, memory, LZ77Vram);
 	dmaCopy(memory, SPRITE_PALETTE_SUB, 512);//non extended palette for sprites
 	//decompress(subTilesTiles, bgGetGfxPtr(subBG[0]), LZ77Vram);
-	//16kB divided by 64 is 256 glyphs
+	//128kB divided by 64 is 2048 glyphs
 	decompress(spriteTilesTiles, strings, LZ77Vram);
-	for(int i = 0; i < 256; ++i) {
+	for(int i = 0; i < 2048; ++i) {
 		sprites[i] = oamAllocateGfx(&oamSub, SpriteSize_8x8, SpriteColorFormat_256Color);
 		dmaCopy(strings + i * 64, sprites[i], 64);
-	}
+	}??extra bit set
 }
 
 void BG::drawSprite(int number, int x, int y, int glyph) {
-	oamSet(&oamSub, number & 127, x, y, 0, 0, SpriteSize_8x8, SpriteColorFormat_256Color, 
-			sprites[glyph & 255], -1, false, false,
+	oamSet(&oamSub, number & 127, x, y, 0, glyph >> 12,//same as tile format
+			SpriteSize_8x8, SpriteColorFormat_256Color, 
+			sprites[glyph & 1023], -1, false, false,
 			TILE_FLIP_H & glyph, TILE_FLIP_V & glyph, false);
 }
 
@@ -520,18 +509,18 @@ void BG::hideSprite(int number) {
 	oamSetHidden(&oamSub, number, true);
 }
 
-void extendedPalettes(const unsigned short *pal, int len) {
+void extendedPalettes() {
 	vramSetBankH(VRAM_H_LCD);
-	decompress(pal, memory, LZ77Vram);
-	u16 palette[len / 2];
+	decompress(subTilesPal, memory, LZ77Vram);
+	u16 palette[256];
 	//16 palette slots for BG1 and BG2
 	//as console and keyboard are 4bpp backgrounds
 	//they are not affected with extended palettes
 	//USE LAST 2 PALETTE LINES AS LIGHT ADJUSTMENT
 	for(int i = 1; i < 3; ++i) {
 		for(int p = 0; p < 16; ++p) {
-			int col = memory[15 + i * 16 + p];//multiplyer of light
-			for(int k = 0; k < len / 2; ++k) {
+			int col = memory[256 - 32 + (i - 1) * 16 + p];//multiplyer of light
+			for(int k = 0; k < 256; ++k) {
 				int r = RED(col) * RED(memory[k]) / 31;
 				int b = BLUE(col) * BLUE(memory[k]) / 31;
 				int g = GREEN(col) * GREEN(memory[k]) /31;
@@ -542,6 +531,21 @@ void extendedPalettes(const unsigned short *pal, int len) {
 		}
 	}
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);//extended palette
+	vramSetBankI(VRAM_I_LCD);
+	decompress(spriteTilesPal, memory, LZ77Vram);
+	//16 palette slots for sprites
+	for(int p = 0; p < 16; ++p) {
+		int col = memory[256 - 16 + p];//multiplyer of light
+		for(int k = 0; k < 256; ++k) {
+			int r = RED(col) * RED(memory[k]) / 31;
+			int b = BLUE(col) * BLUE(memory[k]) / 31;
+			int g = GREEN(col) * GREEN(memory[k]) /31;
+			palette[k] = RGB15(r, g, b);
+		}
+		DC_FlushAll();
+		dmaCopy(palette, &VRAM_I_EXT_SPR_PALETTE[p], 512);
+	}
+	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 }
 
 //=========================== DRAWING ROUTINES ============================
@@ -823,12 +827,12 @@ int main(int argc, char *argv[]) {
     //A 128 -> PRIMARY TEXTURES (BIG + SMALL FONTS)
     //B 128 -> PRIMARY TEXTURES (TextureID[0,1])
     //C 128 -> SUB CONSOLE, KEYBOARD, 2 * BG, (map 23 free)
-    //D 128 -> PRIMARY TEXTURES (TextureID[2,3])
+    //D 128 -> SUB SPRITE
     //E 64 -> MAIN BG (EE) -> uses main palette as 3D doesn't
     //F 16 -> TEXTURE PALETTE (6 * 512 (3K of 32K) used) -> hi-colour
-    //G 16 -> TEXTURE PALETTE -> overflow from above
+    //G 16 -> TEXTURE PALETTE extended
     //H 32 -> SUB BG EXT PALETTE -> 4096 colours (auto palette by last 32 colour lights)
-    //I 16 -> SUB SPRITE -> vramSetBankI(VRAM_I_SUB_SPRITE);
+    //I 16 -> SUB SPRITE EXT PALETTE
 
     //lower screen
 	//x, y, w, h in chars
@@ -859,15 +863,14 @@ int main(int argc, char *argv[]) {
 
 	//upper screen
 	bgExtPaletteEnableSub();
-	extendedPalettes(subTilesPal, subTilesPalLen);
+	extendedPalettes();
 	// Set Bank A+B+D to texture (256 K + 128K)
 	vramSetBankA(VRAM_A_TEXTURE);
     vramSetBankB(VRAM_B_TEXTURE);
-	vramSetBankD(VRAM_D_TEXTURE);
+	vramSetBankD(VRAM_D_SUB_SPRITE);
 	vramSetBankE(VRAM_E_MAIN_BG);//for intro screens and ...
 	vramSetBankF(VRAM_F_TEX_PALETTE_SLOT0);
 	vramSetBankG(VRAM_G_TEX_PALETTE_SLOT1);
-	vramSetBankI(VRAM_I_SUB_SPRITE);
 	oamInit(&oamSub, SpriteMapping_1D_64, false);//only 16kB so could go as low as 1D_16
 	//if it were possible
 	initSprites();
