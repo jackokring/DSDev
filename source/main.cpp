@@ -517,6 +517,7 @@ void defaultTilesMain() {
 
 u16 *sprites[2048];//pointers to VRAM_D
 int hiSprites = 0;
+int layerSprite = 0;
 
 void initSprites() {
 	decompress(spriteTilesPal, memory, LZ77Vram);
@@ -531,7 +532,7 @@ void initSprites() {
 }
 
 void BG::drawSprite(int number, int x, int y, int glyph) {
-	oamSet(&oamSub, number & 127, x, y, 0, glyph >> 12,//same as tile format
+	oamSet(&oamSub, number & 127, x, y, layerSprite, glyph >> 12,//same as tile format
 			SpriteSize_8x8, SpriteColorFormat_256Color, 
 			sprites[(glyph & 1023) + hiSprites], -1, false, false,
 			TILE_FLIP_H & glyph, TILE_FLIP_V & glyph, false);
@@ -539,6 +540,10 @@ void BG::drawSprite(int number, int x, int y, int glyph) {
 
 void BG::setHighSprites(bool hi) {
 	hiSprites = hi ? 1024 : 0;
+}
+
+void BG::setSpriteLayer(bool foreground) {
+	layerSprite = foreground ? 2 : 3;
 }
 
 void BG::hideSprite(int number) {

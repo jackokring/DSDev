@@ -36,6 +36,7 @@ class BG {
 		static void drawSprite(int number, int x, int y, int glyph);
 		static void hideSprite(int number);
 		static void setHighSprites(bool hi);
+		static void setSpriteLayer(bool foreground = true);
 
 		//upper display (main) 2 or 3 D select
 		static void setFor2D();
