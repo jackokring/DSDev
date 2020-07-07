@@ -59,7 +59,9 @@ enum AIState {
     AIS_IS_WEAPON = 8192,
     AIS_IS_AMMOABLE = 0,
 
-
+    //womb (binary polar)
+    AIS_FEMALE = 16384,
+    AIS_MALE = 0,
 }
 
 
