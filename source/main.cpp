@@ -182,7 +182,7 @@ void loadEffects() {
 			255,	// volume
 			128,	// panning
 		};
-		effectTrigger[i] = false;
+		effectTrigger[0][i] = effectTrigger[1][i] = false;
 	}
 }
 
