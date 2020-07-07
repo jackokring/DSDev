@@ -43,15 +43,23 @@ enum AIState {
     AIS_CAN_LEARN = 512,
     AIS_FIXED_MIMETIC = 0,
 
-    //polymorph (binary polar)
+    //polymorph (binary polar, i.e. can this enum be self-altered in life?)
     AIS_META_POLYMORPH = 1024,
     AIS_NOT_THE_THING = 0,
 
-    //tooling up (binary polar)
+    //tooling up (binary polar, using weapon scores on the weapon net)
     AIS_CAN_UPGRADE = 2048,
     AIS_INTRINSIC_TOOLAGE = 0,
 
-    
+    //empathy (binary polar, local spreading of common loss functions)
+    AIS_EMPATH = 4096,
+    AIS_STEELY = 0,
+
+    //weapon meta (binary polar, tree of distributed emissives)
+    AIS_IS_WEAPON = 8192,
+    AIS_IS_AMMOABLE = 0,
+
+
 }
 
 
