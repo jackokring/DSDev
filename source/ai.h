@@ -62,6 +62,14 @@ enum AIState {
     //womb (binary polar)
     AIS_FEMALE = 16384,
     AIS_MALE = 0,
+
+    //mouth (binary polar)
+    AIS_IS_EATER = 32768,
+    AIS_UNVORE = 0,
+
+    //excretion (binary polar)
+    AIS_SHITS = 65536,
+    AIS_PERFECT_RECYCLER = 0,
 }
 
 
