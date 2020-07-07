@@ -87,7 +87,7 @@ int32 lastTriggered[numberOfEffects];
 int32 soundHoldLength[numberOfEffects] = {
 	0, 0, 0, 0,
 	0,
-	0, 0, 0, 0, 0
+	0, 0, 0, 0
 };
 
 u8 curentAudioMod = -1;
