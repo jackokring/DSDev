@@ -19,13 +19,29 @@ enum AIState {
     AIS_POSITION_LOCATED = 8,
     AIS_POSITION_ESTIMATED = 0,
 
-    //predictive knowledge (binary polar)
+    //predictive knowledge (binary polar, and inverse for DISPERSE)
     AIS_INTERCEPTS = 16,
     AIS_BLINE = 0,
 
     //newtonian motive (binary polar)
     AIS_CAN_IMPULSE = 32,
     AIS_FREE_FALL = 0,
+
+    //can spawn (binary polar)
+    AIS_IS_GENETIC = 64,
+    AIS_IS_DRONE = 0,
+
+    //can think (binary polar)
+    AIS_IS_MIMETIC = 128,
+    AIS_IS_MINDLESS = 0,
+
+    //plasmid (binary polar)
+    AIS_CAN_PLASMID = 256,
+    AIS_FIXED_GENETIC = 0,
+
+    //conversation (binary polar)
+    AIS_CAN_LEARN = 512,
+    AIS_FIXED_MIMETIC = 0,
 
     
 }
