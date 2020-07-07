@@ -43,6 +43,14 @@ enum AIState {
     AIS_CAN_LEARN = 512,
     AIS_FIXED_MIMETIC = 0,
 
+    //polymorph (binary polar)
+    AIS_META_POLYMORPH = 1024,
+    AIS_NOT_THE_THING = 0,
+
+    //tooling up (binary polar)
+    AIS_CAN_UPGRADE = 2048,
+    AIS_INTRINSIC_TOOLAGE = 0,
+
     
 }
 
