@@ -65,18 +65,17 @@ u8 audioMods[MSL_NSONGS] = {
 u16 audioEffects[] = {
     //primary feedback sound set
     SFX_ZAP,//primary action feedback
-    SFX_CRISPERROR_C4,//displeasure or cancel sound
-    SFX_CHIPPULSE_C4,//working on it sound, tick, tick ..
-    SFX_DRONE_C4,//buzzing about somewhere
+    SFX_BOUNCE,//displeasure or cancel sound
+    SFX_BIRD,//working on it sound, tick, tick ..
+    SFX_UP,//buzzing about somewhere
 
     //must have game sounds
 	SFX_EXPLODE,//classic bang reverb
 
-	SFX_ALERTZONE_C3,//bubbly query
-    SFX_ELECTROGLICK_C2,//boing electro thing
-    SFX_GRISTLE_C4,//distorted chopper
-    SFX_POWERX_C2,//electro buzz stab
-    SFX_ROBOZ_C4//vocoder-ish
+	SFX_PAC,//bubbly pacman?
+    SFX_BOOM,//small explode
+    SFX_SYNDROM,//distorted syndrum down
+    SFX_GLISS//unpower up loss?
 };
 
 //===================== SOUND PROCESSING =======================
