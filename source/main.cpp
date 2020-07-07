@@ -46,6 +46,8 @@ void progressMessage(PROGRESS x) {
 #include "mmsolution.h"		// solution definitions
 #include "mmsolution_bin.h"	// solution binary reference 
 
+int32 frame = 0;//frame counter
+
 u8 audioMods[MSL_NSONGS] = {
 	MOD_WF_COURIER,
 	MOD_MATHHYSTERIA,
@@ -81,6 +83,13 @@ u16 audioEffects[] = {
 #define numberOfEffects sizeof(audioEffects) / sizeof(u16)
 
 mm_sound_effect effectHandles[numberOfEffects];
+bool effectTrigger[2][numberOfEffects];
+int32 lastTriggered[numberOfEffects];
+int32 soundHoldLength[numberOfEffects] = {
+	0, 0, 0, 0,
+	0,
+	0, 0, 0, 0, 0
+};
 
 u8 curentAudioMod = -1;
 bool sheduleAudio = true;
@@ -173,6 +182,7 @@ void loadEffects() {
 			255,	// volume
 			128,	// panning
 		};
+		effectTrigger[i] = false;
 	}
 }
 
@@ -180,6 +190,26 @@ void unloadEffects() {
 	for(u8 i = 0; i < numberOfEffects; ++i) {
 		mmUnloadEffect(audioEffects[i]);	
 	}
+}
+
+void processAudio() {
+	if(sheduleAudio) Audio::playMod(rand() % MSL_NSONGS);
+	for(u8 i = 0; i < numberOfEffects; ++i) {
+		if(effectTrigger[0][i] == true) {
+			effectTrigger[0][i] = false;
+			if(frame - lastTriggered[i] > soundHoldLength[i])
+				Audio::playEffect(i, true);
+		}
+		if(effectTrigger[1][i] == true) {
+			effectTrigger[1][i] = false;
+			Audio::playEffect(i);
+		}
+	}
+}
+
+void Audio::cueEffect(int effect, bool foreground) {//multiple effect trigger group
+	effectTrigger[foreground ? 0 : 1][effect] = true;
+	lastTriggered[effect] = frame;
 }
 
 //============= FONT CLASS ==========================
@@ -313,7 +343,6 @@ char *printValue(int32 *value, bool comma = false,
 }
 
 //=================== MASTER GLOBAL STATE =================
-int32 frame = 0;//frame counter
 int32 stepFrames;
 bool baulkAI = false;
 bool paused = true;
@@ -916,7 +945,7 @@ int main(int argc, char *argv[]) {
 		initGame();
 		startGame();
 		while(!exiting) {
-			if(sheduleAudio) Audio::playMod(rand() % MSL_NSONGS);
+			processAudio();
 			//3D? Draw main screen
 			if(!currently2D) {
 				game->draw3D();

@@ -38,6 +38,7 @@ class Audio {
     public:
         static void playMod(u8 current);
         static mm_sfxhand playEffect(int effect, bool foreground = false);
+        static void cueEffect(int effect, bool foreground = false);
 };
 
 #endif
