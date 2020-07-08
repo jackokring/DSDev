@@ -61,7 +61,7 @@ class Thread : Type {//cooperative
 //views
 class View {
     public:
-        static void processInput(u16 keys);
+        void processInput(u16 keys);
 };
 
 class ViewSet : View {

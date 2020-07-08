@@ -651,7 +651,7 @@ u16 drawSubMeta() {
 			subViewRXInput = NULL;//exit code edit
 		}
 		if(subViewRXInput != NULL) {
-			View::processInput(activeKeys & keyIntercepted);
+			subViewRXInput->processInput(activeKeys & keyIntercepted);
 		}
 		activeKeys &= ~keyIntercepted;
 	} else {//select repeat view changer for coding
