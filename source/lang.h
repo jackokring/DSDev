@@ -60,7 +60,8 @@ class Thread : Type {//cooperative
 
 //views
 class View {
-
+    public:
+        static void processInput(u16 keys);
 };
 
 class ViewSet : View {
@@ -72,6 +73,6 @@ class Machine {//singleton?
 
 };
 
-extern View *subViewRXInput;//set view to draw?
+extern View *codeView;//set view to draw?
 extern u16 keyIntercepted;//mask of keys intercepted
 #endif

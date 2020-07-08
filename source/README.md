@@ -7,12 +7,12 @@ Basic Design Things
 -------------------
 
 * Bottom display has console and keyboard
-* Top display uses 2D and 3D GL. Allocated 4 * 64kB (256 colour) textures plus 2 fonts
+* Top display uses 2D and 3D GL. Allocated 2 * 64kB (256 colour) textures plus 2 fonts
 * Font resources use a modified ASCII (upper case)
-  * Sword - output producer, fast (A)
-  * Shield - input consumer, slow (B)
-  * Chest - output producer, slow (Y)
-  * Binoculars - input consumer, fast (X)
+  * Sword - output kenetic, fast (A)
+  * Shield - input potential, slow (B)
+  * Chest - output potential, slow (Y)
+  * Binoculars - input kinetic, fast (X)
   * Heart - replaces backslash (life)
   * End - replaces caret for easy name select end on high score
   * Various other glyphs - box art, arrows, angled quotes ...
@@ -33,13 +33,13 @@ VRAM
 ----
 
 Main
-* BG0/3D - A, B, D (texture gfx); F, G (texture palette)
-* BG2, BG3 - E (shared gfx and seperate maps using main palette)
+* BG0/3D - A, B (texture gfx, using F texture palette)
+* BG2, BG3 - E (shared gfx and seperate maps using G extended palette)
 
 Sub
 * BG0 - C (ANSI minimal console) 
-* BG1 - C (shared gfx and seperate maps); H using extended palette)
+* BG1 - C (shared gfx and seperate maps, using H extended palette)
 * BG2 - (as above)
 * BG3 - C (inbuilt keyboard)
-* Sprites - I (TBC)
+* Sprites - D, (using I extended palette)
 

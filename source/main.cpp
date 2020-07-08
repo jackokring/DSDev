@@ -380,6 +380,7 @@ void waitForKey(int keys) {
 }
 
 int textureID[2];
+View *codeView;
 View *subViewRXInput;
 u16 keyIntercepted = 0;
 u16 keyHoldAllow = 0;
@@ -638,11 +639,27 @@ u16 drawSubMeta() {
 		paused = !paused;//open pause state
 		consoleClear();
 	}
-	//if(subViewRXInput != NULL);//process
 	uint activeKeys = keysDown();
 	//held keys check
-	if(!paused) activeKeys |= (keyHoldAllow & keysHeld());
-	return ~keyIntercepted & activeKeys;
+	if(!paused) {
+		activeKeys |= (keyHoldAllow & keysHeld());
+	} else {
+		activeKeys |= (keysDownRepeat() & (KEY_DPAD_X | KEY_DPAD_Y));
+	}
+	if(subViewRXInput != NULL) {
+		if((keysDownRepeat() & KEY_SELECT & ~keysDown())) {
+			subViewRXInput = NULL;//exit code edit
+		}
+		if(subViewRXInput != NULL) {
+			View::processInput(activeKeys & keyIntercepted);
+		}
+		activeKeys &= ~keyIntercepted;
+	} else {//select repeat view changer for coding
+		if((keysDownRepeat() & KEY_SELECT & ~keysDown())) {
+			subViewRXInput = codeView;//set code edit
+		}
+	}
+	return activeKeys;
 	//return keysDown();
 }
 
@@ -887,7 +904,7 @@ int main(int argc, char *argv[]) {
     //B 128 -> PRIMARY TEXTURES (TextureID[0,1])
     //C 128 -> SUB CONSOLE, KEYBOARD, 2 * BG, (map 23 free)
     //D 128 -> SUB SPRITE
-    //E 64 -> MAIN BG (EE) -> uses main palette as 3D doesn't
+    //E 64 -> MAIN BG (EE)
     //F 16 -> TEXTURE PALETTE (4 * 512 (2K of 16K) used) -> hi-colour
     //G 16 -> MAIN BG EXT PALETTE
     //H 32 -> SUB BG EXT PALETTE -> 4096 colours (auto palette by last 32 colour lights)

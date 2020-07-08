@@ -39,3 +39,7 @@ bool asBool(u16 node) {
 char *asString(u16 node) {
     return strings + memory[node];
 }
+
+void View::processInput(u16 keys) {
+	
+}
