@@ -564,7 +564,8 @@ void extendedPalettes() {
 				int r = RED(col) * RED(memory[k]) / 31;
 				int b = BLUE(col) * BLUE(memory[k]) / 31;
 				int g = GREEN(col) * GREEN(memory[k]) /31;
-				palette[k] = RGB15(r, g, b);
+				int a = memory[k] & 32768;
+				palette[k] = RGB15(r, g, b) | a;
 			}
 			DC_FlushAll();
 			dmaCopy(palette, &VRAM_H_EXT_PALETTE[i][p], 512);//4096 colours max
@@ -580,7 +581,8 @@ void extendedPalettes() {
 				int r = RED(col) * RED(memory[k]) / 31;
 				int b = BLUE(col) * BLUE(memory[k]) / 31;
 				int g = GREEN(col) * GREEN(memory[k]) /31;
-				palette[k] = RGB15(r, g, b);
+				int a = memory[k] & 32768;
+				palette[k] = RGB15(r, g, b) | a;
 			}
 			DC_FlushAll();
 			dmaCopy(palette, &VRAM_G_EXT_PALETTE[i + 1][p], 512);//4096 colours max
@@ -596,7 +598,8 @@ void extendedPalettes() {
 			int r = RED(col) * RED(memory[k]) / 31;
 			int b = BLUE(col) * BLUE(memory[k]) / 31;
 			int g = GREEN(col) * GREEN(memory[k]) /31;
-			palette[k] = RGB15(r, g, b);
+			int a = memory[k] & 32768;
+			palette[k] = RGB15(r, g, b) | a;
 		}
 		DC_FlushAll();
 		dmaCopy(palette, &VRAM_I_EXT_SPR_PALETTE[p], 512);
