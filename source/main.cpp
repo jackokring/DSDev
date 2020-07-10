@@ -577,7 +577,7 @@ void extendedPalettes() {
 		}
 		DC_FlushAll();
 		dmaCopy(palette, &VRAM_H_EXT_PALETTE[1][p], 512);//4096 colours max
-		int col = memory[256 - 16 + p];//multiplyer of light
+		col = memory[256 - 16 + p];//multiplyer of light
 		for(int k = 0; k < 256; ++k) {
 			int r = RED(col) * RED(memory[k]) / 62;
 			int b = BLUE(col) * BLUE(memory[k]) / 62;
@@ -602,7 +602,7 @@ void extendedPalettes() {
 		}
 		DC_FlushAll();
 		dmaCopy(palette, &VRAM_G_EXT_PALETTE[2][p], 512);//4096 colours max
-		int col = memory[256 - 16  + p];//multiplyer of light
+		col = memory[256 - 16  + p];//multiplyer of light
 		for(int k = 0; k < 256; ++k) {
 			int r = RED(col) * RED(memory[k]) / 62;
 			int b = BLUE(col) * BLUE(memory[k]) / 62;
@@ -926,10 +926,6 @@ void powerButtonPressed() {
 }
 
 //=================== KEYBOARD / CONSOLE ============================
-void View::keyboardPress(int key) {
-
-}
-
 void View::keyboardVisible(bool show) {//make encapsulation and possibe fx
 	//console size to 8 lines?
 	if(show) {
@@ -944,10 +940,6 @@ void View::print(char * text) {
 		//maybe other processing
 		iprintf(text);
 	}
-}
-
-void View::show() {//might be virtual?
-
 }
 
 //=================== MAIN ENTRY ========================================

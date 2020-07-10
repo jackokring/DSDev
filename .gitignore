@@ -7,3 +7,5 @@ build/main.o
 DSDev.elf
 build/mmsolution.bin
 build/mmsolution.bin.o
+build/subTiles.o
+build/subTiles.s

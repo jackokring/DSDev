@@ -43,3 +43,11 @@ char *asString(u16 node) {
 void View::processInput(u16 keys) {
 	
 }
+
+void View::keyboardPress(int key) {
+
+}
+
+void View::show() {//might be virtual?
+
+}
