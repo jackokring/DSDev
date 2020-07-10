@@ -564,6 +564,9 @@ void BG::hideSprite(int number) {
 	oamSetHidden(&oamSub, number, true);
 }
 
+//<62 makes bluer
+#define BLUE_TINT_BACKGROUND 48
+
 void extendedPalettes() {
 	vramSetBankH(VRAM_H_LCD);
 	decompress(subTilesPal, memory, LZ77Vram);
@@ -572,36 +575,52 @@ void extendedPalettes() {
 	//as console and keyboard are 4bpp backgrounds
 	//they are not affected with extended palettes
 	//USE LAST 2 PALETTE LINES AS LIGHT ADJUSTMENT
-	for(int i = 1; i < 3; ++i) {
-		for(int p = 0; p < 16; ++p) {
-			int col = memory[256 - 32 + (i - 1) * 16 + p];//multiplyer of light
-			for(int k = 0; k < 256; ++k) {
-				int r = RED(col) * RED(memory[k]) / 31;
-				int b = BLUE(col) * BLUE(memory[k]) / 31;
-				int g = GREEN(col) * GREEN(memory[k]) /31;
-				int a = memory[k] & 32768;
-				palette[k] = RGB15(r, g, b) | a;
-			}
-			DC_FlushAll();
-			dmaCopy(palette, &VRAM_H_EXT_PALETTE[i][p], 512);//4096 colours max
+	for(int p = 0; p < 16; ++p) {
+		int col = memory[256 - 16 + p];//multiplyer of light
+		for(int k = 0; k < 256; ++k) {
+			int r = RED(col) * RED(memory[k]) / 31;
+			int b = BLUE(col) * BLUE(memory[k]) / 31;
+			int g = GREEN(col) * GREEN(memory[k]) / 31;
+			int a = memory[k] & 32768;
+			palette[k] = RGB15(r, g, b) | a;
 		}
+		DC_FlushAll();
+		dmaCopy(palette, &VRAM_H_EXT_PALETTE[1][p], 512);//4096 colours max
+		int col = memory[256 - 16 + p];//multiplyer of light
+		for(int k = 0; k < 256; ++k) {
+			int r = RED(col) * RED(memory[k]) / 62;
+			int b = BLUE(col) * BLUE(memory[k]) / 62;
+			int g = GREEN(col) * GREEN(memory[k]) / BLUE_TINT_BACKGROUND;//blue!!
+			int a = memory[k] & 32768;
+			palette[k] = RGB15(r, g, b) | a;
+		}
+		DC_FlushAll();
+		dmaCopy(palette, &VRAM_H_EXT_PALETTE[2][p], 512);//4096 colours max
 	}
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);//extended palette
 	vramSetBankG(VRAM_G_LCD);
 	decompress(mainTilesPal, memory, LZ77Vram);
-	for(int i = 1; i < 3; ++i) {
-		for(int p = 0; p < 16; ++p) {
-			int col = memory[256 - 32 + (i - 1) * 16 + p];//multiplyer of light
-			for(int k = 0; k < 256; ++k) {
-				int r = RED(col) * RED(memory[k]) / 31;
-				int b = BLUE(col) * BLUE(memory[k]) / 31;
-				int g = GREEN(col) * GREEN(memory[k]) /31;
-				int a = memory[k] & 32768;
-				palette[k] = RGB15(r, g, b) | a;
-			}
-			DC_FlushAll();
-			dmaCopy(palette, &VRAM_G_EXT_PALETTE[i + 1][p], 512);//4096 colours max
+	for(int p = 0; p < 16; ++p) {
+		int col = memory[256 - 16  + p];//multiplyer of light
+		for(int k = 0; k < 256; ++k) {
+			int r = RED(col) * RED(memory[k]) / 31;
+			int b = BLUE(col) * BLUE(memory[k]) / 31;
+			int g = GREEN(col) * GREEN(memory[k]) / 31;
+			int a = memory[k] & 32768;
+			palette[k] = RGB15(r, g, b) | a;
 		}
+		DC_FlushAll();
+		dmaCopy(palette, &VRAM_G_EXT_PALETTE[2][p], 512);//4096 colours max
+		int col = memory[256 - 16  + p];//multiplyer of light
+		for(int k = 0; k < 256; ++k) {
+			int r = RED(col) * RED(memory[k]) / 62;
+			int b = BLUE(col) * BLUE(memory[k]) / 62;
+			int g = GREEN(col) * GREEN(memory[k]) / BLUE_TINT_BACKGROUND;//blue!!
+			int a = memory[k] & 32768;
+			palette[k] = RGB15(r, g, b) | a;
+		}
+		DC_FlushAll();
+		dmaCopy(palette, &VRAM_G_EXT_PALETTE[3][p], 512);//4096 colours max
 	}
 	vramSetBankG(VRAM_G_BG_EXT_PALETTE_SLOT23);
 	vramSetBankI(VRAM_I_LCD);
@@ -612,7 +631,7 @@ void extendedPalettes() {
 		for(int k = 0; k < 256; ++k) {
 			int r = RED(col) * RED(memory[k]) / 31;
 			int b = BLUE(col) * BLUE(memory[k]) / 31;
-			int g = GREEN(col) * GREEN(memory[k]) /31;
+			int g = GREEN(col) * GREEN(memory[k]) / 31;
 			int a = memory[k] & 32768;
 			palette[k] = RGB15(r, g, b) | a;
 		}
