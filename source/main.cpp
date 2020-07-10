@@ -375,6 +375,7 @@ void waitForKey(int keys) {
 	Audio::playEffect(ACTION_FX);
 }
 
+Font *textures[2];
 View *codeView;
 View *subViewRXInput;
 u16 keyIntercepted = 0;
@@ -422,17 +423,10 @@ void BG::setFor3D() {
 		font = new Font(8, (u16 *)strings, (u8 *)memory);
 		loadCompressedTex((u8*)font_16x16Bitmap, (u16*)font_16x16Pal);
 		fontBig = new Font(16, (u16 *)strings, (u8 *)memory);
-		glGenTextures(4, (int *)&textureID);//make 4 textures
-		glBindTexture(0, textureID[0]);//bind it
 		loadCompressedTex((u8*)threeDtex0Bitmap, (u16*)threeDtex0Pal);
-		glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
-			0, TEXGEN_TEXCOORD, memory);
-		glColorTableEXT(0, 0, 255, 0, 0, (uint16 *)strings);
-		glBindTexture(0, textureID[1]);//bind it
+		textures[0] = new Font(16, (u16 *)strings, (u8 *)memory);
 		loadCompressedTex((u8*)threeDtex1Bitmap, (u16*)threeDtex1Pal);
-		glTexImage2D(0, 0, GL_RGB256, TEXTURE_SIZE_256, TEXTURE_SIZE_256,
-			0, TEXGEN_TEXCOORD, memory);
-		glColorTableEXT(0, 0, 255, 0, 0, (uint16 *)strings);
+		textures[1] = new Font(16, (u16 *)strings, (u8 *)memory);
 	}
 	//enable textures
 	glEnable(GL_TEXTURE_2D);
@@ -919,6 +913,8 @@ void cleanUp() {
 	glResetTextures();
 	if(fontBig != NULL) delete fontBig;
 	if(font != NULL) delete font;
+	if(textures[0] != NULL) delete textures[0];
+	if(textures[1] != NULL) delete textures[1];
 	glInitialized = false;
 }
 
