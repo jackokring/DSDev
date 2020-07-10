@@ -739,7 +739,6 @@ void optionsText() {
 
 void menuText(const char *abxy[], const char *lrWhat, char *lr,
 		const char *start, const char *select) {
-	consoleClear();
 	const char *butABXY[] = {
 		ANSI_RED "A",
 		ANSI_YEL "B",
@@ -839,6 +838,7 @@ void applyInfrequentlyAccessedSettings() {
 }
 
 void drawAndProcessMenu(u16 keysMasked) {
+	consoleClear();
 	if(subViewRXInput == NULL) {//intercept menu view for show special instead?
 		//menu display
 		const char *buttons[] = { "NEW GAME", "LOAD GAME", "EXIT", "SAVE GAME" };
@@ -898,6 +898,8 @@ void drawAndProcessMenu(u16 keysMasked) {
 		if(keysMasked & KEY_SELECT) {//BO SALECTA!!
 			Audio::playMod(++curentAudioMod);
 		}
+	} else {
+		subViewRXInput->show();
 	}
 }
 
@@ -921,6 +923,31 @@ void cleanUp() {
 void powerButtonPressed() {
 	cleanUp();
 	exit(0);
+}
+
+//=================== KEYBOARD / CONSOLE ============================
+void View::keyboardPress(int key) {
+
+}
+
+void View::keyboardVisible(bool show) {//make encapsulation and possibe fx
+	//console size to 8 lines?
+	if(show) {
+		keyboardShow();
+	} else {
+		keyboardHide();
+	}
+}
+
+void View::print(char * text) {
+	if(subViewRXInput != NULL) {
+		//maybe other processing
+		iprintf(text);
+	}
+}
+
+void View::show() {//might be virtual?
+
 }
 
 //=================== MAIN ENTRY ========================================
@@ -948,7 +975,8 @@ int main(int argc, char *argv[]) {
     //4096 byte tiles in default font 4bpp
     //tilebase 4 is free @ 64K, map 30 and 31 free in lower 64K of VRAM_C
     //BG1, BG2 not used
-	Keyboard * k = keyboardDemoInit();
+	Keyboard *k = keyboardDemoInit();
+	k->OnKeyPressed = View::keyboardPress;
     //keyboardShow();
     //BG3, mapbase 20 (2K) -> just above tiles, tilebase 0 (16K) = 0K
     //40,960 byte tiles for keyboard (256 * 320 / 2) 4bpp

@@ -62,6 +62,10 @@ class Thread : Type {//cooperative
 class View {
     public:
         void processInput(u16 keys);
+        static void keyboardPress(int key);
+        static void keyboardVisible(bool show = true);
+        static void print(char * text);//output to console when OK
+        static void show();//signal this to generate filling of console
 };
 
 class ViewSet : View {
