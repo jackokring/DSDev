@@ -1,4 +1,5 @@
 #include "lang.h"
+#include "ctl.h"
 #include <string.h>
 //========================== DSL PROCESSOR =================
 
@@ -54,6 +55,10 @@ void View::show(bool keyboard) {//might be virtual?
 }
 
 bool View::VBIPoll() {
-    swiWaitForVBlank();
+    if(baulkAI) return true;//been a while as VBI occured
+    //obtaining a frame count of frames elapsed in main thread resets BaulkAI to false
+    //process non essential threads here!!
+    //or wait
+    swiWaitForVBlank();//still some frame left to waste!!
     return true;
 }
