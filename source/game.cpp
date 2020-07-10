@@ -125,6 +125,7 @@ void GameLogic::draw3D() {
 	if((keys & KEY_RIGHT)) rotateY -= 3;
 	
 	//glBindTexture(0, textureID[0]);
+	//font.
 
 	//draw the obj
 	glBegin(GL_QUAD);

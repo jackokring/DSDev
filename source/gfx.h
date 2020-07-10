@@ -22,6 +22,8 @@ class Font {
 	private:
 	glImage *font_sprite;
 	int textureID;
+	int size;
+	int charsAcross;
 	int extended = 0;
 };
 

@@ -222,7 +222,9 @@ Font::Font(const u16 tileSize,
 	const u16 *palette,
 	const u8 *texture) {
 		int sz = 256 / tileSize;
-		sz *= sz; 
+		size = sz;//faster
+		charsAcross = 256 / size;
+		sz *= sz;
 		font_sprite = new glImage[sz];
 		textureID = glLoadTileSet(font_sprite,
 			tileSize, tileSize,//glLoadTileSet -> tileWidth, tileHieght 
@@ -245,7 +247,7 @@ void Font::print(int x, int y, const char *text) {
 	while(*text) { 
 		font_char = (*(unsigned char*)text++) | extended;
 		glSprite(x, y, GL_FLIP_NONE, &font_sprite[font_char]);
-		x += font_sprite[font_char].width; 
+		x += size; 
 	}
 }
 
@@ -264,13 +266,7 @@ void Font::printCentered(int y, const char *text) {
 }
 
 int Font::printWidth(const char *text) {
-	uint font_char;
-	int total_width = 0;
-	while(*text) {
-		font_char = (*(unsigned char*)text++) | extended;
-		total_width += font_sprite[font_char].width; 
-	}
-	return total_width;
+	return strlen(text) * size;
 }
 
 int Font::getTextureID() {
@@ -279,8 +275,8 @@ int Font::getTextureID() {
 
 int Font::getTexturePack(u16 tile, CORNER coordinate, u16 scale) {
 	uint sz = font_sprite[0].width;
-	uint x = (256 / sz) * (tile % (256 / sz));
-	uint y = (256 / sz) * (tile / (256 / sz));
+	uint x = charsAcross * (tile % charsAcross);
+	uint y = charsAcross * (tile / charsAcross);
 	switch(coordinate) {
 		case TOP_LEFT_FONT:
 			return TEXTURE_PACK(inttot16(x),inttot16(y));
@@ -379,7 +375,6 @@ void waitForKey(int keys) {
 	Audio::playEffect(ACTION_FX);
 }
 
-int textureID[2];
 View *codeView;
 View *subViewRXInput;
 u16 keyIntercepted = 0;
@@ -458,6 +453,8 @@ void BG::setFor3D() {
 }
 
 void BG::putMain(int bg, int x, int y, int tile) {
+	//tiles greater than equal to 768 are glithy effects
+	//rotation of all tiles to be greater than or equal to this is a "feature"
 	u16 *map = bgGetMapPtr(mainBG[bg]);
 	x += y * 64;
 	x &= 4095;//8kB of double bytes
