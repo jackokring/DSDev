@@ -7,7 +7,7 @@ Basic Design Things
 -------------------
 
 * Bottom display has console and keyboard
-* Top display uses 2D and 3D GL. Allocated 2 * 64kB (256 colour) textures plus 2 3D fonts
+* Top display uses 2D and 3D GL. Allocated 2 * 64kB (256 colour) textures plus 2 3D fonts. These two textures are allocated as fonts to ease loading and use.
 * Font resources use a modified ASCII (upper case)
   * Sword - output kenetic, fast (A)
   * Shield - input potential, slow (B)

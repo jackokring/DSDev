@@ -3,7 +3,6 @@
 #include "ctl.h"
 #include <gl2d.h>
 //============================== GRAPHICS INCLUDES ====================
-
 class Font {
 	public:	
 	~Font();
@@ -26,6 +25,10 @@ class Font {
 	int charsAcross;
 	int extended = 0;
 };
+
+extern Font *textures[2];
+extern Font *font;
+extern Font *BigFont;
 
 class BG {
     public:
