@@ -460,7 +460,7 @@ void BG::setFor3D() {
 void BG::putMain(int bg, int x, int y, int tile) {
 	u16 *map = bgGetMapPtr(mainBG[bg]);
 	x += y * 64;
-	x &= 4095;
+	x &= 4095;//8kB of double bytes
 	map += x;
 	*map = tile;
 }
@@ -468,11 +468,11 @@ void BG::putMain(int bg, int x, int y, int tile) {
 void BG::putSub(int bg, int x, int y, int tile, int attribute) {
 	u16 *map = bgGetMapPtr(subBG[bg]);
 	x += y * 64;
-	x &= 2047;
+	x &= 4095;//8kB of double bytes
 	map += x;
 	*map = tile;
 	u8 *at = (u8 *)bgGetMapPtr(subBG[bg]);
-	at += 4096;
+	at += 8192;//offset in bytes
 	at += x;
 	*at = (u8)attribute;
 }
@@ -485,12 +485,12 @@ void BG::clearMain(int bg) {
 }
 
 void BG::clearSub(int bg) {
-	u16 *map = bgGetMapPtr(subBG[bg]) + 2048;//advanced attributes ...
-	for(int i = 0; i < 1024; ++i) {
+	u16 *map = bgGetMapPtr(subBG[bg]) + 8192;//advanced attributes ...
+	for(int i = 0; i < 2048; ++i) {
 		*map++ = 0;
 	}
 	map = bgGetMapPtr(subBG[bg]);
-	for(int i = 0; i < 2048; ++i) {
+	for(int i = 0; i < 4096; ++i) {
 		*map++ = 0;
 	}
 }
@@ -926,8 +926,8 @@ int main(int argc, char *argv[]) {
     //keyboardShow();
     //BG3, mapbase 20 (2K) -> just above tiles, tilebase 0 (16K) = 0K
     //40,960 byte tiles for keyboard (256 * 320 / 2) 4bpp
-	subBG[0] = bgInitSub(1, BgType_Text8bpp, BgSize_T_512x256, 26, 4);
-	subBG[1] = bgInitSub(2, BgType_Text8bpp, BgSize_T_512x256, 29, 4);
+	subBG[0] = bgInitSub(1, BgType_Text8bpp, BgSize_T_512x512, 26, 4);
+	subBG[1] = bgInitSub(2, BgType_Text8bpp, BgSize_T_512x512, 14, 4);
 	decompress(subTilesTiles, bgGetGfxPtr(subBG[0]), LZ77Vram);
 	BG::clearSub(0);
 	BG::clearSub(1);
