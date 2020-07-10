@@ -48,6 +48,12 @@ void View::keyboardPress(int key) {
 
 }
 
-void View::show() {//might be virtual?
+void View::show(bool keyboard) {//might be virtual?
+    //if keyboard true then 8 line display
 
+}
+
+bool View::VBIPoll() {
+    swiWaitForVBlank();
+    return true;
 }

@@ -837,6 +837,8 @@ void applyInfrequentlyAccessedSettings() {
 	//actual effects are short and setting used on playEffect()
 }
 
+bool keysShown = false;
+
 void drawAndProcessMenu(u16 keysMasked) {
 	consoleClear();
 	if(subViewRXInput == NULL) {//intercept menu view for show special instead?
@@ -899,7 +901,7 @@ void drawAndProcessMenu(u16 keysMasked) {
 			Audio::playMod(++curentAudioMod);
 		}
 	} else {
-		subViewRXInput->show();
+		subViewRXInput->show(keysShown);
 	}
 }
 
@@ -926,12 +928,17 @@ void powerButtonPressed() {
 }
 
 //=================== KEYBOARD / CONSOLE ============================
+PrintConsole *console;
+
 void View::keyboardVisible(bool show) {//make encapsulation and possibe fx
 	//console size to 8 lines?
+	keysShown = show;
 	if(show) {
 		keyboardShow();
+		consoleSetWindow(console, 0, 0, 32, 8);//top space
 	} else {
 		keyboardHide();
+		consoleSetWindow(console, 0, 0, 32, 24);//all
 	}
 }
 
@@ -958,7 +965,6 @@ int main(int argc, char *argv[]) {
 
     //lower screen
 	//x, y, w, h in chars
-	PrintConsole *console;
 	consoleSetWindow(console = consoleDemoInit(), 0, 0, 32, 24);//does the following
     //videoSetModeSub(MODE_0_2D);
 	//vramSetBankC(VRAM_C_SUB_BG);
@@ -1033,17 +1039,8 @@ int main(int argc, char *argv[]) {
 			} else {
 				drawAndProcessMenu(drawSubMeta());
 			}
-			/* while(inFrameCount()) {
-				if(paused) {
-					swiWaitForVBlank();//low power
-				} else {
-					//perform AI?? section
-					//check baulkAI in intensive search
-					swiWaitForVBlank();//low power
-				}
-			}	*/
-			//test hack
-			swiWaitForVBlank();
+			oamUpdate(&oamSub);//sprites for next frame
+			while(!View::VBIPoll());//default returns true after VBI
 		}
 	} while(newGame);
 	cleanUp();

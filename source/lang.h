@@ -65,7 +65,8 @@ class View {
         static void keyboardPress(int key);
         static void keyboardVisible(bool show = true);
         static void print(char * text);//output to console when OK
-        static void show();//signal this to generate filling of console
+        static void show(bool keyboard);//signal this to generate filling of console
+        static bool VBIPoll();
 };
 
 class ViewSet : View {
