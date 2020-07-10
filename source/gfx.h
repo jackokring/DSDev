@@ -31,6 +31,8 @@ class BG {
         static void putSub(int bg, int x, int y, int tile, int attribute = 0);
         static void clearMain(int bg);
         static void clearSub(int bg);
+		static void scrollMain(int x0, int y0, int x1 = 0, int y1 = 0);
+		static void scrollSub(int x0, int y0, int x1 = 0, int y1 = 0);
 
 		//lower display sprites
 		static void drawSprite(int number, int x, int y, int glyph);

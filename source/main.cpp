@@ -495,6 +495,22 @@ void BG::clearSub(int bg) {
 	}
 }
 
+void BG::scrollMain(int x0, int y0, int x1, int y1) {
+	bgSetScroll(mainBG[0], x0, y0);//origin
+	bgSetRotateScale(mainBG[0], 0, 1 << 8, 1 << 8);
+	bgSetScroll(mainBG[1], x1, y1);//origin
+	bgSetRotateScale(mainBG[1], 0, 1 << 8, 1 << 8);
+	bgUpdate();
+}
+
+void BG::scrollSub(int x0, int y0, int x1, int y1) {
+	bgSetScroll(subBG[0], x0, y0);//origin
+	//bgSetRotateScale(subBG[0], 0, 1 << 8, 1 << 8);
+	bgSetScroll(subBG[1], x1, y1);//origin
+	//bgSetRotateScale(subBG[1], 0, 1 << 8, 1 << 8);
+	bgUpdate();
+}
+
 void loadTitleMain(const unsigned int *tiles,
 		const unsigned short *pal) {
 	BG::setFor2D();
@@ -503,9 +519,7 @@ void loadTitleMain(const unsigned int *tiles,
 	for(int x = 0; x < 32 * 24; ++x) {
 		BG::putMain(0, x % 32, x / 32, x);
 	}
-	bgSetScroll(mainBG[0], 0, 0);//origin
-	bgSetRotateScale(mainBG[0], 0, 1 << 8, 1 << 8);
-	bgUpdate();
+	BG::scrollMain(0, 0);
 	bgExtPaletteDisable();//not needed?
 }
 
@@ -615,7 +629,7 @@ GameLogic *game = new GameLogic();
 u16 drawSubMeta() {
 	for(int i = 0; i < 2; ++i) {
 		u16 *map = bgGetMapPtr(subBG[i]);
-		u8 *at = (u8 *)(map + 2048);//attribute pointer
+		u8 *at = (u8 *)(map + 4096);//attribute pointer 8kB offset
 		for(int j = frame & 15; j < 2048; j+= 16) {
 			//process attribute
 			int a = *at;
