@@ -4,7 +4,7 @@
 #include <nds.h>
 extern bool baulkAI;
 extern int32 frame;
-extern int32 stepFrames;
+//extern int32 stepFrames;
 extern bool paused;
 extern u16 keyIntercepted;
 extern u16 keyHoldAllow;

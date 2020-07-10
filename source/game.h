@@ -23,7 +23,7 @@ class GameLogic {
         void draw3D();
         //game processing
         void processInputs(u16 keysMasked);
-        void processMotions();
+        void processMotions(int32 frames);//frames usually 1
         void processCollisions();
         void processStateMachine();
 };

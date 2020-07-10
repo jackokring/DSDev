@@ -153,7 +153,7 @@ void GameLogic::processInputs(u16 keysMasked) {
 	/* if(keysMasked & KEY_START) paused = true;// <- handled elsewhere */
 }
 
-void GameLogic::processMotions() {
+void GameLogic::processMotions(int32 frames) {
 
 }
 

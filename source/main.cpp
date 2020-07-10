@@ -350,19 +350,18 @@ void updateFrame() {
 	baulkAI = true;
 }
 
-bool inFrameCount() {
+int32 inFrameCount() {
 	static u16 last = 0;
 	u16 x = frame - last;
 	if(x > 1) baulkAI = false;
 	last += x;
-	stepFrames = x;
-	return x == 0;
+	return x;
 }
 
 void enterFrameWhile() {
 	exiting = false;
 	scanKeys();//just to catch buffer state for held
-	while(!inFrameCount());
+	while(inFrameCount() != 0);
 }
 
 void waitForKey(int keys) {
@@ -1033,7 +1032,7 @@ int main(int argc, char *argv[]) {
 			//Draw sub screen
 			if(!paused) {
 				game->processInputs(drawSubMeta());//keysIntercepted?
-				game->processMotions();
+				game->processMotions(inFrameCount());
 				game->processCollisions();
 				game->processStateMachine();
 			} else {
