@@ -657,6 +657,7 @@ u16 drawSubMeta() {
 	} else {//select repeat view changer for coding
 		if((keysDownRepeat() & KEY_SELECT & ~keysDown())) {
 			subViewRXInput = codeView;//set code edit
+			activeKeys &= ~KEY_SELECT;//prevent passthru
 		}
 	}
 	return activeKeys;
