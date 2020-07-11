@@ -655,7 +655,7 @@ u16 drawSubMeta() {
 	}
 	game->drawSub();
 	oamUpdate(&oamSub);//sprites
-	//int keyCode = keyboardUpdate();//for later
+	keyboardUpdate();//for later
 	//return masked keys
 	scanKeys();
 	if(keysDown() & KEY_START) {
@@ -934,7 +934,7 @@ void View::keyboardVisible(bool show) {//make encapsulation and possibe fx
 	keysShown = show;
 	if(show) {
 		keyboardShow();
-		consoleSetWindow(console, 0, 0, 32, 8);//top space
+		consoleSetWindow(console, 0, 0, 32, 14);//top space
 	} else {
 		keyboardHide();
 		consoleSetWindow(console, 0, 0, 32, 24);//all
@@ -1129,7 +1129,7 @@ int main(int argc, char *argv[]) {
 			} else {
 				drawAndProcessMenu(drawSubMeta());
 			}
-			oamUpdate(&oamSub);//sprites for next frame
+			//oamUpdate(&oamSub);//sprites for next frame
 			while(!View::VBIPoll());//default returns true after VBI
 		}
 	} while(newGame);

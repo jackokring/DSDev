@@ -50,7 +50,7 @@ void View::keyboardPress(int key) {
 }
 
 void View::show(bool keyboard) {//might be virtual?
-    //if keyboard true then 8 line display
+    //if keyboard true then 14 line display
 
 }
 
