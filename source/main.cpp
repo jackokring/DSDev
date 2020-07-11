@@ -949,6 +949,22 @@ void View::print(char * text) {
 }
 
 bool consoleIntercept(void *con, char c) {//true for handled
+	if(c >= 128) {
+		//no font available as a default
+		char val[2];
+		val[1] = '\0';
+		switch((c & 64) >> 6) {
+			case 0:
+				iprintf(ANSI_YEL);//day
+			case 1:
+				iprintf(ANSI_BLU);//night
+			default:
+				break;
+		}
+		val[0] = (c & 63) | 64;//text
+		iprintf((char *)&val);
+		iprintf(ANSI_WHT);
+	}
 	//unhandled control codes
 	switch(c) {
 		case 1:
