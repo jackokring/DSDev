@@ -968,10 +968,12 @@ bool consoleIntercept(void *con, char c) {//true for handled
 	}
 	//unhandled control codes
 	switch(c) {
-		case 1:
-			break;
-		case 2:
-			break;
+		case 1://^A
+			iprintf(ANSI_RED);
+			return true;
+		case 2://^B
+			iprintf(ANSI_YEL);
+			return true;
 		case 3:
 			break;
 		case 4:
@@ -980,15 +982,17 @@ bool consoleIntercept(void *con, char c) {//true for handled
 			break;
 		case 6:
 			break;
-		case 7:
-			break;
+		case 7://^G
+			Audio::cueEffect(SFX_EXPLODE);
+			return true;
 		//BS
 		//TAB
 		//LF
 		case 11:
 			break;
-		case 12:
-			break;
+		case 12://^L (FF)
+			consoleClear();
+			return true;
 		//CR
 		case 14:
 			break;
@@ -1010,10 +1014,12 @@ bool consoleIntercept(void *con, char c) {//true for handled
 			break;
 		case 23:
 			break;
-		case 24:
-			break;
-		case 25:
-			break;
+		case 24://^X
+			iprintf(ANSI_BLU);
+			return true;
+		case 25://^Y
+			iprintf(ANSI_GRN);
+			return true;
 		case 26:
 			break;
 		//ESC (Some ANSI)
