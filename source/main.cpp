@@ -1025,6 +1025,9 @@ bool consoleIntercept(void *con, char c) {//true for handled
 			break;
 		case 31:
 			break;
+		default://a java old time lock-up habit (halt without a default)
+			//also an error in VHDL style languages due to incomplete coverage
+			break;
 	}
 	return false;
 }
