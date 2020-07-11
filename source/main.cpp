@@ -964,6 +964,7 @@ bool consoleIntercept(void *con, char c) {//true for handled
 		val[0] = (c & 63) | 64;//text
 		iprintf((char *)&val);
 		iprintf(ANSI_WHT);
+		return true;
 	}
 	//unhandled control codes
 	switch(c) {
