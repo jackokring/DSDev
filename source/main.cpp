@@ -361,7 +361,7 @@ int32 inFrameCount() {
 void enterFrameWhile() {
 	exiting = false;
 	scanKeys();//just to catch buffer state for held
-	while(inFrameCount() != 0);
+	while(inFrameCount() == 0);
 }
 
 void waitForKey(int keys) {
