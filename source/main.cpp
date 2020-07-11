@@ -660,6 +660,10 @@ u16 drawSubMeta() {
 	scanKeys();
 	if(keysDown() & KEY_START) {
 		paused = !paused;//open pause state
+		if(keysShown) {
+			View::keyboardVisible(false);//hide
+		}
+		enterFrameWhile();//might have been quite a few frames
 		consoleClear();
 	}
 	uint activeKeys = keysDown();
@@ -933,10 +937,13 @@ void View::keyboardVisible(bool show) {//make encapsulation and possibe fx
 	//console size to 8 lines?
 	keysShown = show;
 	if(show) {
+		paused = true;
 		keyboardShow();
 		consoleSetWindow(console, 0, 0, 32, 14);//top space
 	} else {
 		keyboardHide();
+		paused = false;
+		enterFrameWhile();//reduce VBI accumulate
 		consoleSetWindow(console, 0, 0, 32, 24);//all
 	}
 }

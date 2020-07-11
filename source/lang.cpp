@@ -1,6 +1,7 @@
 #include "lang.h"
 #include "ctl.h"
 #include <string.h>
+#include <keyboard.h>
 //========================== DSL PROCESSOR =================
 
 //384 kB memory space
@@ -46,7 +47,7 @@ void View::processInput(u16 keys) {
 }
 
 void View::keyboardPress(int key) {
-
+    if(key == DVK_FOLD) keyboardVisible(false);//hide BUT has input finished?
 }
 
 void View::show(bool keyboard) {//might be virtual?
