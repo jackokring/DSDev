@@ -103,14 +103,18 @@ void Audio::playMod(u8 current) {
 	sheduleAudio = false;
 }
 
-mm_sfxhand Audio::playEffect(int effect, bool foreground) {
+mm_sfxhand Audio::playEffect(int effect, bool foreground, bool raw = true) {
 	mm_sound_effect *snd = NULL;
-	for(uint i = 0; i < numberOfEffects; ++i) {
-		if(audioEffects[i] == effect) {
-			snd = &effectHandles[i];
-			break;
-		}
-	}	
+	if(raw) {
+		for(uint i = 0; i < numberOfEffects; ++i) {
+			if(audioEffects[i] == effect) {
+				snd = &effectHandles[i];
+				break;
+			}
+		}	
+	} else {
+		snd = &effectHandles[effect];//not raw
+	}
 	if(snd == NULL) return 0;
 	mmSetEffectsVolume(volumeEffectPercent * 1024 / 100);
 	mm_sfxhand hand = mmEffectEx(snd);
@@ -197,11 +201,11 @@ void processAudio() {
 		if(effectTrigger[0][i] == true) {
 			effectTrigger[0][i] = false;
 			if(frame - lastTriggered[i] > soundHoldLength[i])
-				Audio::playEffect(i, true);
+				Audio::playEffect(i, true, false);
 		}
 		if(effectTrigger[1][i] == true) {
 			effectTrigger[1][i] = false;
-			Audio::playEffect(i);
+			Audio::playEffect(i, false, false);
 		}
 	}
 }
