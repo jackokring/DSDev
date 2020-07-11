@@ -524,8 +524,8 @@ int hiSprites = 0;
 int layerSprite = 0;
 
 void initSprites() {
-	decompress(spriteTilesPal, memory, LZ77Vram);
-	dmaCopy(memory, SPRITE_PALETTE_SUB, 512);//non extended palette for sprites
+	//decompress(spriteTilesPal, memory, LZ77Vram);
+	//dmaCopy(memory, SPRITE_PALETTE_SUB, 512);//non extended palette for sprites
 	//decompress(subTilesTiles, bgGetGfxPtr(subBG[0]), LZ77Vram);
 	//128kB divided by 64 is 2048 glyphs
 	decompress(spriteTilesTiles, strings, LZ77Vram);
@@ -998,7 +998,7 @@ int main(int argc, char *argv[]) {
 	vramSetBankD(VRAM_D_SUB_SPRITE);
 	vramSetBankE(VRAM_E_MAIN_BG);//for intro screens and ...
 	vramSetBankF(VRAM_F_TEX_PALETTE_SLOT0);
-	oamInit(&oamSub, SpriteMapping_1D_64, false);//only 16kB so could go as low as 1D_16
+	oamInit(&oamSub, SpriteMapping_1D_64, true);//only 16kB so could go as low as 1D_16
 	//if it were possible
 	initSprites();
 
