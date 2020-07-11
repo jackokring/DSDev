@@ -103,7 +103,7 @@ void Audio::playMod(u8 current) {
 	sheduleAudio = false;
 }
 
-mm_sfxhand Audio::playEffect(int effect, bool foreground, bool raw = true) {
+mm_sfxhand Audio::playEffect(int effect, bool foreground, bool raw) {
 	mm_sound_effect *snd = NULL;
 	if(raw) {
 		for(uint i = 0; i < numberOfEffects; ++i) {
