@@ -935,6 +935,7 @@ PrintConsole *console;
 
 void View::keyboardVisible(bool show) {//make encapsulation and possibe fx
 	//console size to 8 lines?
+	if(keysShown == show) return;//no change as anim plays even if ...
 	keysShown = show;
 	if(show) {
 		paused = true;
