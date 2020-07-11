@@ -59,7 +59,9 @@ lang.o: /home/jacko/Documents/DSDev/source/lang.cpp \
  /opt/devkitpro/libnds/include/nds/arm9/trig_lut.h \
  /opt/devkitpro/libnds/include/nds/arm9/video.h \
  /opt/devkitpro/libnds/include/nds/arm9/videoGL.h \
- /opt/devkitpro/libnds/include/nds/arm9/nand.h
+ /opt/devkitpro/libnds/include/nds/arm9/nand.h \
+ /home/jacko/Documents/DSDev/source/ctl.h \
+ /opt/devkitpro/libnds/include/nds/arm9/keyboard.h
 /home/jacko/Documents/DSDev/source/lang.h:
 /opt/devkitpro/libnds/include/nds.h:
 /opt/devkitpro/libnds/include/nds/libversion.h:
@@ -121,3 +123,5 @@ lang.o: /home/jacko/Documents/DSDev/source/lang.cpp \
 /opt/devkitpro/libnds/include/nds/arm9/video.h:
 /opt/devkitpro/libnds/include/nds/arm9/videoGL.h:
 /opt/devkitpro/libnds/include/nds/arm9/nand.h:
+/home/jacko/Documents/DSDev/source/ctl.h:
+/opt/devkitpro/libnds/include/nds/arm9/keyboard.h:

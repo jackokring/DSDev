@@ -207,8 +207,13 @@ void processAudio() {
 }
 
 void Audio::cueEffect(int effect, bool foreground) {//multiple effect trigger group
-	effectTrigger[foreground ? 0 : 1][effect] = true;
-	lastTriggered[effect] = frame;
+	for(uint i = 0; i < numberOfEffects; ++i) {
+		if(audioEffects[i] == effect) {
+			effectTrigger[foreground ? 0 : 1][i] = true;
+			lastTriggered[i] = frame;
+			break;
+		}
+	}	
 }
 
 //============= FONT CLASS ==========================
@@ -635,6 +640,8 @@ void extendedPalettes() {
 GameLogic *game = new GameLogic();
 
 //===================== INTERNAL AUTOMATION DRAWING HELP =====================
+bool keysShown = false;
+
 u16 drawSubMeta() {
 	for(int i = 0; i < 2; ++i) {
 		u16 *map = bgGetMapPtr(subBG[i]);
@@ -839,8 +846,6 @@ void applyInfrequentlyAccessedSettings() {
 	mmSetJingleVolume(volumeEffectPercent * 1024 / 100);//an effect
 	//actual effects are short and setting used on playEffect()
 }
-
-bool keysShown = false;
 
 void drawAndProcessMenu(u16 keysMasked) {
 	consoleClear();
