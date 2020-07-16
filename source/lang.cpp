@@ -5,6 +5,7 @@
 //========================== DSL PROCESSOR =================
 #define OUT_OF_MEMORY 0
 #define STRING_TOO_LONG 1
+#define STACK_UNDER 2
 
 //384 kB memory space
 u16 memory[65536];
@@ -104,6 +105,24 @@ void freeString(u16 loc) {
         strings[i - len] = strings[i];
     }
     maxString -= len;//reclaim space
+}
+
+void push(u16 point, u16 element) {
+    links[element] = memory[point];
+    memory[point] = element;//one element used as stack handle (easier)
+    //allows list of stacks (lists)
+}
+
+u16 pop(u16 point) {
+    u16 val = memory[point];
+    if(val) {
+        u16 tmp = links[val];
+        links[val] = 0;//single item
+        memory[point] = tmp;//pop
+        return val;
+    }
+    processError(STACK_UNDER);
+    return 0;
 }
 
 int asInt(u16 node) {
