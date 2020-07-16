@@ -62,6 +62,9 @@ void free(u16 loc) {
 u16 allocString(char *allocate) {
     if(!stringFull(allocate)) {
         u16 loc = alloc();
+        if(!loc) {
+            return 0;//out of mem baulk
+        }
         memory[loc] = maxString;//pointer
         while(*(maxString++) = *(allocate++));//copy string
         u16 handle = alloc();
