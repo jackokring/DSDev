@@ -62,8 +62,12 @@ void free(u16 loc) {
 u16 allocString(char *allocate) {
     if(!stringFull(allocate)) {
         u16 loc = alloc();
+        if(!loc) {
+            return 0;//out of mem baulk for prevent allocate
+        }
         u16 handle = alloc();
-        if((!loc) || (!handle)) {
+        if(!handle) {
+            free(loc);//leaky?
             return 0;//out of mem baulk for prevent allocate
         }
         memory[loc] = maxString;//pointer
