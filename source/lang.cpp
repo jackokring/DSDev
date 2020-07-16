@@ -66,7 +66,7 @@ u16 allocString(char *allocate) {
             return 0;//out of mem baulk
         }
         memory[loc] = maxString;//pointer
-        while(*(maxString++) = *(allocate++));//copy string
+        while((strings[maxString++] = *(allocate++)));//copy string
         u16 handle = alloc();
         memory[handle] = loc;
         links[handle] = stringList;
