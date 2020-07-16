@@ -9,20 +9,39 @@ u16 memory[65536];
 u16 links[65536];
 char strings[65536];
 u8 types[65536];
-u16 freeChain;
+const u16 freeChain = 0;
 u16 maxString;
 
 void initMemory() {
     for(int i = 0; i < 65536; ++i) {
         links[i] = i + 1;//wraps modulo ring
     }
-    freeChain = 0;
+    //freeChain = 0;
     maxString = 0;
+    memory[freeChain] = 65535;//free count
 }
 
 bool memoryFull() {
     return (links[freeChain] == links[links[freeChain]]);//free chain points to self
     //last memory location not accessible. Not worth the index to access
+}
+
+u16 alloc() {
+    if(!memoryFull()) {
+        u16 loc = links[freeChain];
+        u16 next = links[loc];
+        links[freeChain] = next;
+        links[loc] = 0;//empty tail
+        memory[freeChain]--;//free count
+        return loc;
+    }
+    return 0;
+}
+
+void free(u16 loc) {
+    links[loc] = links[freeChain];
+    links[freeChain] = loc;//add
+    memory[freeChain]++;//free count
 }
 
 bool stringFull(char *alloc) {
